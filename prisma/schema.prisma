@@ -1,0 +1,419 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  ContestEntries ContestEntry[]
+  Bets           Bet[]
+  username       String?        @unique
+  phone          BigInt?
+  DOB            DateTime?
+  isFirstDeposit Boolean        @default(true)
+  // Username of the other user
+  referral       String?
+  Wallets        Wallets[]
+  Sessions Session[]
+  Transactions Transaction[]
+  firstname String?
+  lastname String?
+  address1 String?
+  address2 String?
+  city String?
+  state String?
+  postalCode String?
+  identityStatus Boolean        @default(false)
+  reasonCodes String[]
+  isAdmin        Boolean        @default(false)
+}
+
+model ContestEntry {
+  id         String  @id @default(uuid())
+  contest    Contest @relation(fields: [contestsId], references: [id])
+  bets       Bet[]
+  tokens     Decimal
+  User       User    @relation(fields: [userId], references: [id])
+  userId     String
+  contestsId String
+  transactions Transaction[]
+  DepositDistributions DepositDistribution[]
+}
+
+enum BetStatus {
+  PENDING
+  WIN
+  LOSS
+  PUSH
+  CANCELLED
+}
+
+enum BetType {
+  TEASER
+  STRAIGHT
+  PARLAY
+}
+
+enum BetLegType {
+  OVER_ODDS
+  UNDER_ODDS
+  SPREAD_AWAY_ODDS
+  SPREAD_HOME_ODDS
+  MONEYLINE_AWAY_ODDS
+  MONEYLINE_HOME_ODDS
+}
+
+model BetLeg {
+  id     String     @id @default(uuid())
+  market Market     @relation(fields: [marketId, marketSel_id], references: [id, sel_id])
+  type   BetLegType
+  odds   Decimal
+  total  Decimal
+  status BetStatus  @default(PENDING)
+
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @db.Timestamptz(6)
+  marketId     String
+  marketSel_id Int
+  Bet          Bet?     @relation(fields: [betId], references: [id])
+  betId        String?
+}
+
+model Bet {
+  id               String       @id @default(uuid())
+  stake            Decimal      @db.Decimal(10, 2)
+  status           BetStatus
+  owner            User         @relation(fields: [userId], references: [id])
+  payout           Decimal      @db.Decimal(10, 2)
+  type             BetType
+  legs             BetLeg[]
+  odds             Int
+  ContestEntries   ContestEntry @relation(fields: [contestEntriesId], references: [id])
+  contestEntriesId String
+  userId           String
+  ContestCategory  ContestCategory @relation(fields: [contestCategoryId], references: [id])
+  contestCategoryId  String
+  stakeType        BetStakeType
+  DepositDistributions DepositDistribution[]
+  Transactions Transaction[]
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+}
+
+enum BetStakeType {
+  ALL_IN
+  INSURED
+}
+enum ContestWagerType {
+  TOKEN
+  CASH
+}
+
+model Contest {
+  id             String         @id @default(uuid())
+  name           String         @db.VarChar(255)
+  description    String
+  // Whether or not a contest can be joined
+  isActive       Boolean
+  // Date of which the contest can be played in
+  startDate      DateTime       @db.Timestamptz(6)
+  // Date of which no more bets can be placed in this contest
+  endDate        DateTime       @db.Timestamptz(6)
+  type           ContestType
+  bgImageUrl     String         @db.VarChar(255)
+  ContestEntries ContestEntry[]
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  Wallets    Wallets[]
+  entryFee   Decimal
+  totalPrize Decimal
+  wagerType ContestWagerType @default(TOKEN)
+  priority  Int  @default(autoincrement())
+}
+
+enum League {
+  NFL
+  MLB
+  NBA
+  NCAAB
+  NCAAF
+  NHL
+  TENNIS
+  GOLF
+  SOCCER
+  MMA
+}
+
+enum Status {
+  Scheduled
+  InProgress
+  Final
+  PostponedCanceled
+}
+
+model Team {
+  id       String      @id
+  name     String
+  code     String
+  homeTeam Offer[]  @relation("homeTeam")
+  awayTeam Offer[]  @relation("awayTeam")
+  Market   Market[]
+  Players  Player[]
+}
+
+enum MarketType {
+  GM
+  GP
+  PP
+}
+
+enum MarketResult {
+  One
+  Zero
+  Null
+}
+
+model Player {
+  id       String      @id
+  name     String
+  position String
+  teamid   String
+  team     String
+  Market   Market[]
+  Team     Team?      @relation(fields: [teamid], references: [id])
+  headshot String?
+}
+
+model Market {
+  id               String
+  // team id or player id
+  team             Team?        @relation(fields: [teamId], references: [id])
+  player           Player?      @relation(fields: [playerId], references: [id])
+  sel_id           Int
+  type             MarketType
+  category         String
+  name             String
+  teamAbbrev       String
+  offline          Boolean
+  spread           Float?
+  spread_odd       Float?
+  total            Float?
+  over             Float?
+  under            Float?
+  moneyline        Float?
+  spread_bet       Float?
+  spread_cash      Float?
+  over_bet         Float?
+  under_bet        Float?
+  over_cash        Float?
+  under_cash       Float?
+  moneyline_bet    Float?
+  moneyline_cash   Float?
+  spread_result    MarketResult
+  spread_stat      Float?
+  over_result      MarketResult
+  under_result     MarketResult
+  total_stat       Float?
+  moneyline_result MarketResult
+  moneyline_stat   Float?
+  offer            Offer?       @relation(fields: [offerId], references: [gid])
+  offerId          String?
+  teamId           String?
+  playerId         String?
+  BetLeg           BetLeg[]
+
+  @@id([id, sel_id])
+}
+
+model Offer {
+  gid       String   @id
+  league    League
+  gamedate  String
+  epoch     Int
+  start_utc String?
+  end_utc   String?
+  inplay    Boolean
+  status    Status
+  matchup   String
+  gametime  String
+  home      Team     @relation("homeTeam", fields: [homeTeamId], references: [id])
+  away      Team     @relation("awayTeam", fields: [awayTeamId], references: [id])
+  markets   Market[]
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  homeTeamId String
+  awayTeamId String
+  manualEntry      Boolean      @default(false)
+}
+
+enum ContestType {
+  MATCH
+  FANTASY
+}
+
+// For in-house purposes
+model AppSettings {
+  id    String         @id @default(uuid())
+  name  AppSettingName
+  value String
+}
+
+enum AppSettingName {
+  // Limit for matching the first deposit
+  MAX_MATCH_DEPOSIT_AMOUNT
+  // Credit amount for firt successful deposit of referral
+  REFERRAL_CREDIT_AMOUNT
+  // Reload bonus
+  RELOAD_BONUS_AMOUNT
+}
+
+// TODO: [LOC-173] Wallets should go on contest entries?
+model Wallets {
+  id         String  @id @default(uuid())
+  User       User    @relation(fields: [userId], references: [id])
+  contest    Contest @relation(fields: [contestsId], references: [id])
+  balance    Decimal @db.Decimal(10, 2)
+  userId     String
+  contestsId String
+
+  created_by String
+  updated_by String
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([userId, contestsId])
+}
+
+model Session {
+  id String @id @default(uuid())
+  serviceType String
+  User User @relation(fields: [userId], references: [id])
+  userId String
+  deviceLocation String
+  sessionRequestRaw String?
+  completeSessionRequestRaw String?
+  SessionResponses SessionResponse[]
+  Transactions Transaction[]
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model SessionResponse {
+  id String @id @default(uuid())
+  Session Session @relation(fields: [sessionId], references: [id])
+  sessionId String
+  reasonCodes String[]
+  sessionResponseRaw String
+  statusCode Int
+  statusMessage String
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum PaymentMethodType {
+  CC
+  ACH
+  Paypal
+  OTHERS
+}
+
+model Transaction {
+  id String @id
+  actionType String
+  Session Session @relation(fields: [sessionId], references: [id])
+  sessionId String
+  User User @relation(fields: [userId], references: [id])
+  userId String
+  amountProcess Decimal
+  amountBonus Decimal
+  transactionCurrency String //USD or other ISO 4217 Currency Code
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  TransactionStatuses TransactionStatus[]
+  ContestEntry ContestEntry? @relation(fields: [contestEntryId], references: [id])
+  contestEntryId String?
+  DepositDistributions DepositDistribution[]
+  betId String? @unique
+  Bet   Bet?  @relation(fields: [betId], references: [id])
+}
+
+model TransactionStatus {
+  id String @id @default(uuid())
+  Transaction Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+  statusCode Int
+  statusMessage String?
+  transactionType TransactionType
+  transactionScore Decimal
+  // Text description of the payment method used by the customer.
+  transactionMethod String
+  transactionMethodType PaymentMethodType
+  //Account of the payment method used: VISA, MC, AMEX, PAYPAL, etc.
+  transactionMethodAccount String
+  approvalDateTime DateTime
+  statusDateTime DateTime
+  processDateTime DateTime?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model ContestCategory {
+  id                String         @id @default(uuid())
+  numberOfPicks     Int
+  allInPayoutMultiplier  Float
+  primaryInsuredPayoutMultiplier Float
+  secondaryInsuredPayoutMultiplier Float
+  Bets           Bet[]
+}
+
+// To determine how much the user can withdraw without payout request approval
+model DepositDistribution {
+  id             String         @id @default(uuid())
+  Transaction    Transaction    @relation(fields: [transactionId], references: [id])
+  transactionId  String
+  Bet            Bet?           @relation(fields: [betId], references: [id])
+  betId          String?
+  ContestEntry   ContestEntry?  @relation(fields: [contestEntryId], references: [id])
+  contestEntryId String?
+  amount         Decimal
+  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+}
+
+model ContactUs {
+  id            String      @id @default(uuid())
+  name          String
+  email         String
+  phoneNumber   String
+  category      String
+  description   String
+  emailSent     Boolean     @default(false)
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+}
+
+model Banner {
+  id            String      @id @default(uuid())
+  text          String
+  priority      Int         @default(autoincrement())
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+}
+
+model SpecialRestriction {
+  id  String  @id @default(uuid())
+  code  String
+  description String?
+  blockedReasonCodes  String[]
+  blockedLeagues  League[]
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+}
