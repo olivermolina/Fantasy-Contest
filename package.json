@@ -38,7 +38,7 @@
     "@faker-js/faker": "^7.5.0",
     "@fontsource/roboto": "^4.5.8",
     "@hookform/resolvers": "^2.9.8",
-    "@logtail/js": "^0.1.12",
+    "@logtail/js": "^0.1.17",
     "@logtail/node": "^0.1.12",
     "@logtail/winston": "^0.1.13",
     "@mui/icons-material": "^5.10.9",
