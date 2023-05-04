@@ -1,4 +1,5 @@
 import {
+  addToParlayBet,
   BetModel,
   ParlayModel,
   removeBet,
@@ -17,7 +18,10 @@ import { useAppDispatch } from '~/state/hooks';
 import { BetStakeType } from '@prisma/client';
 import { calculateInsuredPayout } from '~/utils/calculateInsuredPayout';
 
-type CartItem = CartProps['cartItems'][0];
+export type CartItemType = Omit<
+  CartProps['cartItems'][0],
+  'maxBetAmount' | 'minBetAmount' | 'freeEntryCount'
+>;
 
 function onUpdateCartItem(
   dispatch: ReturnType<typeof useAppDispatch>,
@@ -37,7 +41,7 @@ function onUpdateCartItem(
 export function mapStraightToCartItem(
   bet: BetModel,
   dispatch: ReturnType<typeof useAppDispatch>,
-): CartItem {
+): CartItemType {
   return {
     id: bet.betId.toString(),
     legs: [
@@ -55,6 +59,9 @@ export function mapStraightToCartItem(
         homeTeamName: bet.entity1,
         statName: bet.name,
         betOption: bet.team,
+        onClickMoreLess: (event, value) => {
+          dispatch(addToParlayBet({ ...bet, team: value }));
+        },
       },
     ],
     onUpdateCartItem: onUpdateCartItem(dispatch),
@@ -78,7 +85,7 @@ export function mapStraightToCartItem(
 export function mapParlayToCartItem(
   bet: ParlayModel,
   dispatch: ReturnType<typeof useAppDispatch>,
-): CartItem {
+): CartItemType {
   return {
     id: bet.betId.toString(),
     legs: bet.legs.map((leg) => ({
@@ -89,7 +96,7 @@ export function mapParlayToCartItem(
         dispatch(
           removeLegFromBetLegs({
             betId: bet.betId.toString(),
-            betLegName: leg.name,
+            marketId: leg.marketId,
           }),
         );
       },
@@ -100,6 +107,9 @@ export function mapParlayToCartItem(
       betOption: leg.team,
       awayTeamName: leg.entity2,
       homeTeamName: leg.entity1,
+      onClickMoreLess: (event, value) => {
+        dispatch(addToParlayBet({ ...leg, team: value }));
+      },
     })),
     stake: bet.stake.toString(),
     payout: calculateParlayPayout(
@@ -126,7 +136,7 @@ export function mapParlayToCartItem(
 export function mapTeaserToCartItem(
   bet: TeaserModel,
   dispatch: ReturnType<typeof useAppDispatch>,
-): CartItem {
+): CartItemType {
   return {
     id: bet.betId.toString(),
     legs: bet.legs.map((leg) => {
@@ -153,6 +163,9 @@ export function mapTeaserToCartItem(
         homeTeamName: leg.entity1,
         statName: leg.statName,
         betOption: leg.team,
+        onClickMoreLess: (event, value) => {
+          dispatch(addToParlayBet({ ...leg, team: value }));
+        },
       };
     }),
     stake: bet.stake.toString(),

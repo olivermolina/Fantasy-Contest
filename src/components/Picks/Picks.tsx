@@ -32,33 +32,85 @@ export interface PickSummaryProps {
   >;
   isLoading: boolean;
   dateRangeValue: DateRangeInterface | null;
+  /**
+   * Boolean to show admin components
+   */
+  isAdminView: boolean;
+  /**
+   * Boolean to hide tab title
+   */
+  showTabTitle?: boolean;
+  /**
+   * Boolean to hide date filters
+   */
+  showDateFilters?: boolean;
+  /**
+   * Boolean to hide balance summary
+   */
+  showBalanceSummary?: boolean;
 }
 
-const renderPickItems = (picks: PicksProps[]) => {
-  if (!picks || picks.length === 0) return <div>No data available.</div>;
-  return picks.map(({ data, type, status }) => (
+function PickItems(props: { picks: PicksProps[]; isAdminView: boolean }) {
+  const { picks, isAdminView } = props;
+  if (!picks || picks.length === 0)
+    return (
+      <div
+        className={
+          'flex flex-col text-white justify-center items-center h-full'
+        }
+      >
+        <img
+          className="object-cover w-28 h-28"
+          src={'/assets/images/ico_smiley_sad_w_circle.svg'}
+          alt="No data available"
+        />
+        <span className={'text-lg font-semibold'}>No data available.</span>
+        <span className={'text-sm'}>
+          Visit Challenges add place some entries.
+        </span>
+      </div>
+    );
+  return (
     <>
-      {type === BetType.STRAIGHT && <StraightCard key={data.id} {...data} />}
-      {type === BetType.PARLAY && (
-        <ParlayCard key={data.id} {...data} status={status} />
-      )}
+      {picks.map(({ data, type, status }) => (
+        <>
+          {type === BetType.STRAIGHT && (
+            <StraightCard key={data.id} {...data} isAdminView={isAdminView} />
+          )}
+          {type === BetType.PARLAY && (
+            <ParlayCard
+              key={data.id}
+              {...data}
+              status={status}
+              isAdminView={isAdminView}
+            />
+          )}
+        </>
+      ))}
     </>
-  ));
-};
+  );
+}
 
-const Picks: React.FC<PickSummaryProps> = (props) => {
+const Picks: React.FC<PickSummaryProps> = ({
+  showTabTitle = true,
+  showDateFilters = true,
+  showBalanceSummary = true,
+  ...props
+}) => {
   const tabs = [PickStatus.PENDING, PickStatus.SETTLED].map((status) => ({
     value: status,
     label: status,
     description: `${status} Picks`,
   }));
   return (
-    <div className={'flex flex-col h-fit w-full'}>
-      <Tabs
-        tabs={tabs}
-        activeTab={props.selectedTabStatus}
-        handleChange={props.handleChangeTab}
-      />
+    <div className={'flex flex-col h-full w-full'}>
+      {showTabTitle && (
+        <Tabs
+          tabs={tabs}
+          activeTab={props.selectedTabStatus}
+          handleChange={props.handleChangeTab}
+        />
+      )}
       {[PickStatus.PENDING, PickStatus.SETTLED].map((status) => (
         <TabPanel
           key={status}
@@ -66,15 +118,21 @@ const Picks: React.FC<PickSummaryProps> = (props) => {
           selectedValue={props.selectedTabStatus}
         >
           {props.isLoading ? (
-            <div className="flex w-full px-5">
-              <Skeleton sx={{ padding: 5, height: 100, width: '100%' }} />
+            <div className="flex flex-col w-full justify-start">
+              <div className={'flex gap-2'}>
+                <Skeleton sx={{ height: 75, width: 65 }} />
+                <Skeleton sx={{ height: 75, width: 65 }} />
+                <Skeleton sx={{ height: 75, width: 65 }} />
+              </div>
+              <Skeleton sx={{ height: 150, width: '100%' }} />
             </div>
           ) : (
-            <div className="flex flex-col w-full divide-y divide-gray-200 h-full">
-              {status === PickStatus.PENDING ? (
+            <div className="flex flex-col w-full h-full">
+              {status === PickStatus.PENDING && showBalanceSummary && (
                 <PendingSummary items={props.summaryItems} />
-              ) : (
-                <div className={'flex flex-row p-3 md:p-5 '}>
+              )}
+              {status !== PickStatus.PENDING && showDateFilters && (
+                <div className={'flex flex-row p-3 md:p-5 text-white'}>
                   <PickDatePickerRange
                     dateRangeValue={props.dateRangeValue}
                     setDateRangeValue={props.setDateRangeValue}
@@ -82,19 +140,24 @@ const Picks: React.FC<PickSummaryProps> = (props) => {
                 </div>
               )}
 
-              <div className="flex flex-col gap-3 md:gap-4 px-1 py-3 md:px-3">
-                {renderPickItems(
-                  props.picks.filter((pick) =>
-                    status === PickStatus.SETTLED
-                      ? [
-                          PickStatus.LOSS,
-                          PickStatus.SETTLED,
-                          PickStatus.WIN,
-                          PickStatus.CANCELLED,
-                        ].includes(pick.status)
-                      : pick.status === status,
-                  ),
-                )}
+              <div className="flex flex-col gap-3 md:gap-4 px-1 py-3 md:px-3 h-full">
+                <PickItems
+                  picks={
+                    props.picks.filter((pick) =>
+                      status === PickStatus.SETTLED
+                        ? [
+                            PickStatus.LOSS,
+                            PickStatus.SETTLED,
+                            PickStatus.WIN,
+                            PickStatus.CANCELLED,
+                            PickStatus.REFUNDED,
+                            PickStatus.PUSH,
+                          ].includes(pick.status)
+                        : pick.status === status,
+                    ) || []
+                  }
+                  isAdminView={props.isAdminView}
+                />
               </div>
             </div>
           )}

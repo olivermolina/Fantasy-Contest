@@ -35,7 +35,7 @@ const ProfileDetails = (props: ProfileDetailsProps) => {
   return (
     <div className={`w-full lg:p-4`}>
       <div
-        className={`flex flex-row justify-between rounded-b-lg shadow-md p-4 bg-gradient-to-r from-white to-gray-400 gap-2`}
+        className={`flex flex-row justify-between rounded-b-lg shadow-md p-4 bg-primary gap-2`}
       >
         <div className="flex flex-col justify-around gap-2">
           {props.isLoading && !props.image && (
@@ -72,10 +72,10 @@ const ProfileDetails = (props: ProfileDetailsProps) => {
         </div>
         <div className="flex flex-col justify-between items-end">
           <button
-            className="py-2.5 px-3 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700"
+            className="py-2.5 px-3 text-sm font-medium text-gray-700 bg-primary rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700"
             type="button"
           >
-            <Icons.PencilSquare className={'h-6 w-6'} />
+            <Icons.PencilSquare className={'h-6 w-6 fill-white'} />
           </button>
 
           {props.showFollowers && (

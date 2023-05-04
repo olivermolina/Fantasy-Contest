@@ -25,6 +25,7 @@ StraightCard.args = {
   gameInfo: 'New Yourk Rangers vs Tampa Bay Lightning ',
   contestType: 'More or Less',
   pickTime: '12/06/2022',
+  settledTime: '12/06/2022',
   potentialWin: 27.56,
   risk: 13,
   status: PickStatus.PENDING,

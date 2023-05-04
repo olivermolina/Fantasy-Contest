@@ -4,10 +4,10 @@ describe('EVAnaltyics', () => {
   it('should properly format getLeague params', () => {
     const params = new URLSearchParams({
       game: '1',
-      date: formatDate(new Date('2012-01-01')),
+      date: formatDate(new Date('2011-12-30')),
     });
     expect(formatGetLeagueURL(LeagueEnum.NBA, params)).toBe(
-      'https://api.evanalytics.com/odds/v1/leagues/nba?game=1&date=2011-12-31',
+      'https://api.evanalytics.com/odds/v1/leagues/nba?game=1&date=2011-12-30',
     );
   });
 

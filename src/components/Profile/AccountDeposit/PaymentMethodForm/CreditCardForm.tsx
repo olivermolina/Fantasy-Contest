@@ -104,7 +104,7 @@ const CreditCardForm = (props: CreditCardFormProps) => {
         onSubmit={handleSubmit(props.onSubmit)}
       >
         <label className={PaymentMethodFormsStyles.flexElements}>
-          <span className="mb-1 font-bold text-md">Cardholder Name</span>
+          <span className="mb-1 text-sm">Cardholder Name</span>
           <input
             className={PaymentMethodFormsStyles.billingInputs(
               errors.fullName?.message,
@@ -115,7 +115,7 @@ const CreditCardForm = (props: CreditCardFormProps) => {
           <FormErrorText>{errors.fullName?.message}</FormErrorText>
         </label>
         <label className={PaymentMethodFormsStyles.flexElements}>
-          <span className="mb-1 font-bold text-md">Card number</span>
+          <span className="mb-1 text-sm">Card number</span>
           {savedPaymentMethod ? (
             <input
               className={PaymentMethodFormsStyles.cardInputs(undefined)}
@@ -171,52 +171,56 @@ const CreditCardForm = (props: CreditCardFormProps) => {
           <FormErrorText>{errors.cardNumber?.message}</FormErrorText>
         </label>
         <label className={PaymentMethodFormsStyles.nonFullWidthElements}>
-          <span className="mb-1 font-bold text-md">Expire date</span>
+          <span className="mb-1 text-sm">Expire date</span>
 
           <Controller
             control={control}
             name="expireDate"
             render={({ field: { onChange, name, value } }) => (
-              <PatternFormat
-                format="##/####"
-                mask="_"
-                className={PaymentMethodFormsStyles.cardInputs(
-                  errors.expireDate?.message,
+              <div
+                className={classNames(
+                  'flex flex-row rounded-md peer p-2 border-2 bg-[#1A487F] gap-2 justify-center items-center',
+                  {
+                    'border-red-500 outline-red-500':
+                      errors.expireDate?.message,
+                    'border-gray-200 outline-blue-500':
+                      !!errors.expireDate?.message,
+                  },
                 )}
-                type="text"
-                placeholder="MM/YYYY"
-                name={name}
-                value={value}
-                onChange={(e) => {
-                  onChange(e);
-                  trigger(name);
-                }}
-              />
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className={'object-fit h-5 w-5'}
+                >
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <PatternFormat
+                  format="##/####"
+                  mask="_"
+                  className={'w-full bg-transparent outline-0'}
+                  type="text"
+                  placeholder="MM/YYYY"
+                  name={name}
+                  value={value}
+                  onChange={(e) => {
+                    onChange(e);
+                    trigger(name);
+                  }}
+                />
+              </div>
             )}
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={classNames(PaymentMethodFormsStyles.icons, {
-              '-translate-y-7':
-                errors.cvv?.message || errors.expireDate?.message,
-              '-translate-y-1/2': !(
-                errors.cvv?.message || errors.expireDate?.message
-              ),
-            })}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
 
           <FormErrorText>{errors.expireDate?.message}</FormErrorText>
         </label>
         <label className={PaymentMethodFormsStyles.nonFullWidthElements}>
-          <span className="flex items-center gap-3 mb-1 font-bold text-md">
+          <span className="flex items-center gap-3 mb-1 text-sm">
             CVC/CVV
             <span className="relative group">
-              <span className="hidden group-hover:flex justify-center items-center px-2 py-1 text-xs absolute -right-2 transform translate-x-full -translate-y-1/2 w-max top-1/2 bg-black text-white">
+              <span className="hidden group-hover:flex justify-center items-center px-2 py-1 text-xs absolute -right-2 w-max top-1/2 bg-black text-white">
                 {' '}
                 Security code
               </span>
@@ -235,42 +239,41 @@ const CreditCardForm = (props: CreditCardFormProps) => {
             control={control}
             name="cvv"
             render={({ field: { onChange, name, value } }) => (
-              <PatternFormat
-                format="###"
-                mask="_"
-                className={PaymentMethodFormsStyles.cardInputs(
-                  errors.cvv?.message,
+              <div
+                className={classNames(
+                  'flex flex-row rounded-md peer p-2 border-2 bg-[#1A487F] gap-2 justify-center items-center',
+                  {
+                    'border-red-500 outline-red-500': errors.cvv?.message,
+                    'border-gray-200 outline-blue-500': !!errors.cvv?.message,
+                  },
                 )}
-                type="text"
-                placeholder="&bull;&bull;&bull;"
-                name={name}
-                value={value}
-                onChange={(e) => {
-                  onChange(e);
-                  trigger(name);
-                }}
-              />
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+
+                <PatternFormat
+                  format="###"
+                  mask="_"
+                  className={'w-full bg-transparent outline-0'}
+                  type="text"
+                  placeholder="&bull;&bull;&bull;"
+                  name={name}
+                  value={value}
+                  onChange={(e) => {
+                    onChange(e);
+                    trigger(name);
+                  }}
+                />
+              </div>
             )}
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={classNames(
-              `absolute bottom-0 left-0 -mb-0.5 absolute peer-placeholder-shown:text-gray-300 h-6 w-6 bottom-0 left-0 -mb-0.5 transform translate-x-1/2
-          text-black peer-placeholder-shown:text-gray-300 h-6 w-6`,
-              {
-                '-translate-y-7':
-                  errors.cvv?.message || errors.expireDate?.message,
-                '-translate-y-1/2': !(
-                  errors.cvv?.message || errors.expireDate?.message
-                ),
-              },
-            )}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
 
           <FormErrorText>{errors.cvv?.message}</FormErrorText>
         </label>

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import { Prisma, MarketResult, League, Market } from '@prisma/client';
+import { League, Market, MarketResult, Prisma } from '@prisma/client';
 import winston from 'winston';
 import { prisma } from '~/server/prisma';
 import defaultLogger from '~/utils/logger';
@@ -107,6 +107,18 @@ export const ingest = async (
             teamid: `${teamid.toString()}-${league}`,
           }),
         );
+
+        // Insert or update players in case they have changed teams
+        await prisma.$transaction(
+          playerData.map((player) =>
+            prisma.player.upsert({
+              where: { id: player.id },
+              update: player,
+              create: player,
+            }),
+          ),
+        );
+
         await prisma.player.createMany({
           skipDuplicates: true,
           data: playerData,

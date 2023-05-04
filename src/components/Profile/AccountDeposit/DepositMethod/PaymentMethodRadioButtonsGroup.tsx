@@ -35,12 +35,30 @@ export default function PaymentMethodRadioButtonsGroup(props: Props) {
       >
         <FormControlLabel
           value={PaymentMethodRadioOptions.SAVED}
-          control={<Radio />}
+          control={
+            <Radio
+              sx={{
+                color: 'white',
+                '&.Mui-checked': {
+                  color: '#69a4f3',
+                },
+              }}
+            />
+          }
           label="Saved Payment Methods"
         />
         <FormControlLabel
           value={PaymentMethodRadioOptions.NEW}
-          control={<Radio />}
+          control={
+            <Radio
+              sx={{
+                color: 'white',
+                '&.Mui-checked': {
+                  color: '#69a4f3',
+                },
+              }}
+            />
+          }
           label="New"
         />
       </RadioGroup>

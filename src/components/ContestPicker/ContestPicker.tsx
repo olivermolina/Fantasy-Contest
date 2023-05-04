@@ -2,15 +2,17 @@ import React, { useRef } from 'react';
 import { ContestCard, contestCardPropTypes } from './ContestCard';
 import PropTypes from 'prop-types';
 import { InferPropTypes } from '..';
+import { Skeleton } from '@mui/material';
 
 const contestPickerPropTypes = {
   contests: PropTypes.arrayOf(PropTypes.shape(contestCardPropTypes).isRequired)
     .isRequired,
+  isLoading: PropTypes.bool,
 };
 
 type Props = InferPropTypes<typeof contestPickerPropTypes>;
 
-export const ContestPicker: React.FC<Props> = ({ contests }) => {
+export const ContestPicker: React.FC<Props> = ({ contests, isLoading }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const scrollLeft = () => {
     divRef.current?.scrollBy({
@@ -23,7 +25,7 @@ export const ContestPicker: React.FC<Props> = ({ contests }) => {
     });
   };
   return (
-    <div className="relative">
+    <div className="relative mx-8 lg:mx-4">
       <h3 className="font-bold text-lg">☆ AVAILABLE CONTESTS</h3>
       <button
         onClick={scrollLeft}
@@ -66,9 +68,14 @@ export const ContestPicker: React.FC<Props> = ({ contests }) => {
         }}
         className="hide-scrollbar grid content-start justify-start grid-flow-col-dense p-2 gap-2 overflow-x-scroll ml-4 mr-4"
       >
-        {contests.map((contest, i) => (
-          <ContestCard key={i} {...contest} />
-        ))}
+        {isLoading ? (
+          <>
+            <Skeleton variant={'rectangular'} height={100} width={160} />
+            <Skeleton variant={'rectangular'} height={100} width={160} />
+          </>
+        ) : (
+          contests.map((contest, i) => <ContestCard key={i} {...contest} />)
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,389 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BalanceSummaryTable should render correctly 1`] = `
+<div>
+  <div
+    class="MuiBox-root css-8atqhb"
+  >
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-1mxz8qt-MuiPaper-root"
+    >
+      <div
+        class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular bg-blue-500 text-white css-xvd0n5-MuiToolbar-root"
+      >
+        <h5
+          class="MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"
+        >
+          Weekly Balance Summary
+        </h5>
+      </div>
+      <div
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiTableContainer-root css-11xur9t-MuiPaper-root-MuiTableContainer-root"
+      >
+        <table
+          aria-label="Weekly Balance Summary"
+          class="MuiTable-root css-rqglhn-MuiTable-root"
+        >
+          <thead
+            class="MuiTableHead-root css-15wwp11-MuiTableHead-root"
+          >
+            <tr
+              class="MuiTableRow-root MuiTableRow-head css-1q1u3t4-MuiTableRow-root"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="3"
+                scope="col"
+              >
+                Player
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                Deposited
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Mon
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Tue
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Wed
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Thu
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Fri
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Sat
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Sun
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Total Week
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Deposits
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Withdrawals
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Pending
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Amount Avail to Withdraw
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Bonus Bal
+                </span>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3n0cd-MuiTableCell-root"
+                colspan="1"
+                scope="col"
+              >
+                <span>
+                  Total Balance
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tfoot
+            class="MuiTableFooter-root css-9cgc89-MuiTableFooter-root"
+          >
+            <tr
+              class="MuiTableRow-root MuiTableRow-hover MuiTableRow-footer css-dn9jez-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="4"
+              >
+                <span
+                  class="text-bold font-bold text-black"
+                >
+                  Grand Total
+                </span>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-14qhs9-MuiTableCell-root"
+                colspan="1"
+              >
+                <div
+                  class="MuiBox-root css-0"
+                >
+                  <span>
+                    0.00
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root MuiTableRow-footer css-1q1u3t4-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-footer MuiTableCell-alignCenter MuiTableCell-sizeMedium css-1gsvvia-MuiTableCell-root"
+                colspan="18"
+              >
+                <span
+                  class="text-lg font-bold mr-5"
+                >
+                  Total Active Players:
+                   
+                  0
+                </span>
+                <span
+                  class="text-lg font-bold"
+                >
+                  Total Inactive Players:
+                   
+                  0
+                </span>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+`;

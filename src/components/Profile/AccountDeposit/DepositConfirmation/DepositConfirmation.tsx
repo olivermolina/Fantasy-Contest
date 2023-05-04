@@ -9,9 +9,9 @@ interface DepositConfirmationProps {
 const DepositConfirmation = (props: DepositConfirmationProps) => {
   const { depositAmount } = props;
   return (
-    <div className="flex flex-col shadow-md rounded-md divide-y gap-2 bg-white">
+    <div className="flex flex-col shadow-md rounded-md divide-y gap-2 bg-primary">
       <div className="flex flex-col p-6 gap-2">
-        <p className="font-bold text-lg">Account Deposit</p>
+        <p className="font-bold text-lg hidden lg:block">Account Deposit</p>
         <div className="flex gap-1">
           <span className={'font-bold text-sm'}>$</span>
           <div>
@@ -56,7 +56,7 @@ const DepositConfirmation = (props: DepositConfirmationProps) => {
         </div>
       </div>
       <div className="flex flex-col p-6 gap-2">
-        <p className="text-sm">
+        <p className="text-sm text-lightText">
           Next: It may take to 60 seconds for this deposit amount to show as
           credited in your account.
         </p>

@@ -14,24 +14,26 @@ interface PendingSummaryProps {
 
 const PendingSummary: React.FC<PendingSummaryProps> = (props) => {
   return (
-    <div
-      className={
-        'grid grid-rows-1 grid-cols-5 md:grid-rows-1 md:grid-cols-5 gap-2 md:gap-4 p-2 md:p-4 overflow-x-auto'
-      }
-    >
+    <div className={'flex overflow-x-auto gap-2 w-full bg-primary p-2'}>
       {props.items
         ?.sort((a, b) => a.priority - b.priority)
         .map(({ label, value, isShowDollarPrefix }) => (
           <div
             key={`${value}-${label}`}
             className={
-              'flex flex-col rounded p-1 md:p-4 bg-gray-100 justify-between md:justify-around gap-1 md:gap-2'
+              'flex flex-col rounded p-2 bg-gray-100 justify-center gap-1 bg-[#0D3D77]'
             }
           >
-            <p className={'text-gray-400 text-xs md:text-md'}>{label}</p>
-            <p className={'font-bold text-sm md:text-lg'}>
+            <span
+              className={
+                'text-gray-400 text-xs md:text-sm md:text-md text-[#65A0EE]'
+              }
+            >
+              {label}
+            </span>
+            <span className={'font-bold text-sm md:text-lg text-white'}>
               {isShowDollarPrefix ? showDollarPrefix(value, true) : value}
-            </p>
+            </span>
           </div>
         ))}
     </div>

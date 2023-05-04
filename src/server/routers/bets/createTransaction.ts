@@ -72,3 +72,5 @@ export const createTransaction = async (input: CreateTransactionInput) => {
     });
   }
 };
+
+export default createTransaction;

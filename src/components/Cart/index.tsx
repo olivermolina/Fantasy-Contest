@@ -2,7 +2,6 @@ import React from 'react';
 import { ICartItemProps } from './ICartItemProps';
 import { CartItem } from './CartItem';
 import { SmallText } from './SmallText';
-import { CartTopItemButton } from './CartTopItemButton';
 import classNames from 'classnames';
 
 export interface CartProps {
@@ -11,44 +10,72 @@ export interface CartProps {
   onClickPlayerOU?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   activeTab: 'teamToken' | 'playerOU';
   links: any[];
-  cartItems: (ICartItemProps & { id: string })[];
+  cartItems: (Omit<
+    ICartItemProps,
+    'minBetAmount' | 'maxBetAmount' | 'freeEntryCount'
+  > & {
+    id: string;
+  })[];
   showLoading?: boolean;
   children?: any;
+  minimumEntryFee: number;
+  maximumEntryFee: number;
+  /**
+   * User's free entry count
+   */
+  freeEntryCount: number;
+  /**
+   * Free entry stake amount
+   */
+  freeEntryStake: number;
+  /**
+   * The app setting string value of Free Entry stake type options
+   * @example 'ALL_IN, INSURED'
+   */
+  stakeTypeFreeEntry: string;
+  isChallengePage?: boolean;
 }
 
 export const Cart: React.FC<CartProps> = (props) => {
   return (
-    <div className="bg-white rounded-br shadow min-w-[300px]">
+    <div
+      className={classNames(
+        'bg-primary shadow min-w-[300px] border-t-0 border-slate-500 border',
+        {
+          'rounded-br-xl': props.isChallengePage,
+        },
+      )}
+    >
       {/* Header */}
-      <div className="text-xl font-bold text-blue-600 text-center p-4">
+      <div className="text-xl font-bold text-white text-center p-4 border-b border-b-slate-500">
         Your picks
-      </div>
-
-      {/* Select Items */}
-      <div className="border-t border-b-lg flex border-gray-300">
-        <CartTopItemButton
-          onClick={props.onClickPlayerOU}
-          isActive={props.activeTab === 'playerOU'}
-        >
-          More or Less
-        </CartTopItemButton>
-        <CartTopItemButton
-          onClick={props.onClickTeamToken}
-          isActive={props.activeTab === 'teamToken'}
-        >
-          Token Contest
-        </CartTopItemButton>
       </div>
 
       {/* Cart Items */}
       {props.cartItems.map((item) => (
-        <CartItem key={item.id} {...item} />
+        <CartItem
+          key={item.id}
+          {...item}
+          maxBetAmount={props.maximumEntryFee}
+          minBetAmount={props.minimumEntryFee}
+          freeEntryCount={props.freeEntryCount}
+          freeEntryStake={props.freeEntryStake}
+          stakeTypeFreeEntry={props.stakeTypeFreeEntry}
+        />
       ))}
 
       {/* Show if no items */}
       {props.cartItems.length === 0 && (
-        <div className="text-center text-sm text-gray-400 m-4 w-full">
-          There are no entries to place of this type.
+        <div className="flex flex-col justify-center items-center text-white w-full py-8 gap-4">
+          <img
+            className="object-cover w-28 h-28"
+            src={'/assets/images/ico_smiley_sad_w_circle.svg'}
+            alt="No Entries"
+          />
+          <span className={'text-lg'}>No entries</span>
+          <span className={'text-sm max-w-[150px] text-center'}>
+            There are no entries to place of this type.
+          </span>
         </div>
       )}
 
@@ -58,7 +85,7 @@ export const Cart: React.FC<CartProps> = (props) => {
           disabled={props.showLoading}
           onClick={props.onClickSubmitForm}
           className={classNames(
-            'rounded uppercase bg-blue-600 font-bold text-white flex justify-center text-center p-3 flex-grow',
+            'rounded-lg bg-white font-bold text-secondary flex justify-center text-center p-3 flex-grow',
             { 'cursor-not-allowed': props.showLoading },
           )}
         >
@@ -83,7 +110,7 @@ export const Cart: React.FC<CartProps> = (props) => {
               <span className="sr-only">Loading...</span>
             </div>
           ) : (
-            'submit'
+            'Submit'
           )}
         </button>
       </div>
@@ -91,9 +118,13 @@ export const Cart: React.FC<CartProps> = (props) => {
       {/* Footer links */}
       <div className="p-4 pt-0 flex gap-2">
         {props.links.map((link, i) => (
-          <SmallText key={i}>{link}</SmallText>
+          <SmallText key={i} textColor={'text-white'}>
+            {link}
+          </SmallText>
         ))}
-        <SmallText>lockspread.com © {new Date().getFullYear()}</SmallText>
+        <SmallText textColor={'text-white'}>
+          lockspread.com © {new Date().getFullYear()}
+        </SmallText>
       </div>
     </div>
   );

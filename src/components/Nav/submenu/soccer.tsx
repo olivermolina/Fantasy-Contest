@@ -10,7 +10,13 @@ export function SoccerIcon(props: SportsIconProps) {
       fill="none"
       viewBox="0 0 44 44"
     >
-      <circle cx="22" cy="22" r="22" fill="#fff" opacity="0.1"></circle>
+      <circle
+        cx="22"
+        cy="22"
+        r="22"
+        fill="#fff"
+        opacity={props.isSelected ? '1' : '0.1'}
+      ></circle>
 
       <g
         id="g220"
@@ -22,7 +28,7 @@ export function SoccerIcon(props: SportsIconProps) {
           cx="128"
           cy="128"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -32,7 +38,7 @@ export function SoccerIcon(props: SportsIconProps) {
         <polygon
           points="152.7,162 167.9,115 128,86 88.1,115 103.3,162 "
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -44,7 +50,7 @@ export function SoccerIcon(props: SportsIconProps) {
           x2="128"
           y2="86"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -53,7 +59,7 @@ export function SoccerIcon(props: SportsIconProps) {
         <polyline
           points="163 38.6 128 64 93 38.6"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -65,7 +71,7 @@ export function SoccerIcon(props: SportsIconProps) {
           x2="88.099998"
           y2="115"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -74,7 +80,7 @@ export function SoccerIcon(props: SportsIconProps) {
         <polyline
           points="53.8 67.1 67.1 108.2 32.1 133.7"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -86,7 +92,7 @@ export function SoccerIcon(props: SportsIconProps) {
           x2="103.3"
           y2="162"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -95,7 +101,7 @@ export function SoccerIcon(props: SportsIconProps) {
         <polyline
           points="47.1 179.8 90.4 179.8 103.8 220.9"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -107,7 +113,7 @@ export function SoccerIcon(props: SportsIconProps) {
           x2="152.7"
           y2="162"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -116,7 +122,7 @@ export function SoccerIcon(props: SportsIconProps) {
         <polyline
           points="152.2 220.9 165.6 179.8 208.9 179.8"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -128,7 +134,7 @@ export function SoccerIcon(props: SportsIconProps) {
           x2="167.89999"
           y2="115"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"
@@ -137,7 +143,7 @@ export function SoccerIcon(props: SportsIconProps) {
         <polyline
           points="223.9 133.7 188.9 108.2 202.2 67.1"
           fill="none"
-          stroke="#fff"
+          stroke={props.isSelected ? '#003370' : '#fff'}
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="8"

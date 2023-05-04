@@ -1,5 +1,6 @@
 import * as yup from '~/utils/yup';
 import {
+  AppSettingName,
   BetLegType,
   BetStakeType,
   BetStatus,
@@ -7,10 +8,10 @@ import {
   ContestCategory,
   ContestEntry,
   ContestWagerType,
+  League,
   Market,
   Prisma,
   TransactionType,
-  League,
 } from '@prisma/client';
 import { prisma } from '~/server/prisma';
 import { calculateTeaserPayout } from '~/utils/caculateTeaserPayout';
@@ -19,13 +20,17 @@ import { calculateTotalOdds } from '~/utils/calculateTotalBets';
 import { User } from '@supabase/supabase-js';
 import { createTransaction } from '~/server/routers/bets/createTransaction';
 import { ActionType } from '~/constants/ActionType';
-import GIDX, { IDeviceGPS, isBlocked, isVerified } from '~/lib/tsevo-gidx/GIDX';
+import { IDeviceGPS } from '~/lib/tsevo-gidx/GIDX';
 import { TRPCError } from '@trpc/server';
 import { getUserTotalBalance } from '~/server/routers/user/userTotalBalance';
 import applyDepositDistribution from '~/server/routers/user/applyDepositDistribution';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
-import specialRestrictions from '~/server/routers/contest/specialRestrictions';
-import { getErrorMessage } from '~/utils/geErrorMessage';
+import { calculateBonusCreditStake } from '~/utils/calculateBonusCreditStake';
+import { monitorUser } from '~/server/routers/bets/monitorUser';
+import { getUserSettings } from '../appSettings/list';
+import { DefaultAppSettings } from '~/constants/AppSettings';
+import { getMarketTotalProjection } from '~/utils/getMarketTotalProjection';
+import { verifyFreeSquarePickCategories } from '~/utils/verifyFreeSquarePickCategories';
 
 function placeBetSchema(isTeaser: boolean) {
   return yup.object().shape({
@@ -100,6 +105,32 @@ export type BetInputType = {
  */
 export async function placeBet(bet: BetInputType, user: User): Promise<void> {
   try {
+    const { user: prismaUser, userAppSettings: appSettings } =
+      await getUserSettings(user.id);
+    if (!prismaUser) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'You must be logged in to place entry.',
+      });
+    }
+
+    const minBetAmount = Number(
+      appSettings.find((s) => s.name === AppSettingName.MIN_BET_AMOUNT)
+        ?.value || DefaultAppSettings.MIN_BET_AMOUNT,
+    );
+    const maxBetAmount = Number(
+      appSettings.find((s) => s.name === AppSettingName.MAX_BET_AMOUNT)
+        ?.value || DefaultAppSettings.MAX_BET_AMOUNT,
+    );
+    if (bet.stake < minBetAmount || bet.stake > maxBetAmount) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `Bet amount is not allowed. Please bet more than ${minBetAmount} and less than ${maxBetAmount}. Stake: ${bet.stake}.`,
+      });
+    }
+
+    await monitorUser(bet, prismaUser);
+
     const isTeaser = bet.type === BetType.TEASER;
     const validPayload = placeBetSchema(isTeaser).validateSync(bet);
 
@@ -109,60 +140,11 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
       },
     });
 
-    const prismaUser = await prisma.user.findUnique({
-      where: {
-        id: user.id,
-      },
-    });
-
-    if (!prismaUser) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'You must be logged in to place entry.',
-      });
-    }
-
-    const session = await prisma.session.create({
-      data: {
-        userId: prismaUser.id,
-        serviceType: ActionType.CUSTOMER_MONITOR,
-        deviceLocation: '',
-        sessionRequestRaw: '',
-      },
-    });
-
-    const gidx = await new GIDX(
-      prismaUser,
-      ActionType.CUSTOMER_MONITOR,
-      session,
-    );
-    const { deviceGPS, ipAddress } = bet;
-    const customerMonitorResponse = await gidx.customerMonitor({
-      deviceGPS,
-      ipAddress,
-    });
-    const reasonCodes = customerMonitorResponse.ReasonCodes;
-
-    if (!isVerified(reasonCodes)) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: CustomErrorMessages.NOT_VERIFIED,
-      });
-    }
-
-    if (isBlocked(reasonCodes)) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: getErrorMessage(reasonCodes),
-      });
-    }
-
-    const leagues = bet.legs.map((leg) => leg.league);
-    await specialRestrictions(reasonCodes, leagues);
-
+    let bonusCreditStake = 0;
     if (contest.wagerType === ContestWagerType.CASH) {
       // Get user total available balance
-      const { totalAmount } = await getUserTotalBalance(user.id);
+      const { totalAmount, creditAmount } = await getUserTotalBalance(user.id);
+      bonusCreditStake = calculateBonusCreditStake(bet.stake, creditAmount);
       if (bet.stake > totalAmount) {
         throw new TRPCError({
           code: 'FORBIDDEN',
@@ -178,13 +160,36 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
             id: leg.marketId,
             sel_id: leg.marketSelId,
           },
+          include: {
+            FreeSquare: {
+              include: {
+                FreeSquareContestCategory: {
+                  include: {
+                    contestCategory: true,
+                  },
+                },
+              },
+            },
+          },
         });
+
+        try {
+          // Will throw an error if the leg length is not enabled in the free square,
+          verifyFreeSquarePickCategories(bet.legs.length, market.FreeSquare);
+        } catch (e) {
+          const error = e as Error;
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: error.message,
+          });
+        }
+
         return {
           type: leg.type,
           odds: getOdds(leg, market),
           marketId: leg.marketId,
           marketSel_id: leg.marketSelId,
-          total: leg.total,
+          total: getMarketTotalProjection(leg.total, market.FreeSquare),
         };
       }),
     );
@@ -216,6 +221,8 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
     const newBet = await prisma.bet.create({
       data: {
         stake: bet.stake,
+        cashStake: 0,
+        bonusCreditStake,
         status: BetStatus.PENDING,
         owner: {
           connect: {

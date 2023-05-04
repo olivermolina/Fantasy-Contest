@@ -22,7 +22,7 @@ export interface ExplainerCardProps {
 const ExplainerCard = (props: ExplainerCardProps) => {
   const Image = props.image;
   return (
-    <div className="flex flex-col justify-start items-center gap-2 border-white rounded-[27px] border-2 sm:min-w-auto md:w-[280px] lg:w-[400px] h-auto p-5 md:p-10">
+    <div className="flex flex-col justify-start items-center gap-2 border-white rounded-lg border-2 p-5 md:p-10 max-w-sm bg-[#1A395B] bg-opacity-40">
       {/* Explainer Image */}
 
       {typeof props.image === 'string' ? (

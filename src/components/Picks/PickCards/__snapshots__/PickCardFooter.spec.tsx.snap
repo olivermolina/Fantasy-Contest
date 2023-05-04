@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PickCardFooter should render 1`] = `
+<div>
+  <div
+    class="p-1 md:p-2 flex flex-row justify-between gap-1 text-white"
+  >
+    <div
+      class="flex flex-col items-center"
+    >
+      <p
+        class="text-lightText text-sm"
+      >
+        Entry
+      </p>
+      <div
+        class="flex font-bold h-full items-center"
+      >
+        $10.00
+      </div>
+    </div>
+    <div
+      class="flex flex-col items-center"
+    >
+      <p
+        class="text-lightText text-sm"
+      >
+        Potential Win
+      </p>
+      <div
+        class="font-bold flex font-bold h-full items-center"
+      >
+        $100.00
+      </div>
+    </div>
+    <div
+      class="flex flex-col items-center"
+    >
+      <p
+        class="text-lightText text-sm"
+      >
+        Status
+      </p>
+      <div
+        class="flex flex-col md:flex-row gap-1 items-center h-full"
+      >
+        <div
+          class="w-4 h-4 border border-gray-300 rounded-full"
+        />
+        <p
+          class="font-bold capitalize text-sm"
+        >
+          PENDING
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;

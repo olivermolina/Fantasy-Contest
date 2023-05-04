@@ -6,10 +6,12 @@ import { listBets } from './listBets';
 import { grade } from './grade';
 import pendingBetLegs from './pendingBetLegs';
 import getManualOffersWithPendingBets from './getManualOffersWithPendingBets';
+import { createMissingWinTransaction } from './createMissingWinTransaction';
+import { isAuthenticated } from '../middleware/isAuthenticated';
 
 export const betsRouter = t.router({
   list: listBets,
-  placeBet: t.procedure
+  placeBet: isAuthenticated
     .input(yup.mixed<BetInputType>().required())
     .mutation(async ({ input, ctx }) => {
       if (!ctx.session.user) {
@@ -22,4 +24,5 @@ export const betsRouter = t.router({
   grade,
   pendingBetLegs,
   getManualOffersWithPendingBets,
+  createMissingWinTransaction,
 });

@@ -14,9 +14,9 @@ interface TabsProps {
 }
 
 const tabConfig = {
+  none: 'flex flex-col block p-4 cursor-pointer justify-center items-center rounded-t-lg shadow-inner bg-[#1A395B] border-gray-500 border border-b-0',
   active:
-    'flex flex-col block p-4 cursor-pointer bg-white justify-center items-center rounded-t-lg shadow-inner',
-  none: 'flex flex-col p-4 cursor-pointer bg-white justify-center items-center mb-0.5 rounded-t-lg shadow-lg',
+    'flex flex-col p-4 cursor-pointer bg-primary justify-center items-center rounded-t-lg',
 };
 
 const Tabs = (props: TabsProps) => {
@@ -33,12 +33,9 @@ const Tabs = (props: TabsProps) => {
             }
             onClick={() => props.handleChange(tab.value)}
           >
-            <h5 className="text-md font-bold tracking-tight text-gray-900 uppercase">
+            <h5 className="text-md font-bold tracking-tight text-white uppercase">
               {tab.label}
             </h5>
-            <p className="font-normal text-xs text-gray-400 capitalize">
-              {tab.description}
-            </p>
           </div>
         </div>
       ))}

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CopyClipboardButton should render 1`] = `
+<div>
+  <button
+    aria-label="Copied to clipboard!"
+    class=""
+    data-mui-internal-clone-element="true"
+  >
+    <svg
+      class="h-6 w-6"
+      data-file-name="SvgClipboardDocument"
+    />
+  </button>
+</div>
+`;

@@ -3,15 +3,16 @@ import { toast } from 'react-toastify';
 import { RootState } from '../store';
 import { setSelectedContestCategory } from '~/state/ui';
 import {
-  BetInput,
-  ParlayModel,
-  removeLegFromBetLegs,
   addIdToBet,
   addParlayBet,
+  BetInput,
+  BetModel,
+  ParlayModel,
+  removeLegFromBetLegs,
   selectAllBets,
   updateBet,
-  BetModel,
 } from './index';
+import { calculateFreeEntryCount } from '~/utils/calculateFreeEntryCount';
 
 export const addToParlayBet = createAsyncThunk(
   'bets/addToParlayBet',
@@ -21,6 +22,24 @@ export const addToParlayBet = createAsyncThunk(
     const parlayBet = allBets.find(
       (betRow) => 'legs' in betRow && betRow.contest === bet.contest,
     ) as ParlayModel;
+
+    // Show error if Free Square is not allowed in a Free Entry
+    if (bet.freeSquare && !bet.freeSquare.freeEntryEnabled) {
+      const bonusCredit = Number(state.profile.totalBalance?.creditAmount);
+      const bonusCreditFreeEntryEquivalent = Number(
+        state.appSettings.BONUS_CREDIT_FREE_ENTRY_EQUIVALENT,
+      );
+
+      const freeEntryCount = calculateFreeEntryCount(
+        bonusCredit,
+        bonusCreditFreeEntryEquivalent,
+      );
+
+      if (freeEntryCount > 0) {
+        toast.error(`You cannot select a Free Square in a Free Entry.`);
+        return;
+      }
+    }
 
     // If no current parlay bet exists, create one.
     if (!parlayBet) {
@@ -54,6 +73,21 @@ export const addToParlayBet = createAsyncThunk(
           },
         );
       } else {
+        // Show error if player already in legs
+        if (legs.findIndex((leg) => leg.playerId === bet.playerId) !== -1) {
+          toast.error(`Cannot pick the same player twice in an entry.`);
+          return;
+        }
+
+        // Show error if more than one free square is selected
+        if (
+          bet.freeSquare !== null &&
+          legs.filter((leg) => leg.freeSquare !== null).length > 0
+        ) {
+          toast.error(`Cannot pick free square twice in an entry.`);
+          return;
+        }
+
         const contestCategories = state.ui.contestCategories;
         selectedContestCategory = contestCategories?.find(
           (contestCategory) =>
@@ -106,11 +140,10 @@ export const addToParlayBet = createAsyncThunk(
 export function handleBetLegModification(
   betLegArgs: BetInput,
   parlayBet: Pick<ParlayModel, 'betId' | 'legs'>,
-
   // Dependency Injections
   removeLegFromBetLegs: (args: {
     betId: BetModel['betId'];
-    betLegName: BetModel['name'];
+    marketId: BetModel['marketId'];
   }) => void,
   addIdToBet: (bet: Omit<BetModel, 'betId'>) => BetModel,
   updateBetLeg: (legs: ParlayModel['legs']) => void,
@@ -124,7 +157,7 @@ export function handleBetLegModification(
   if (userHasDoubleClickedButton) {
     removeLegFromBetLegs({
       betId: parlayBet.betId.toString(),
-      betLegName: currLeg.name,
+      marketId: currLeg.marketId,
     });
   } else {
     // Override the old bet leg

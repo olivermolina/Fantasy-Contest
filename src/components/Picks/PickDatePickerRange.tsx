@@ -20,11 +20,30 @@ export interface DateRangeInterface {
 }
 
 interface Props {
-  setDateRangeValue: React.Dispatch<
-    React.SetStateAction<DateRangeInterface | null>
-  >;
+  setDateRangeValue: ({
+    startDate,
+    endDate,
+  }: {
+    startDate: ReturnType<typeof dayjs>;
+    endDate: ReturnType<typeof dayjs>;
+  }) => void;
   dateRangeValue: DateRangeInterface | null;
 }
+
+const textFieldStyles = {
+  input: { color: 'white' },
+  label: {
+    color: 'white',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'white',
+    },
+    '&:hover fieldset': {
+      border: 'solid 3px #144e97',
+    },
+  },
+};
 
 export default function PickDatePickerRange(props: Props) {
   const { register, handleSubmit } = useForm<any>({
@@ -33,12 +52,15 @@ export default function PickDatePickerRange(props: Props) {
 
   const [dateRangeValue, setDateRangeValue] =
     React.useState<DateRangeInterface>({
-      startDate: dayjs(new Date()).subtract(7, 'day'),
-      endDate: dayjs(new Date()),
+      startDate: dayjs().subtract(7, 'day'),
+      endDate: dayjs(),
     });
 
   const onSubmit = (data: DateRangeInterface) => {
-    props.setDateRangeValue(data);
+    props.setDateRangeValue({
+      startDate: dayjs(data.startDate),
+      endDate: dayjs(data.endDate),
+    });
   };
 
   useEffect(() => {
@@ -65,6 +87,7 @@ export default function PickDatePickerRange(props: Props) {
                 {...register('startDate')}
                 size="small"
                 margin="dense"
+                sx={textFieldStyles}
               />
             )}
             value={dateRangeValue.startDate}
@@ -86,6 +109,7 @@ export default function PickDatePickerRange(props: Props) {
                 {...register('endDate')}
                 size="small"
                 margin="dense"
+                sx={textFieldStyles}
               />
             )}
             value={dateRangeValue.endDate}

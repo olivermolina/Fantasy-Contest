@@ -48,12 +48,6 @@ const SavedPaymentMethodCardList = (props: Props) => {
       )}
 
       {!isLoading &&
-        (!savedPaymentMethods || savedPaymentMethods?.length === 0) && (
-          <Grid item className={'p-2 text-md'}>
-            No payment methods available to add deposit.
-          </Grid>
-        )}
-      {!isLoading &&
         savedPaymentMethods?.map((paymentMethod) => (
           <Grid item key={paymentMethod.Token}>
             <SavePaymentMethodCard

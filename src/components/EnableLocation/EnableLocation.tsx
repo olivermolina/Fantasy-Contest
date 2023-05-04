@@ -24,14 +24,17 @@ export default function EnableLocation(props: Props) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          backgroundColor: '#003370',
+          color: 'white',
         },
       }}
     >
       <div className={'overflow-y-auto'}>
         <CardHeader
-          sx={(theme) => ({
+          sx={() => ({
             color: '#fff',
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: '#003370',
+            borderBottom: '1px solid #71a5e5',
           })}
           avatar={
             <Avatar sx={{ bgcolor: '#fff', width: 50, height: 50 }}>
@@ -94,17 +97,20 @@ export default function EnableLocation(props: Props) {
           </p>
         </CardContent>
       </div>
-      <div>
+      <div className={'border-secondary border-t-2'}>
         <CardActions disableSpacing>
           <Button
             variant={'contained'}
             fullWidth
-            sx={(theme) => ({
+            sx={{
               textTransform: 'none',
               fontSize: '1.125rem',
               lineHeight: '1.75rem',
-              backgroundColor: theme.palette.primary.main,
-            })}
+              '&.MuiButton-root': {
+                backgroundColor: 'white',
+                color: '#003370',
+              },
+            }}
             size="large"
             onClick={props.handleEnableLocation}
           >

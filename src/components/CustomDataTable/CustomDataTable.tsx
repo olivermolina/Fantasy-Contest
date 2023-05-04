@@ -25,9 +25,11 @@ import { rankItem } from '@tanstack/match-sorter-utils';
 import DebouncedInput from '~/components/ContestDetail/Entries/DebouncedInput';
 import CustomNoRowsOverlay from '~/components/CustomDataTable/CustomNoRowsOverlay';
 import AddIcon from '@mui/icons-material/Add';
+import { LoadingSpinner } from '~/components/Cart/LoadingSpinner';
+import { useWindowSize } from 'usehooks-ts';
 import classNames from 'classnames';
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
 
@@ -43,7 +45,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 interface PropsCustomDataTable {
   isLoading: boolean;
   flatData: any[];
-  handleNew: () => void;
+  handleNew?: () => void;
   columns: ColumnDef<any, any>[];
   tableTitle: string;
   searchPlaceholder?: string;
@@ -51,6 +53,8 @@ interface PropsCustomDataTable {
   totalFetched: number;
   isFetching: boolean;
   fetchNextPage: any;
+  showSearchInput?: boolean;
+  enableSorting?: boolean;
 }
 
 function CustomDataTable(props: PropsCustomDataTable) {
@@ -65,7 +69,11 @@ function CustomDataTable(props: PropsCustomDataTable) {
     searchPlaceholder,
     isLoading,
     handleNew,
+    showSearchInput = true,
+    enableSorting = true,
   } = props;
+
+  const windowSize = useWindowSize();
 
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
@@ -115,6 +123,7 @@ function CustomDataTable(props: PropsCustomDataTable) {
     debugTable: true,
     debugHeaders: true,
     debugColumns: false,
+    enableSorting,
   });
 
   const { rows } = table.getRowModel();
@@ -128,42 +137,50 @@ function CustomDataTable(props: PropsCustomDataTable) {
   const { virtualItems: virtualRows } = rowVirtualizer;
 
   return (
-    <>
-      <div
-        className={'flex flex-nowrap gap-2 justify-between my-2 items-center'}
-      >
-        <DebouncedInput
-          value={globalFilter ?? ''}
-          onChange={(value) => setGlobalFilter(String(value))}
-          placeholder={`${searchPlaceholder || 'Search key'}`}
-          debounce={200}
-        />
-        <IconButton onClick={handleNew} color="primary">
-          <AddIcon />
-        </IconButton>
-      </div>
+    <div className={'h-full'}>
+      {showSearchInput && (
+        <div
+          className={'flex flex-nowrap gap-2 justify-between my-2 items-center'}
+        >
+          <DebouncedInput
+            value={globalFilter ?? ''}
+            onChange={(value) => setGlobalFilter(String(value))}
+            placeholder={`${searchPlaceholder || 'Search key'}`}
+            debounce={200}
+          />
+          {!!handleNew && (
+            <IconButton onClick={handleNew} color="primary">
+              <AddIcon />
+            </IconButton>
+          )}
+        </div>
+      )}
 
       {isLoading ? (
         <Skeleton variant="rectangular" height={60} />
       ) : (
         <TableContainer
           component={Paper}
-          className={classNames('h-full', {
+          sx={(theme) => ({
+            height: windowSize.height * 0.6,
+            maxHeight: windowSize.height * 0.6,
+            [theme.breakpoints.up('xl')]: {
+              height: windowSize.height * 0.8,
+            },
+            boxSizing: 'border-box',
+          })}
+          className={classNames({
             'overflow-y-hidden': virtualRows.length === 0,
+            'overflow-auto': virtualRows.length !== 0,
           })}
         >
-          <div
+          <Box
             onScroll={(e) =>
               fetchMoreOnBottomReached(e.target as HTMLDivElement)
             }
             ref={tableContainerRef}
-            className={'h-4/5'}
           >
-            <Table
-              sx={{ minWidth: 650 }}
-              aria-label={`${tableTitle} List`}
-              stickyHeader
-            >
+            <Table aria-label={`${tableTitle} List`} stickyHeader>
               <TableHead>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -212,7 +229,9 @@ function CustomDataTable(props: PropsCustomDataTable) {
                   return (
                     <TableRow
                       key={row.id}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      sx={{
+                        '&:last-child td, &:last-child th': { border: 0 },
+                      }}
                       hover
                     >
                       {row.getVisibleCells().map((cell) => {
@@ -236,10 +255,16 @@ function CustomDataTable(props: PropsCustomDataTable) {
                 <CustomNoRowsOverlay customMessage={`No ${tableTitle}`} />
               </div>
             )}
-          </div>
+          </Box>
         </TableContainer>
       )}
-    </>
+
+      {isFetching && (
+        <div className={'flex justify-center items-center mt-5'}>
+          <LoadingSpinner /> Fetching data...
+        </div>
+      )}
+    </div>
   );
 }
 

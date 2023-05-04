@@ -1,16 +1,19 @@
-import React from 'react';
-import { Logo } from '~/components/Layout/Logo';
 import { Grid } from '@mui/material';
-import { UnderlinedLink } from '~/components/Nav/UnderlinedLink';
 import Link from 'next/link';
+import { Logo } from '~/components/Layout/Logo';
+import { UnderlinedLink } from '~/components/Nav/UnderlinedLink';
 import { SocialLinks } from '~/components/SocialLinks/SocialLinks';
 
-const FooterLinks = () => (
+interface Props {
+  isLoggedIn?: boolean;
+}
+
+const FooterLinks = (props: Props) => (
   <footer className="flex flex-col md:flex-row px-2 md:px-10 py-4 border-t border-gray-400 items-center gap-4 md:gap-5 place-content-between">
     <div
       className={'flex flex-col md:flex-row justify-center items-center gap-1'}
     >
-      <Logo scale={4} />
+      <Logo scale={4} isLoggedIn={props.isLoggedIn} />
       <Grid
         container
         direction="row"
@@ -55,7 +58,7 @@ const FooterLinks = () => (
         </Grid>
         <Grid item>
           <UnderlinedLink>
-            <Link href="#" className="text-xs md:text-base">
+            <Link href="/faq" className="text-xs md:text-base">
               FAQ
             </Link>
           </UnderlinedLink>

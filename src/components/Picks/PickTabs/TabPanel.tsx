@@ -9,7 +9,7 @@ interface TabPanelProps {
 const TabPanel: React.FC<TabPanelProps> = (props) => {
   if (props.value !== props.selectedValue) return null;
   return (
-    <div className="flex bg-white h-full w-full z-0 shadow-lg">
+    <div className="flex h-full w-full z-0 bg-primary p-2 rounded-b-lg">
       {props?.children}
     </div>
   );

@@ -9,39 +9,41 @@ import { useRouter } from 'next/router';
 import ExplainerCard, {
   ExplainerCardProps,
 } from '~/components/LandingLayout/Content/ExplainerCard';
-import { Grid } from '@mui/material';
 import { Banner } from '@prisma/client';
 
 interface Props extends React.PropsWithChildren {
   cards: FantasyCardProps[];
   explainers: ExplainerCardProps[];
   banners: Banner[];
+  isLoading: boolean;
 }
 
 const Content = (props: Props) => {
   const router = useRouter();
   return (
-    <div className={'flex flex-col gap-y-10 p-5'}>
-      <ContentBanner banners={props.banners} />
+    <div className={'flex flex-col gap-y-10 p-5 items-center '}>
+      <ContentBanner banners={props.banners} isLoading={props.isLoading} />
       <ContentHeader />
-      <Grid container spacing={2} justifyContent={'center'}>
+      <div
+        className={
+          'flex flex-col lg:flex-row gap-2 justify-center items-stretch'
+        }
+      >
         {props.cards?.map((card) => (
-          <Grid item key={card.playerName}>
-            <FantasyCard {...card} />
-          </Grid>
+          <FantasyCard key={card.playerName} {...card} />
         ))}
-      </Grid>
+      </div>
       <div className="flex justify-center">
         <button
           type="submit"
-          className="p-4 px-10 py-3 md:py-4 md:px-20 text-white rounded-full bg-transparent hover:bg-blue-500 font-bold text-xl bg-blue-600 border border-white"
+          className="p-4 px-10 py-3 md:py-4 md:px-20 text-white rounded-full bg-transparent hover:bg-primary font-bold text-xl border border-white"
           onClick={() => router.push('/auth/sign-up')}
         >
           Sign Up
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-center items-stretch gap-5">
+      <div className="flex flex-col lg:flex-row justify-center items-stretch gap-5">
         {props.explainers?.map((explainer) => (
           <ExplainerCard {...explainer} key={explainer.title} />
         ))}

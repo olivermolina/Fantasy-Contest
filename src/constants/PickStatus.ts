@@ -5,4 +5,5 @@ export enum PickStatus {
   LOSS = 'LOSS',
   PUSH = 'PUSH',
   CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED',
 }

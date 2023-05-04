@@ -1,25 +1,12 @@
 import { Transaction, TransactionStatus } from '@prisma/client';
 import prisma from '~/server/prisma';
 import { TRPCError } from '@trpc/server';
-import calculateCredits from './calculateCredits';
-import calculateUnPlayedAmount from './calculateUnPlayedAmount';
-import calculateWithdrawableAmount from './calculateWithdrawableAmount';
-import calculateTotalAmount from '~/server/routers/user/userTotalBalance/calculateTotalAmount';
+import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
+import { generateUserTotalBalancesFromTransactions } from './generateUserTotalBalancesFromTransactions';
 
 export type TransactionStatusWithTransaction = TransactionStatus & {
   Transaction: Transaction;
 };
-
-export enum PaymentStatusCode {
-  PAYMENT_NOT_FOUND = -1,
-  PENDING = 0,
-  COMPLETE = 1,
-  INELIGIBLE = 2,
-  FAILED = 3,
-  PROCESSING = 4,
-  REVERSED = 5,
-  CANCELLED = 6,
-}
 
 export interface UserTotalBalanceInterface {
   totalAmount: number;
@@ -35,6 +22,16 @@ export interface UserTotalBalanceInterface {
  * @param userId
  */
 const getUserTotalBalance = async (userId: string) => {
+  if (!userId) {
+    return {
+      totalAmount: 0,
+      totalCashAmount: 0,
+      creditAmount: 0,
+      unPlayedAmount: 0,
+      withdrawableAmount: 0,
+    } as UserTotalBalanceInterface;
+  }
+
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -65,39 +62,7 @@ const getUserTotalBalance = async (userId: string) => {
     },
   });
 
-  let creditAmount = 0;
-  let unPlayedAmount = 0;
-  let withdrawableAmount = 0;
-  let totalAmount = 0;
-  for (const transactionStatus of transactionStatuses) {
-    totalAmount = calculateTotalAmount(transactionStatus, totalAmount);
-    creditAmount = calculateCredits(
-      transactionStatus,
-      creditAmount,
-      totalAmount,
-    );
-    unPlayedAmount = calculateUnPlayedAmount(
-      transactionStatus,
-      unPlayedAmount,
-      creditAmount,
-    );
-    withdrawableAmount = calculateWithdrawableAmount(
-      transactionStatus,
-      withdrawableAmount,
-    );
-  }
-
-  // Finalize balances
-  const totalCashAmount =
-    totalAmount > creditAmount ? totalAmount - creditAmount : 0;
-
-  return {
-    totalAmount,
-    totalCashAmount,
-    creditAmount,
-    unPlayedAmount,
-    withdrawableAmount,
-  } as UserTotalBalanceInterface;
+  return generateUserTotalBalancesFromTransactions(transactionStatuses);
 };
 
 export default getUserTotalBalance;

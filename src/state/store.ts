@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import bets from './bets';
 import ui from './ui';
 import profile from './profile';
+import appSettings from './appSettings';
 
 const allStores = {
   bets,
   ui,
   profile,
+  appSettings,
 };
 
 export const createStore = () =>

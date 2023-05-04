@@ -8,18 +8,21 @@ import { Banner } from '@prisma/client';
 
 const cards = [
   {
+    id: '1',
     onClickLess: () => console.log('clicked'),
     onClickMore: () => console.log('clicked'),
     stat: 'Passing Yards',
     value: 99.5,
-    gameInfo: 'DAL @ DEN',
+    gameInfo: 'DAL @ KC',
     playerName: 'Patrick Mahomes',
     image: '/assets/images/patrick-mahomes.png',
     playerPosition: 'QB',
     playerTeam: 'KC',
     matchTime: dayjs(new Date()).format('MM/DD/YYYY hh:mm A'),
+    freeSquare: null,
   },
   {
+    id: '2',
     onClickLess: () => console.log('clicked'),
     onClickMore: () => console.log('clicked'),
     stat: 'Total Bases',
@@ -30,8 +33,10 @@ const cards = [
     playerPosition: 'OF',
     playerTeam: 'NYY',
     matchTime: dayjs(new Date()).format('MM/DD/YYYY hh:mm A'),
+    freeSquare: null,
   },
   {
+    id: '3',
     onClickLess: () => console.log('clicked'),
     onClickMore: () => console.log('clicked'),
     stat: 'Points',
@@ -42,6 +47,7 @@ const cards = [
     playerPosition: 'F',
     playerTeam: 'MIL',
     matchTime: dayjs(new Date()).format('MM/DD/YYYY hh:mm A'),
+    freeSquare: null,
   },
 ];
 
@@ -59,10 +65,10 @@ const explainers = [
     image: '/assets/images/up-down-arrow.svg',
   },
   {
-    title: 'Token Contests',
+    title: '24/7 Customer Support',
     description:
-      'Our Daily/Weekly Token contests gives every user 1000 tokens to start the contest. Place those 1000 tokens on any player\'s stats you want similar to"More or Less". Whoever ends up with the most tokens at the end wins cash depending on where they rank on our leaderboards.',
-    image: '/assets/images/contest-trophy.svg',
+      'We are always looking for new ways to improve our website. Please contact us with any questions you have and provide as much feedback as you can. We are here to give you the best experience possible!  ',
+    image: '/assets/images/support.svg',
   },
 ];
 
@@ -83,16 +89,21 @@ const DEFAULT_BANNERS: Banner[] = [
   },
 ];
 
-const LandingLayoutContainer: React.FC = () => {
-  const { data } = trpc.appSettings.banners.useQuery();
+interface Props {
+  isLoggedIn?: boolean;
+}
+
+const LandingLayoutContainer = (props: Props) => {
+  const { data, isLoading } = trpc.appSettings.banners.useQuery();
 
   return (
-    <LandingLayout>
+    <LandingLayout isLoggedIn={props.isLoggedIn}>
       <ChangeRouteLoadingContainer />
       <Content
         cards={cards}
         explainers={explainers}
         banners={data || DEFAULT_BANNERS}
+        isLoading={isLoading}
       />
     </LandingLayout>
   );

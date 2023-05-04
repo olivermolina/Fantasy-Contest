@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import { FantasyPicker } from './FantasyPicker';
+import { mockCards } from '~/components/LandingLayout/__mocks__/mockCards';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -40,50 +41,5 @@ Default.args = {
       name: 'Pill1',
     },
   ],
-  cards: [
-    {
-      onClickLess: () => alert('clicked'),
-      onClickMore: () => alert('clicked'),
-      stat: 'Passing Yards',
-      value: 99.5,
-      gameInfo: 'LA@DEN',
-      playerName: 'Patrick Mahomes',
-      image: '/assets/images/dallas-goedert.png',
-      playerPosition: 'QB',
-      playerTeam: 'KC',
-    },
-    {
-      onClickLess: () => alert('clicked'),
-      onClickMore: () => alert('clicked'),
-      stat: 'Passing Yards',
-      value: 99.5,
-      gameInfo: 'LA@DEN',
-      playerName: 'Patrick Mahomes',
-      image: '/assets/images/patrick-mahomes.png',
-      playerPosition: 'QB',
-      playerTeam: 'KC',
-    },
-    {
-      onClickLess: () => alert('clicked'),
-      onClickMore: () => alert('clicked'),
-      stat: 'Passing Yards',
-      value: 99.5,
-      gameInfo: 'LA@DEN',
-      playerName: 'Patrick Mahomes',
-      image: '/assets/images/tyrod-taylor.png',
-      playerPosition: 'QB',
-      playerTeam: 'KC',
-    },
-    {
-      onClickLess: () => alert('clicked'),
-      onClickMore: () => alert('clicked'),
-      stat: 'Passing Yards',
-      value: 99.5,
-      gameInfo: 'LA@DEN',
-      playerName: 'Patrick Mahomes',
-      image: '/assets/images/tyrod-taylor.png',
-      playerPosition: 'QB',
-      playerTeam: 'KC',
-    },
-  ],
+  cards: mockCards,
 };

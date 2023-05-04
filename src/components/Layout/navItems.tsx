@@ -2,17 +2,18 @@ import React from 'react';
 import classNames from 'classnames';
 import { ChallengeIcon } from '../Nav/Icons/challenge';
 import { UserIcon } from '../Nav/Icons/user';
+import { UrlPaths } from '~/constants/UrlPaths';
 
 const iconClasses =
   'object-contain h-auto max-w-full m-auto mb-1.5 stroke-current';
 export const navItems = [
   {
-    link: '/challenge',
+    link: UrlPaths.Challenge,
     name: 'Challenge',
     icon: <ChallengeIcon className={classNames('h-7 m-auto', iconClasses)} />,
   },
   {
-    link: '/picks',
+    link: UrlPaths.Picks,
     anchor: true,
     name: 'Picks',
     icon: (
@@ -33,8 +34,8 @@ export const navItems = [
     ),
   },
   {
-    link: '/contests',
-    name: 'Contests',
+    link: UrlPaths.Rewards,
+    name: 'Rewards',
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +54,7 @@ export const navItems = [
     ),
   },
   {
-    link: '/profile',
+    link: UrlPaths.Profile,
     name: 'Profile',
     icon: <UserIcon className={classNames('h-7 m-auto', iconClasses)} />,
   },

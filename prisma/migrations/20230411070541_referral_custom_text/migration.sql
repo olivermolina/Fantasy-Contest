@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AppSettingName" ADD VALUE 'REFERRAL_CUSTOM_TEXT';

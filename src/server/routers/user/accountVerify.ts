@@ -6,9 +6,12 @@ import { Session } from '@prisma/client';
 import { mapValues } from 'lodash';
 import dayjs from 'dayjs';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
-import GIDX, { IDeviceGPS, isBlocked, isVerified } from '~/lib/tsevo-gidx/GIDX';
+import GIDX, { IDeviceGPS } from '~/lib/tsevo-gidx/GIDX';
 import { ActionType } from '~/constants/ActionType';
 import { getErrorMessage } from '~/utils/geErrorMessage';
+import specialRestrictions from '~/server/routers/contest/specialRestrictions';
+import { isVerified } from '~/utils/isVerified';
+import { isBlocked } from '~/utils/isBlocked';
 
 const accountVerify = t.procedure
   .input(
@@ -68,6 +71,13 @@ const accountVerify = t.procedure
         message: getErrorMessage(customerMonitorResponse.ReasonCodes),
       });
     }
+
+    // Verify age based on the location and throw error if U19/U21
+    await specialRestrictions(
+      customerMonitorResponse.ReasonCodes,
+      undefined,
+      true,
+    );
 
     const {
       firstname,

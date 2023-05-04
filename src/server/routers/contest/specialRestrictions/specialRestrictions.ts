@@ -9,11 +9,13 @@ import { getErrorMessage } from '~/utils/geErrorMessage';
  *
  * @param reasonCodes TSEVO monitor reason codes
  * @param leagues supported league enums in the application
+ * @param isDeposit deposit actions
  */
 
 const specialRestrictions = async (
   reasonCodes: string[],
   leagues?: League[],
+  isDeposit?: boolean,
 ) => {
   const restrictions = await prisma.specialRestriction.findMany({
     where: {
@@ -32,7 +34,17 @@ const specialRestrictions = async (
       blockedReasonCodes.includes(reasonCode),
     );
 
+    // throw U19/U21 age error message
     if (blockedReasonCodesFilter && blockedReasonCodesFilter.length > 0) {
+      if (isDeposit) {
+        // throw specific message for all not of age error for deposit action
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: CustomErrorMessages.NOT_OF_AGE_STATE_ERROR,
+        });
+      }
+
+      // throw error message based of the age error code
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: getErrorMessage(blockedReasonCodes),
@@ -43,6 +55,7 @@ const specialRestrictions = async (
       blockedLeagues.includes(league),
     );
 
+    // throw blocked college basketball error message
     if (blockedLeaguesFilter && blockedLeaguesFilter.length > 0) {
       throw new TRPCError({
         code: 'FORBIDDEN',

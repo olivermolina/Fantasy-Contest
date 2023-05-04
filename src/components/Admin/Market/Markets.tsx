@@ -14,12 +14,12 @@ import CustomDataTable from '~/components/CustomDataTable';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   Market,
+  MarketResult,
+  MarketType,
   Offer,
   Player,
   Prisma,
   Team,
-  MarketType,
-  MarketResult,
 } from '@prisma/client';
 import CloseIcon from '@mui/icons-material/Close';
 import MarketForm from '~/components/Admin/Market/MarketForm';
@@ -107,7 +107,10 @@ export default function Markets(props: PropsMarket) {
       teamid: '',
       headshot: '',
     },
+    created_at: new Date(),
+    updated_at: new Date(),
     team: null,
+    freeSquareId: null,
   };
   const [selectedMarket, setSelectedMarket] =
     useState<MarketWithPlayerTeam>(newMarket);

@@ -6,7 +6,6 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -18,13 +17,17 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import { Logo } from '~/components/Layout/Logo';
-import { Button } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { UrlPaths } from '~/constants/UrlPaths';
-import { useRouter } from 'next/router';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import AdminBreadCrumb from '~/components/Admin/AdminLayout/AdminBreadCrumb';
+import HomeIcon from '@mui/icons-material/Home';
+import { NextRouter } from 'next/router';
+import Head from 'next/head';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { User } from '@prisma/client';
+import Avatar from '@mui/material/Avatar';
 
-const drawerWidth = 240;
+const drawerWidth = 180;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -100,23 +103,35 @@ const Drawer = styled(MuiDrawer, {
 
 const MENU_OPTIONS = [
   {
-    id: 'offer',
-    label: 'Add Offer',
-    path: UrlPaths.AdminOffer,
-    icon: <SportsEsportsIcon />,
+    id: 'home',
+    label: 'Home',
+    path: UrlPaths.Admin,
+    icon: <HomeIcon />,
   },
   {
-    id: 'user-management',
-    label: 'User Management',
-    path: UrlPaths.AdminUserManagement,
-    icon: <SupervisedUserCircleIcon />,
+    id: 'logout',
+    label: 'Logout',
+    path: UrlPaths.Logout,
+    icon: <LogoutIcon />,
   },
 ];
 
-export default function AdminLayout(props: any) {
-  const router = useRouter();
+interface AdminLayoutProps {
+  router: NextRouter;
+  onMenuItemClick: (path: string) => void;
+  children?: JSX.Element | React.ReactNode;
+  user?: User;
+}
+
+export default function AdminLayout(props: AdminLayoutProps) {
+  const { router, onMenuItemClick, user } = props;
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -126,102 +141,120 @@ export default function AdminLayout(props: any) {
     setOpen(false);
   };
 
+  React.useEffect(() => {
+    const resizeOps = () => {
+      document.documentElement.style.setProperty(
+        '--vh',
+        window.innerHeight * 0.01 + 'px',
+      );
+    };
+    resizeOps();
+    window.addEventListener('resize', resizeOps);
+  }, []);
+
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar sx={{ height: '90px' }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: 'none' }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          {!open && <Logo key="admin-top" />}
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              flexGrow: 1,
-            }}
-          >
-            ADMIN
-          </Typography>
-          <Button
-            color="inherit"
-            onClick={() => router.push(UrlPaths.Challenge)}
-          >
-            Go to App
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <span />
-          <Logo key="top" />
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? (
-              <ChevronRightIcon sx={{ color: 'white' }} />
-            ) : (
-              <ChevronLeftIcon sx={{ color: 'white' }} />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {MENU_OPTIONS.map((option) => (
-            <ListItem key={option.id} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-                onClick={() => router.push(option.path)}
-                selected={option.path.toString() === router?.pathname}
+    <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=1450, height=device-height, initial-scale=1"
+        />
+      </Head>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open}>
+          <Toolbar sx={{ height: '90px' }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{
+                marginRight: 2,
+                ...(open && { display: 'none' }),
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            {!open && <Logo key="admin-top" isLoggedIn={true} />}
+            <span className={'flex-grow'} />
+
+            <Tooltip title={user?.username?.toUpperCase()}>
+              <IconButton
+                onClick={handleClick}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls={menuOpen ? 'account-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={menuOpen ? 'true' : undefined}
               >
-                <ListItemIcon
+                <Avatar sx={{ width: 50, height: 50 }}>
+                  {user?.username?.charAt(0).toUpperCase()}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+        </AppBar>
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <span />
+            <Logo key="top" isLoggedIn={true} />
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? (
+                <ChevronRightIcon sx={{ color: 'white' }} />
+              ) : (
+                <ChevronLeftIcon sx={{ color: 'white' }} />
+              )}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <List>
+            {MENU_OPTIONS.map((option) => (
+              <ListItem
+                key={option.id}
+                disablePadding
+                sx={{ display: 'block' }}
+              >
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
                   }}
+                  onClick={() => onMenuItemClick(option.path)}
+                  selected={option.path.toString() === router?.pathname}
                 >
-                  {option.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={option.label}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-      </Drawer>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, overflow: 'hidden', pb: '150px' }}
-      >
-        <DrawerHeader />
-        <div className={'mt-10 p-5 min-h-screen w-full overflow-auto block'}>
-          {props.children}
-        </div>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {option.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={option.label}
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Drawer>
+        <Box component="main" sx={{ flexGrow: 1, overflow: 'hidden' }}>
+          <DrawerHeader />
+          <div
+            className={
+              'mt-5 p-5 min-h-screen w-full overflow-y-hidden overflow-x-auto block'
+            }
+          >
+            <AdminBreadCrumb />
+            {props.children}
+          </div>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

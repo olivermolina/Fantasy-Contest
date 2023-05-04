@@ -1,30 +1,19 @@
 import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import { prisma } from '~/server/prisma';
 import * as yup from '~/utils/yup';
+import { adminProcedure } from './middleware/isAdmin';
+import { appNodeCache } from '~/lib/node-cache/AppNodeCache';
 
-const deleteMarket = t.procedure
+const deleteMarket = adminProcedure
   .input(
     yup.object({
       id: yup.string().required(),
       selId: yup.number().required(),
     }),
   )
-  .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session.user?.id;
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-    if (!userId || !user) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
-      });
-    }
-
+  .mutation(async ({ input }) => {
     try {
+      appNodeCache.flushAll();
       return await prisma.market.delete({
         where: {
           id_sel_id: {

@@ -6,6 +6,7 @@ import leaders from './leaders';
 import getById from './getById';
 import contestCategoryList from './contestCategoryList';
 import contests from './contests';
+import { getLeagueFantasyOffersCount } from './getLeaguesMarketCount';
 
 export const contestRouter = t.router({
   joinContest,
@@ -15,6 +16,7 @@ export const contestRouter = t.router({
   getById,
   contestCategoryList,
   contests,
+  getLeagueFantasyOffersCount,
 });
 
 export default contestRouter;

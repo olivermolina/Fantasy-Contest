@@ -37,6 +37,10 @@ export const contestCardPropTypes = {
    * Boolean to show enrolled styles
    */
   isEnrolled: PropTypes.bool,
+  /**
+   * The description of the contest
+   */
+  description: PropTypes.string,
 };
 type Props = InferPropTypes<typeof contestCardPropTypes>;
 
@@ -85,6 +89,7 @@ export const ContestCard: React.FC<Props> = ({
   onClickCard,
   showContestDates,
   isEnrolled,
+  description,
 }) => {
   return (
     <button
@@ -108,9 +113,7 @@ export const ContestCard: React.FC<Props> = ({
               {dayjs(endDateString).format('ddd MMM D, YYYY')}
             </h5>
           ) : (
-            <h5 className="text-xs text-gray-500">
-              <br /> <br />
-            </h5>
+            <h5 className="text-xs text-gray-500">{description}</h5>
           )}
         </div>
         <div>

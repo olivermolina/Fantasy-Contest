@@ -15,6 +15,10 @@ import Paypal from '~/assets/icons/paypal.svg';
 import Bank from '~/assets/icons/bank.svg';
 import Logout from '~/assets/icons/logout.svg';
 import WrenchScrewdriver from '~/assets/icons/wrench-screwdriver.svg';
+import MoneyFromBracket from '~/assets/icons/ico_money-from-bracket.svg';
+import MoneyBillTransfer from '~/assets/icons/ico_money-bill-transfer.svg';
+import RectangleHistory from '~/assets/icons/ico_rectangle-history-circle-plus.svg';
+import FileContract from '~/assets/icons/ico_file-contract.svg';
 
 const importedIcons = {
   Camera,
@@ -33,6 +37,10 @@ const importedIcons = {
   Bank,
   Logout,
   WrenchScrewdriver,
+  MoneyFromBracket,
+  MoneyBillTransfer,
+  RectangleHistory,
+  FileContract,
 };
 
 type IconName = keyof typeof importedIcons;

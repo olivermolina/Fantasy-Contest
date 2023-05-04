@@ -4,7 +4,6 @@ import {
   CircularProgress,
   FormHelperText,
   Grid,
-  Paper,
   TextField,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -83,96 +82,119 @@ const ContactUs: FC<Props> = (props) => {
         <span className={'text-lg lg:text-xl font-semibold'}>
           Or use the form below:
         </span>
-        <Paper sx={{ borderRadius: 5, maxWidth: 800 }}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={2} sx={{ p: 2 }}>
-              <Grid item xs={12}>
-                <TextField
-                  label="Name *"
-                  variant="outlined"
-                  fullWidth
-                  {...register('name')}
-                  error={!!errors?.name}
-                  helperText={errors?.name?.message}
-                  disabled={props.isLoading}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label="Email *"
-                  variant="outlined"
-                  fullWidth
-                  {...register('email')}
-                  error={!!errors?.email}
-                  helperText={errors?.email?.message}
-                  disabled={props.isLoading}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label="Phone *"
-                  variant="outlined"
-                  fullWidth
-                  {...register('phoneNumber')}
-                  error={!!errors?.phoneNumber}
-                  helperText={errors?.phoneNumber?.message}
-                  disabled={props.isLoading}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth error={!!errors?.category}>
-                  <InputLabel id="select-category-label">
-                    Choose your category
-                  </InputLabel>
-                  <Select
-                    labelId="select-category-label"
-                    id="select-category"
-                    label="Choose your category"
-                    {...register('category')}
-                    fullWidth
-                    disabled={props.isLoading}
-                  >
-                    {CATEGORIES.map((category, i) => (
-                      <MenuItem value={category} key={`category-${i}`}>
-                        {category}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors?.category?.message ? (
-                    <FormHelperText>{errors?.category?.message}</FormHelperText>
-                  ) : null}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="How can we help you?"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  rows={5}
-                  {...register('description')}
-                  error={!!errors?.description}
-                  helperText={errors?.description?.message}
-                  disabled={props.isLoading}
-                />
-              </Grid>
-              <Grid item xs={12} container justifyContent="flex-end">
-                <Button
-                  type={'submit'}
-                  variant={'contained'}
-                  size={'large'}
-                  sx={{ borderRadius: 10 }}
-                  disabled={props.isLoading}
-                >
-                  Submit
-                  {props.isLoading && (
-                    <CircularProgress sx={{ ml: 1 }} size={20} />
-                  )}
-                </Button>
-              </Grid>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={'bg-primary rounded-lg'}
+        >
+          <Grid container spacing={2} sx={{ p: 2 }}>
+            <Grid item xs={12}>
+              <TextField
+                label="Name *"
+                variant="outlined"
+                fullWidth
+                {...register('name')}
+                error={!!errors?.name}
+                helperText={errors?.name?.message}
+                disabled={props.isLoading}
+              />
             </Grid>
-          </form>
-        </Paper>
+            <Grid item xs={6}>
+              <TextField
+                label="Email *"
+                variant="outlined"
+                fullWidth
+                {...register('email')}
+                error={!!errors?.email}
+                helperText={errors?.email?.message}
+                disabled={props.isLoading}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Phone *"
+                variant="outlined"
+                fullWidth
+                {...register('phoneNumber')}
+                error={!!errors?.phoneNumber}
+                helperText={errors?.phoneNumber?.message}
+                disabled={props.isLoading}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth error={!!errors?.category}>
+                <InputLabel id="select-category-label" sx={{ color: 'white' }}>
+                  Choose your category
+                </InputLabel>
+                <Select
+                  labelId="select-category-label"
+                  id="select-category"
+                  label="Choose your category"
+                  {...register('category')}
+                  fullWidth
+                  disabled={props.isLoading}
+                  sx={(theme) => ({
+                    color: 'white',
+                    '.MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(228, 219, 233, 0.25)',
+                      color: theme.palette.primary.dark,
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(228, 219, 233, 0.25)',
+                      backgroundColor: theme.palette.primary.dark,
+                      color: theme.palette.primary.contrastText,
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'rgba(228, 219, 233, 0.25)',
+                      backgroundColor: theme.palette.primary.dark,
+                      color: theme.palette.primary.contrastText,
+                    },
+                    '.MuiSvgIcon-root ': {
+                      color: 'white',
+                      fill: 'white',
+                      backgroundColor: theme.palette.primary.light,
+                    },
+                  })}
+                >
+                  {CATEGORIES.map((category, i) => (
+                    <MenuItem value={category} key={`category-${i}`}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors?.category?.message ? (
+                  <FormHelperText>{errors?.category?.message}</FormHelperText>
+                ) : null}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="How can we help you?"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={5}
+                {...register('description')}
+                error={!!errors?.description}
+                helperText={errors?.description?.message}
+                disabled={props.isLoading}
+              />
+            </Grid>
+            <Grid item xs={12} container justifyContent="flex-end">
+              <Button
+                type={'submit'}
+                variant={'contained'}
+                size={'large'}
+                sx={{ borderRadius: 10 }}
+                disabled={props.isLoading}
+              >
+                Submit
+                {props.isLoading && (
+                  <CircularProgress sx={{ ml: 1 }} size={20} />
+                )}
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
       </div>
     </div>
   );

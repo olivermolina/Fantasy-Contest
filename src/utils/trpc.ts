@@ -3,8 +3,9 @@ import { NextPageContext } from 'next';
 import superjson from 'superjson';
 import type { AppRouter } from '~/server/routers/_app';
 
-import { httpBatchLink, loggerLink } from '@trpc/client';
+import { httpBatchLink, httpLink, loggerLink, splitLink } from '@trpc/client';
 import type { inferProcedureInput, inferProcedureOutput } from '@trpc/server';
+import { DefaultOptions } from '@tanstack/react-query';
 
 export function getBaseUrl() {
   if (typeof window !== 'undefined') {
@@ -36,35 +37,62 @@ export interface SSRContext extends NextPageContext {
 }
 
 /**
+ * Links to be used in both client and server
+ */
+export const trpcLinks = () => [
+  loggerLink({
+    enabled: (opts) =>
+      process.env.NODE_ENV === 'development' ||
+      (opts.direction === 'down' && opts.result instanceof Error),
+  }),
+  splitLink({
+    condition(op) {
+      // check for context property `skipBatch`
+      return op.context.skipBatch === true;
+    },
+    // when condition is true, use normal request
+    true: httpLink({
+      url: `${getBaseUrl()}/api/trpc`,
+    }),
+    // when condition is false, use batching
+    false: httpBatchLink({
+      url: `${getBaseUrl()}/api/trpc`,
+    }),
+  }),
+];
+
+export const trpcTransformer = superjson;
+
+/**
  * A set of strongly-typed React hooks from your `AppRouter` type signature with `createReactQueryHooks`.
  * @link https://trpc.io/docs/react#3-create-trpc-hooks
  */
-export const trpc = createTRPCNext<AppRouter, SSRContext>({
+export const trpcConfig: Parameters<
+  typeof createTRPCNext<AppRouter, SSRContext>
+>[0] = {
   config({ ctx }) {
     const commonOpts = {
       /**
        * @link https://trpc.io/docs/data-transformers
        */
-      transformer: superjson,
+      transformer: trpcTransformer,
       /**
        * @link https://trpc.io/docs/links
        */
-      links: [
-        // adds pretty logs to your console in development and logs errors in production
-        loggerLink({
-          enabled: (opts) =>
-            process.env.NODE_ENV === 'development' ||
-            (opts.direction === 'down' && opts.result instanceof Error),
-        }),
-
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
-        }),
-      ],
+      links: trpcLinks(),
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
-      queryClientConfig: { defaultOptions: { queries: { retry: false } } },
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            retry: false,
+            retryOnMount: false,
+            enabled: false,
+            refetchInterval: 30 * 1000,
+          },
+        } as DefaultOptions,
+      },
     };
 
     if (typeof window !== 'undefined') {
@@ -122,36 +150,31 @@ export const trpc = createTRPCNext<AppRouter, SSRContext>({
       },
     };
   },
-  /**
-   * @link https://trpc.io/docs/ssr
-   */
-  ssr: false,
-  /**
-   * Set headers or status code when doing SSR
-   */
-  // responseMeta(opts) {
-  //   const ctx = opts.ctx as SSRContext;
-
-  //   if (ctx.status) {
-  //     // If HTTP status set, propagate that
+  // /**
+  //  * @link https://trpc.io/docs/ssr
+  //  */
+  // ssr: true,
+  // /**
+  //  * Set headers or status code when doing SSR
+  //  */
+  // responseMeta({ ctx, clientErrors }) {
+  //   if (clientErrors && clientErrors.length) {
+  //     // propagate http first error from API calls
   //     return {
-  //       status: ctx.status,
+  //       status: clientErrors[0]!.data?.httpStatus ?? 500,
   //     };
   //   }
-
-  //   const error = opts.clientErrors[0];
-  //   if (error) {
-  //     // Propagate http first error from API calls
-  //     return {
-  //       status: error.data?.httpStatus ?? 500,
-  //     };
-  //   }
-
-  //   // for app caching with SSR see https://trpc.io/docs/caching
-
-  //   return {};
+  //   // cache request for 1 day + revalidate once every second
+  //   const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+  //   return {
+  //     headers: {
+  //       'cache-control': `s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
+  //     },
+  //   };
   // },
-});
+};
+
+export const trpc = createTRPCNext<AppRouter, SSRContext>(trpcConfig);
 
 /**
  * This is a helper method to infer the output of a query resolver

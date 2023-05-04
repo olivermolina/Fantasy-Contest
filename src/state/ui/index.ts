@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ContestCategory, ContestWagerType } from '@prisma/client';
+import { trpcClient } from '~/utils/trpcClient/trpcClient';
 
 interface ContestUI {
   id: string;
@@ -15,6 +16,7 @@ interface UIModel {
   selectedContest?: ContestUI;
   selectedContestCategory?: ContestCategory;
   contestCategories?: ContestCategory[];
+  categoryBgColor: string;
 }
 
 const initialUI: UIModel = {
@@ -23,7 +25,21 @@ const initialUI: UIModel = {
   selectedContest: undefined,
   selectedContestCategory: undefined,
   contestCategories: [],
+  categoryBgColor: 'white',
 };
+
+/**
+ * Fetches contest category from the server and caches them in the store.
+ */
+export const fetchContestCategory = createAsyncThunk(
+  'uiContestCategory/fetch',
+  async (input, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const result = await trpcClient().contest.contestCategoryList.query();
+    dispatch(setContestCategories(result));
+    return result;
+  },
+);
 
 const uiSlice = createSlice({
   name: 'ui',
@@ -49,6 +65,10 @@ const uiSlice = createSlice({
       state.contestCategories = payload.payload;
       return state;
     },
+    setCategoryBgColor(state, payload: PayloadAction<string>) {
+      state.categoryBgColor = payload.payload;
+      return state;
+    },
   },
 });
 
@@ -59,6 +79,7 @@ export const {
   setSelectedContest,
   setSelectedContestCategory,
   setContestCategories,
+  setCategoryBgColor,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

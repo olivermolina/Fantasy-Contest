@@ -45,7 +45,6 @@ const createMerchantTransaction = t.procedure
         },
       });
 
-      const creditAmount = user.isFirstDeposit ? amountBonus : 0;
       // Create new transaction
       const uid = new ShortUniqueId({ length: 16 });
       const transaction = await prisma.transaction.create({
@@ -55,7 +54,7 @@ const createMerchantTransaction = t.procedure
           actionType: serviceType,
           userId: user.id,
           amountProcess,
-          amountBonus: creditAmount,
+          amountBonus: amountBonus,
           transactionCurrency: 'USD',
         },
       });

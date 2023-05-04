@@ -1,8 +1,7 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
-import { ContestPicker } from '~/components/ContestPicker/ContestPicker';
 import { useQueryParams } from '~/hooks/useQueryParams';
 import { setActiveContestDetailModal, setSelectedContest } from '~/state/ui';
 import { trpc } from '~/utils/trpc';
@@ -17,13 +16,13 @@ const ContestPickerContainer: React.FC = () => {
   const contestModal = useAppSelector(
     (state) => state.ui.activeContestDetailModal,
   );
-  const { data, isLoading, refetch } = trpc.contest.list.useQuery();
+  const { data, refetch } = trpc.contest.list.useQuery();
   const { setParam, contestId } = useQueryParams();
   const dispatch = useDispatch();
   /**
    * Map contests to expected props or default to an empty array.
    */
-  const contests = useMemo(() => {
+  useMemo(() => {
     if (data && !contestId) {
       const moreOrLessContest = data.find(
         (contest) => contest.id === MORE_OR_LESS_CONTEST_ID,
@@ -47,6 +46,7 @@ const ContestPickerContainer: React.FC = () => {
         startDateString: dayjs(contest.startDate).format('MM/DD/YYYY'),
         endDateString: dayjs(contest.endDate).format('MM/DD/YYYY'),
         contestName: contest.name,
+        description: contest.description,
         onClickCard: () => {
           if (contest.isEnrolled) {
             setParam('contestId', contest.id);
@@ -74,9 +74,7 @@ const ContestPickerContainer: React.FC = () => {
     refetch();
   }, [contestModal]);
 
-  if (isLoading) return <>Loading...</>;
-
-  return <ContestPicker contests={contests} />;
+  return null;
 };
 
 export default ContestPickerContainer;

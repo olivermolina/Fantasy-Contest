@@ -16,6 +16,7 @@ export interface DefaultPickProps {
   description?: string;
   contestType?: string;
   pickTime?: string;
+  settledTime?: string;
   value?: number;
   risk?: number;
   potentialWin?: number | InsuredPayoutInterface;
@@ -24,6 +25,15 @@ export interface DefaultPickProps {
   category?: string;
   stakeType?: BetStakeType;
   league?: string;
+  /**
+   * Staked bonus credit
+   * @example 10
+   */
+  bonusCreditStake?: number;
+  /**
+   * Boolean to show admin components
+   */
+  isAdminView?: boolean;
 }
 
 export interface StraightPickProps extends DefaultPickProps {

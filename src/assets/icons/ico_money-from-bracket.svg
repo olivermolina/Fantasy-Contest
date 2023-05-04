@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg"
+>
+  <title>money-from-bracket</title>
+  <g id="Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="1-2-Lockspread-Theming" transform="translate(-17.000000, -397.000000)" fill="#FFFFFF" fill-rule="nonzero">
+      <g id="Group-13" transform="translate(-0.000000, 132.000000)">
+        <g id="Group-4" transform="translate(0.000000, 180.500000)">
+          <g id="Group-3" transform="translate(16.000000, 41.500000)">
+            <g id="Group-Copy" transform="translate(1.000000, 39.000000)">
+              <g id="money-from-bracket" transform="translate(0.000000, 4.000000)">
+                <path
+                  d="M3,2 C2.4478125,2 2,2.4478125 2,3 L2,5 C2,5.553125 1.5521875,6 1,6 C0.4478125,6 0,5.553125 0,5 L0,3 C0,1.343125 1.343125,0 3,0 L17,0 C18.65625,0 20,1.343125 20,3 L20,5 C20,5.553125 19.553125,6 19,6 C18.446875,6 18,5.553125 18,5 L18,3 C18,2.4478125 17.553125,2 17,2 L3,2 Z"
+                  id="Path"></path>
+                <path
+                  d="M14,16 L6,16 C4.896875,16 4,15.103125 4,14 L4,3 L16,3 L16,14 C16,15.103125 15.103125,16 14,16 Z M6,14 L8,14 C8,12.896875 7.103125,12 6,12 L6,14 Z M14,14 L14,12 C12.896875,12 12,12.896875 12,14 L14,14 Z M7,8.5 C7,9.88125 8.315625,11 10,11 C11.65625,11 13,9.88125 13,8.5 C13,7.11875 11.65625,6 10,6 C8.315625,6 7,7.11875 7,8.5 Z"
+                  id="Shape" opacity="0.4"></path>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -14,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import { RootState } from '../store';
 import { setSelectedContestCategory } from '~/state/ui';
+import { FantasyCardFreeSquareProps } from '~/components/FantasyPicker/FantasyCard';
 
 export interface BaseModel {
   betId: string;
@@ -42,6 +43,8 @@ export interface BetModel extends BaseModel {
   team: 'away' | 'home' | 'over' | 'under';
   name: string;
   statName: string;
+  playerId: string;
+  freeSquare: FantasyCardFreeSquareProps | null;
 }
 
 export interface ParlayModel extends BaseModel {
@@ -100,7 +103,7 @@ export const addToTeaserBet = createAsyncThunk(
 
 export interface RemoveBetLegInput {
   betId: string;
-  betLegName: string;
+  marketId: string;
 }
 
 export const removeLegFromBetLegs = createAsyncThunk(
@@ -112,7 +115,7 @@ export const removeLegFromBetLegs = createAsyncThunk(
       toast.error(`Unable to remove item from entry ${input.betId}`);
       return;
     }
-    const newLegs = bet.legs.filter((leg) => leg.name !== input.betLegName);
+    const newLegs = bet.legs.filter((leg) => leg.marketId !== input.marketId);
     if (newLegs.length) {
       const contestCategories = state.ui.contestCategories;
       const selectedContestCategory = contestCategories?.find(

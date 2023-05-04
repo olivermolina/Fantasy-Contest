@@ -12,14 +12,19 @@ import ContestDetailContainer from '../ContestDetailContainer/ContestDetailConta
 import ChangeRouteLoadingContainer from '~/containers/ChangeRouteLoadingContainer/ChangeRouteLoadingContainer';
 import { Header } from '~/components';
 import DeviceLocationContainer from '~/containers/DeviceLocationContainer';
+import { GetServerSidePropsContext } from 'next';
+import { useDispatch } from 'react-redux';
+import { setCategoryBgColor } from '~/state/ui';
 
 type Props = {
   children: any;
+  query?: GetServerSidePropsContext['query'];
 };
 
 const LayoutContainer: React.FC<Props> = (props) => {
+  const dispatch = useDispatch();
   const router = useRouter();
-  const params = useQueryParams();
+  const params = useQueryParams({ query: props.query });
   const cartItemsCount = useAppSelector((state) => selectAllBets(state).length);
   const cartStake = useAppSelector((state) =>
     selectAllBets(state).reduce((acc, cur) => acc + cur.stake, 0),
@@ -37,19 +42,54 @@ const LayoutContainer: React.FC<Props> = (props) => {
     (state) => state.ui.selectedContestCategory,
   );
 
-  const result = trpc.contest.listOffers.useQuery({
-    contestId: params.contestId,
-    league: params.league as League,
-  });
+  const { data, isLoading } = trpc.contest.getLeagueFantasyOffersCount.useQuery(
+    undefined,
+    {
+      retry: false,
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    },
+  );
+
+  const result = trpc.contest.listOffers.useQuery(
+    {
+      contestId: params.contestId,
+      league: params.league as League,
+    },
+    {
+      retry: false,
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    },
+  );
+  const userDetails = useAppSelector((state) => state.profile.userDetails);
 
   const { data: userTotalBalance, refetch } =
-    trpc.user.userTotalBalance.useQuery();
+    trpc.user.userTotalBalance.useQuery({ userId: userDetails?.id });
 
   const tokenCount = result.data?.tokenCount;
+
+  const handleSetCategoryBgColor = (bgColor: string) => {
+    dispatch(setCategoryBgColor(bgColor));
+  };
 
   useEffect(() => {
     refetch();
   }, [cartStake, contestModal]);
+
+  useEffect(() => {
+    if (data) {
+      // Get the default nav league where offers & markets are available
+      const defaultLeague = data?.find((league) => league.count > 0);
+      params.setParam('league', defaultLeague?.league);
+    }
+  }, [data]);
 
   return (
     <>
@@ -57,6 +97,7 @@ const LayoutContainer: React.FC<Props> = (props) => {
       <DeviceLocationContainer />
       <ChangeRouteLoadingContainer />
       <Layout
+        query={props.query}
         onClickCartDetails={() => {
           router.push(UrlPaths.Cart);
         }}
@@ -74,6 +115,9 @@ const LayoutContainer: React.FC<Props> = (props) => {
         showMobileCart={UrlPaths.Cart.toString() !== router?.pathname}
         playersSelected={entry?.legs.length || 0}
         contestCategory={contestCategory}
+        leagueFantasyOffersCount={data || []}
+        handleSetCategoryBgColor={handleSetCategoryBgColor}
+        isLoading={isLoading}
       >
         {props.children}
       </Layout>

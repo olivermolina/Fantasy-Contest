@@ -18,7 +18,7 @@ const listOffers = t.procedure
   .input(
     yup.object({
       contestId: yup.string().nullable(),
-      league: yup.mixed<League>().default(League.NFL),
+      league: yup.mixed<League>().default(League.NFL).required(),
     }),
   )
   .query(async ({ ctx, input }) => {

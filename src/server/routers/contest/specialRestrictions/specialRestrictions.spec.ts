@@ -10,7 +10,7 @@ describe('Test SpecialRestrictions', () => {
       {
         id: '35e7e89d-5043-4615-a7f7-130374c4a732',
         code: 'LL-GEO-US-NE',
-        description: 'Restrict under 18 of age',
+        description: 'Restrict under 19 of age',
         blockedReasonCodes: ['ID-UA19'],
         blockedLeagues: [],
         created_at: new Date(),
@@ -75,5 +75,24 @@ describe('Test SpecialRestrictions', () => {
     await expect(
       async () => await specialRestrictions(reasonCodes, leagues),
     ).rejects.toThrow(CustomErrorMessages['ID-UA19']);
+  });
+
+  it('should throw under age error when adding a fund if location is Nebraska/Massachusetts', async () => {
+    const reasonCodesNE = ['LL-GEO-US-NE', 'ID-UA19'];
+
+    await expect(
+      async () => await specialRestrictions(reasonCodesNE, undefined, true),
+    ).rejects.toThrow(TRPCError);
+    await expect(
+      async () => await specialRestrictions(reasonCodesNE, undefined, true),
+    ).rejects.toThrow(CustomErrorMessages.NOT_OF_AGE_STATE_ERROR);
+
+    const reasonCodesMA = ['LL-GEO-US-MA', 'ID-UA21'];
+    await expect(
+      async () => await specialRestrictions(reasonCodesMA, undefined, true),
+    ).rejects.toThrow(TRPCError);
+    await expect(
+      async () => await specialRestrictions(reasonCodesMA, undefined, true),
+    ).rejects.toThrow(CustomErrorMessages.NOT_OF_AGE_STATE_ERROR);
   });
 });

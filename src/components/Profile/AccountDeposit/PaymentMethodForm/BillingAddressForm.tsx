@@ -21,14 +21,14 @@ const BillingAddressForm = () => {
     <>
       <p
         className={classNames(
-          'text-xl font-bold mt-5',
+          'text-xl font-semibold mt-5',
           PaymentMethodFormsStyles.flexElements,
         )}
       >
         Billing Address
       </p>
       <label className={PaymentMethodFormsStyles.flexElements}>
-        <span className="mb-1 font-bold text-md">Street Address</span>
+        <span className="mb-1 text-sm">Street Address</span>
         <input
           className={PaymentMethodFormsStyles.billingInputs(
             errors.address1?.message,
@@ -40,7 +40,7 @@ const BillingAddressForm = () => {
         <FormErrorText>{errors.address1?.message}</FormErrorText>
       </label>
       <label className={PaymentMethodFormsStyles.flexElements}>
-        <span className="mb-1 font-bold text-md">Street Address Line 2</span>
+        <span className="mb-1 text-sm">Street Address Line 2</span>
         <input
           className={PaymentMethodFormsStyles.billingInputs(undefined)}
           type="text"
@@ -48,7 +48,7 @@ const BillingAddressForm = () => {
         />
       </label>
       <label className={PaymentMethodFormsStyles.nonFullWidthElements}>
-        <span className="mb-1 font-bold text-md">City</span>
+        <span className="mb-1 text-sm">City</span>
         <input
           className={PaymentMethodFormsStyles.billingInputs(
             errors.city?.message,
@@ -60,7 +60,7 @@ const BillingAddressForm = () => {
         <FormErrorText>{errors.city?.message}</FormErrorText>
       </label>
       <label className={PaymentMethodFormsStyles.nonFullWidthElements}>
-        <span className="mb-1 font-bold text-md">State / Province</span>
+        <span className="mb-1 text-sm">State / Province</span>
         <input
           className={PaymentMethodFormsStyles.billingInputs(
             errors.state?.message,
@@ -72,7 +72,7 @@ const BillingAddressForm = () => {
         <FormErrorText>{errors.state?.message}</FormErrorText>
       </label>
       <label className={PaymentMethodFormsStyles.nonFullWidthElements}>
-        <span className="mb-1 font-bold text-md">Postal / Zip Code</span>
+        <span className="mb-1 text-sm">Postal / Zip Code</span>
         <input
           className={PaymentMethodFormsStyles.billingInputs(
             errors.postalCode?.message,
