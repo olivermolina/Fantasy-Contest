@@ -37,7 +37,7 @@
     "@emotion/styled": "^11.10.5",
     "@faker-js/faker": "^7.5.0",
     "@fontsource/roboto": "^4.5.8",
-    "@hookform/resolvers": "^2.9.11",
+    "@hookform/resolvers": "^3.1.0",
     "@logtail/js": "^0.1.12",
     "@logtail/node": "^0.1.12",
     "@logtail/winston": "^0.1.13",
