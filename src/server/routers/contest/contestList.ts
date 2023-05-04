@@ -12,6 +12,7 @@ const contestList = t.procedure
         id: yup.string().uuid().required(),
         name: yup.string().required(),
         isActive: yup.bool().required(),
+        description: yup.string().required(),
         bgImageUrl: yup.string().url().required(),
         startDate: yup.date().required(),
         endDate: yup.date().required(),
@@ -46,6 +47,7 @@ const contestList = t.procedure
     return contests.map((contest) => ({
       id: contest.id,
       name: contest.name,
+      description: contest.description,
       isActive: contest.isActive,
       bgImageUrl: contest.bgImageUrl,
       startDate: contest.startDate,

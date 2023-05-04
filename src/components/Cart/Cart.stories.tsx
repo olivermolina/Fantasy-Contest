@@ -57,6 +57,8 @@ Open.args = {
     <a key={'fdas'}>Test2</a>,
     <a key={'dfasj'}>Test3</a>,
   ],
+  minimumEntryFee: 1,
+  maximumEntryFee: 50,
   cartItems: [
     {
       id: '1',
@@ -74,6 +76,7 @@ Open.args = {
           homeTeamName: 'University of Florida',
           betOption: '',
           statName: '',
+          onClickMoreLess: () => alert('onClickMoreLess'),
         },
       ],
       stake: '400',
@@ -103,6 +106,7 @@ Open.args = {
           homeTeamName: 'University of Florida',
           betOption: '',
           statName: '',
+          onClickMoreLess: () => alert('onClickMoreLess'),
         },
         {
           id: '3423',
@@ -116,6 +120,7 @@ Open.args = {
           homeTeamName: 'University of Florida',
           betOption: '',
           statName: '',
+          onClickMoreLess: () => alert('onClickMoreLess'),
         },
       ],
       stake: '400',

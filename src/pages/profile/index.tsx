@@ -7,9 +7,7 @@ import { withAuth } from '~/hooks/withAuthServerSideProps';
 const Profile = () => {
   return (
     <LayoutContainer>
-      <div className={'flex w-full'}>
-        <ProfileContainer />
-      </div>
+      <ProfileContainer />
     </LayoutContainer>
   );
 };

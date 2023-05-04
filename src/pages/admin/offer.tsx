@@ -2,27 +2,18 @@ import React from 'react';
 import { GetServerSideProps } from 'next';
 import { withAuth } from '~/hooks/withAuthServerSideProps';
 import AdminOfferContainer from '~/containers/AdminOfferContainer';
-import ChangeRouteLoadingContainer from '~/containers/ChangeRouteLoadingContainer/ChangeRouteLoadingContainer';
-import AdminLayout from '~/components/Admin/AdminLayout';
-import AdminContainer from '~/containers/AdminContainer';
+import AdminLayoutContainer from '~/containers/AdminLayoutContainer/AdminLayoutContainer';
 
-const AdminPage = () => {
+export default function AdminOfferPage() {
   return (
-    <>
-      <ChangeRouteLoadingContainer />
-      <AdminLayout>
-        <AdminContainer>
-          <AdminOfferContainer />
-        </AdminContainer>
-      </AdminLayout>
-    </>
+    <AdminLayoutContainer>
+      <AdminOfferContainer />
+    </AdminLayoutContainer>
   );
-};
-
-export default AdminPage;
+}
 
 export const getServerSideProps: GetServerSideProps = withAuth(async () => {
   return {
     props: {},
   };
-});
+}, 'ADMIN');

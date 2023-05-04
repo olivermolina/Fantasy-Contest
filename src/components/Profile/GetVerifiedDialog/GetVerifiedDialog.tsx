@@ -1,16 +1,13 @@
 import React from 'react';
 import {
-  Box,
   Button,
   CircularProgress,
   Dialog,
   Grid,
-  Stack,
+  IconButton,
   TextField,
-  Typography,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -20,6 +17,8 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import CloseIcon from '@mui/icons-material/Close';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 const InputValidationSchema = Yup.object().shape({
   firstname: Yup.string().required('First name is required'),
@@ -62,79 +61,67 @@ const GetVerifiedDialog = (props: Props) => {
   return (
     <Dialog
       open={props.open}
-      PaperProps={{
-        style: { borderRadius: 25 },
-      }}
+      sx={(theme) => ({
+        '& .MuiPaper-root': {
+          backgroundColor: theme.palette.primary.main,
+          borderRadius: 4,
+        },
+      })}
       maxWidth={'md'}
       fullWidth
     >
       <form onSubmit={handleSubmit(props.onSubmit)}>
-        <Box sx={{ p: 2 }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={{ xs: 2, md: 5 }}
-            sx={(theme) => ({
-              borderRadius: 5,
-              p: 1,
-              [theme.breakpoints.up('sm')]: {
-                p: 3,
-              },
-              backgroundColor: hasError
-                ? theme.palette.error.main
-                : theme.palette.primary.main,
-            })}
-          >
-            <Stack>
-              <Typography
+        <div className={'flex justify-between items-center p-4'}>
+          <div className={'flex justify-between items-center gap-5'}>
+            <div className={'rounded-full p-1 lg:p-4 bg-[#1A487F]'}>
+              <TaskAltIcon
                 sx={(theme) => ({
+                  [theme.breakpoints.up('md')]: {
+                    fontSize: 40,
+                  },
                   fontSize: 25,
-                  color: hasError
-                    ? theme.palette.primary.contrastText
-                    : theme.palette.error.contrastText,
+                  color: theme.palette.primary.contrastText,
                 })}
-              >
+              />
+            </div>
+            <div className={'flex flex-col gap-2'}>
+              <p className={'text-lg lg:text-3xl font-bold text-white'}>
                 {hasError
                   ? "Sorry, we can't move forward"
                   : 'Verify your account'}
-              </Typography>
-              {hasError && (
-                <Typography
-                  sx={(theme) => ({
-                    color: hasError
-                      ? theme.palette.primary.contrastText
-                      : theme.palette.error.contrastText,
-                  })}
-                >
-                  {
-                    "We couldn't verify your account. If you need help, you can send us an email or call."
-                  }
-                </Typography>
-              )}
-            </Stack>
-            {hasError ? (
-              <WarningIcon
-                sx={(theme) => ({
+              </p>
+              <p className={'text-sm lg:text-lg text-lightText'}>
+                Fill out the details as shown on your license.
+              </p>
+            </div>
+          </div>
+          <IconButton onClick={props.handleClose}>
+            <CloseIcon
+              color="secondary"
+              sx={(theme) => ({
+                fontSize: 30,
+                [theme.breakpoints.up('md')]: {
                   fontSize: 40,
-                  color: hasError
-                    ? theme.palette.primary.contrastText
-                    : theme.palette.error.contrastText,
-                })}
-              />
-            ) : (
-              <CheckCircleIcon
-                sx={(theme) => ({
-                  fontSize: 40,
-                  color: hasError
-                    ? theme.palette.primary.contrastText
-                    : theme.palette.error.contrastText,
-                })}
-              />
-            )}
-          </Stack>
-        </Box>
-
+                },
+              })}
+            />
+          </IconButton>
+        </div>
+        <div className={'bg-slate-500 h-[0.025rem] mb-4'} />
+        {hasError && (
+          <div
+            className={
+              'flex p-2 m-4 rounded-lg font-bold text-[#92400E] border-red-500 border-1 bg-[#FFFBEB] gap-2 items-center'
+            }
+          >
+            <WarningIcon />
+            <span>
+              {
+                "We couldn't verify your account. If you need help, you can send us an email or call."
+              }
+            </span>
+          </div>
+        )}
         <Grid container spacing={2} sx={{ p: 2 }}>
           <Grid item xs={12} md={4}>
             <TextField
@@ -235,16 +222,6 @@ const GetVerifiedDialog = (props: Props) => {
             >
               {hasError ? 'Try Again' : 'Confirm'}
               {props.isLoading && <CircularProgress sx={{ ml: 1 }} size={20} />}
-            </Button>
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              onClick={props.handleClose}
-              size={'large'}
-              fullWidth
-              disabled={props.isLoading}
-            >
-              Cancel
             </Button>
           </Grid>
         </Grid>

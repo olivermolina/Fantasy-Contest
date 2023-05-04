@@ -66,6 +66,7 @@ Main.args = {
         gameInfo: 'New Yourk Rangers vs Tampa Bay Lightning ',
         contestType: 'Team Token Picks',
         pickTime: '12/06/2022',
+        settledTime: '12/06/2022',
         potentialWin: 27.56,
         risk: 13,
         status: PickStatus.PENDING,
@@ -83,6 +84,7 @@ Main.args = {
           'Golden State Warriors, Tampa Bay Lightning, Woverhampton Wanderers',
         contestType: 'Team Token Picks',
         pickTime: '12/06/2022',
+        settledTime: '12/06/2022',
         picks: [
           {
             id: 1,
@@ -135,6 +137,7 @@ Main.args = {
         status: PickStatus.WIN,
         value: 212,
         odd: BetLegType.OVER_ODDS,
+        settledTime: '12/06/2022',
       },
     },
     {
@@ -147,6 +150,7 @@ Main.args = {
           'Golden State Warriors, Tampa Bay Lightning, Woverhampton Wanderers',
         contestType: 'Team Token Picks',
         pickTime: '12/06/2022',
+        settledTime: '12/06/2022',
         picks: [
           {
             id: 1,
@@ -194,6 +198,7 @@ Main.args = {
         gameInfo: 'New Yourk Rangers vs Tampa Bay Lightning ',
         contestType: 'Team Token Picks',
         pickTime: '12/06/2022',
+        settledTime: '12/06/2022',
         potentialWin: 27.56,
         risk: 13,
         status: PickStatus.WIN,

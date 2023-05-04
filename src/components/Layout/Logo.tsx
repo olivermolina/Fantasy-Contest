@@ -1,12 +1,18 @@
 import React from 'react';
+import { UrlPaths } from '~/constants/UrlPaths';
 
 type Props = {
   scale: number;
+  isLoggedIn?: boolean;
 };
 
 export const Logo = (props: Props) => {
   return (
-    <a target="_self" href="/" rel="noreferrer">
+    <a
+      target="_self"
+      href={props.isLoggedIn ? UrlPaths.Challenge : '/'}
+      rel="noreferrer"
+    >
       <svg
         id={Number(props.scale).toFixed(1)}
         key={Number(props.scale).toFixed(1)}

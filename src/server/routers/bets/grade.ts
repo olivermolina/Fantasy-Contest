@@ -2,10 +2,14 @@ import { t } from '../../trpc';
 import * as yup from '~/utils/yup';
 import { TRPCError } from '@trpc/server';
 import {
+  Bet,
   BetLeg,
   BetLegType,
   BetStakeType,
   BetStatus,
+  Contest,
+  ContestCategory,
+  ContestEntry,
   ContestWagerType,
   TransactionType,
 } from '@prisma/client';
@@ -15,6 +19,294 @@ import logger from '~/utils/logger';
 import { TOKEN } from '~/constants/TOKEN';
 import { createTransaction } from '~/server/routers/bets/createTransaction';
 import { ActionType } from '~/constants/ActionType';
+import _ from 'lodash';
+
+export const settleBet = async (
+  bet: Bet & {
+    legs: BetLeg[];
+    ContestEntries: ContestEntry & {
+      contest: Contest;
+    };
+    ContestCategory: ContestCategory;
+  },
+) => {
+  let contestCategory = bet.ContestCategory;
+  let betPayout = Number(bet.payout);
+  const legPushStatuses = bet.legs.filter(
+    (leg) => leg.status === BetStatus.PUSH,
+  );
+
+  if (bet.status === 'REFUNDED') {
+    // Cancelled bet
+    await prisma.$transaction([
+      prisma.wallets.update({
+        where: {
+          userId_contestsId: {
+            userId: bet.userId,
+            contestsId: bet.ContestEntries.contestsId,
+          },
+        },
+        data: {
+          balance: {
+            increment: bet.stake,
+          },
+        },
+      }),
+    ]);
+
+    try {
+      await createTransaction({
+        userId: bet.ContestEntries.userId,
+        amountProcess: Number(bet.stake),
+        amountBonus: 0,
+        transactionType: TransactionType.CREDIT,
+        actionType: ActionType.CASH_CONTEST_CANCELLED,
+        betId: bet.id,
+        contestEntryId: bet.ContestEntries.id,
+      });
+    } catch (e) {
+      logger.warn(`Duplicate transaction error.`);
+    }
+    // No further action for refunded bet
+    return;
+  }
+
+  // Legs have any pushes
+  if (legPushStatuses.length > 0) {
+    const legsCount = bet.legs.length;
+    const legPushStatusCount = legPushStatuses.length;
+    const remainingLegCount = legsCount - legPushStatusCount;
+
+    if (remainingLegCount < 2) {
+      // Cancelled bet
+      await prisma.$transaction([
+        prisma.wallets.update({
+          where: {
+            userId_contestsId: {
+              userId: bet.userId,
+              contestsId: bet.ContestEntries.contestsId,
+            },
+          },
+          data: {
+            balance: {
+              increment: bet.stake,
+            },
+          },
+        }),
+        prisma.bet.update({
+          where: {
+            id: bet.id,
+          },
+          data: {
+            status: BetStatus.CANCELLED,
+          },
+        }),
+      ]);
+
+      try {
+        await createTransaction({
+          userId: bet.ContestEntries.userId,
+          amountProcess: Number(bet.stake),
+          amountBonus: 0,
+          transactionType: TransactionType.CREDIT,
+          actionType: ActionType.CASH_CONTEST_CANCELLED,
+          betId: bet.id,
+          contestEntryId: bet.ContestEntries.id,
+        });
+      } catch (e) {
+        logger.warn(` Duplicate transaction error.`);
+      }
+    } else {
+      // Update bet contest category
+      const newContestCategory = await prisma.contestCategory.findFirst({
+        where: {
+          numberOfPicks: remainingLegCount,
+        },
+      });
+
+      if (!newContestCategory) {
+        throw Error('Unsupported contest category');
+      }
+
+      contestCategory = newContestCategory;
+      betPayout = newContestCategory.allInPayoutMultiplier * Number(bet.stake);
+      await prisma.bet.update({
+        where: {
+          id: bet.id,
+        },
+        data: {
+          payout: betPayout,
+          contestCategoryId: newContestCategory.id,
+        },
+      });
+    }
+  }
+
+  if (bet.stakeType === BetStakeType.ALL_IN) {
+    const doesBetHaveALostLeg = bet.legs
+      .filter((l) => l.status !== BetStatus.PUSH)
+      .some((l) => l.status === BetStatus.LOSS);
+    if (doesBetHaveALostLeg) {
+      // user has lost, update the bet
+      await prisma.$transaction([
+        prisma.wallets.update({
+          where: {
+            userId_contestsId: {
+              userId: bet.userId,
+              contestsId: bet.ContestEntries.contestsId,
+            },
+          },
+          data: {
+            balance: {
+              decrement: betPayout,
+            },
+          },
+        }),
+        prisma.bet.update({
+          where: {
+            id: bet.id,
+          },
+          data: {
+            status: BetStatus.LOSS,
+          },
+        }),
+      ]);
+    }
+    const allBetLegsAreWon = bet.legs
+      .filter((l) => l.status !== BetStatus.PUSH)
+      .every((l) => l.status === BetStatus.WIN);
+    if (allBetLegsAreWon) {
+      // user has won, pay them out
+      await prisma.$transaction([
+        prisma.wallets.update({
+          where: {
+            userId_contestsId: {
+              userId: bet.userId,
+              contestsId: bet.ContestEntries.contestsId,
+            },
+          },
+          data: {
+            balance: {
+              increment: betPayout,
+            },
+          },
+        }),
+        prisma.bet.update({
+          where: {
+            id: bet.id,
+          },
+          data: {
+            status: BetStatus.WIN,
+          },
+        }),
+      ]);
+
+      // Increment user cash amount
+      if (bet.ContestEntries?.contest?.wagerType === ContestWagerType.CASH) {
+        try {
+          await createTransaction({
+            userId: bet.ContestEntries.userId,
+            amountProcess: Number(betPayout) + Number(bet.cashStake),
+            amountBonus: 0,
+            transactionType: TransactionType.CREDIT,
+            actionType: ActionType.CASH_CONTEST_WIN,
+            betId: bet.id,
+            contestEntryId: bet.ContestEntries.id,
+          });
+        } catch (e) {
+          logger.warn(` Duplicate transaction error.`);
+        }
+      }
+    }
+  }
+
+  if (bet.stakeType === BetStakeType.INSURED) {
+    const winCount = bet.legs.filter((l) => l.status === BetStatus.WIN).length;
+
+    let insuredPayout = 0;
+    switch (winCount) {
+      case contestCategory.numberOfPicks:
+        insuredPayout =
+          Number(bet.stake) * contestCategory.primaryInsuredPayoutMultiplier;
+        break;
+      case contestCategory.numberOfPicks - 1:
+        insuredPayout =
+          Number(bet.stake) * contestCategory.secondaryInsuredPayoutMultiplier;
+        break;
+      default:
+    }
+
+    if (insuredPayout > 0) {
+      // user has won primary insured amount, pay them out
+      await prisma.$transaction([
+        prisma.wallets.update({
+          where: {
+            userId_contestsId: {
+              userId: bet.userId,
+              contestsId: bet.ContestEntries.contestsId,
+            },
+          },
+          data: {
+            balance: {
+              increment: insuredPayout,
+            },
+          },
+        }),
+        prisma.bet.update({
+          where: {
+            id: bet.id,
+          },
+          data: {
+            payout: insuredPayout,
+            status: BetStatus.WIN,
+          },
+        }),
+      ]);
+
+      // Increment cash amount
+      if (bet.ContestEntries?.contest?.wagerType === ContestWagerType.CASH) {
+        try {
+          await createTransaction({
+            userId: bet.ContestEntries.userId,
+            amountProcess: insuredPayout + Number(bet.cashStake),
+            amountBonus: 0,
+            transactionType: TransactionType.CREDIT,
+            actionType: ActionType.CASH_CONTEST_WIN,
+            betId: bet.id,
+            contestEntryId: bet.ContestEntries.id,
+          });
+        } catch (e) {
+          logger.warn(` Duplicate transaction error.`);
+        }
+      }
+    } else {
+      // user has lost, update the bet and wallet
+      await prisma.$transaction([
+        prisma.wallets.update({
+          where: {
+            userId_contestsId: {
+              userId: bet.userId,
+              contestsId: bet.ContestEntries.contestsId,
+            },
+          },
+          data: {
+            balance: {
+              decrement: insuredPayout,
+            },
+          },
+        }),
+        prisma.bet.update({
+          where: {
+            id: bet.id,
+          },
+          data: {
+            status: BetStatus.LOSS,
+          },
+        }),
+      ]);
+    }
+  }
+};
 
 export const grade = t.procedure
   .input(
@@ -67,6 +359,7 @@ export const grade = t.procedure
         [BetStatus.LOSS]: [],
         [BetStatus.PENDING]: [],
         [BetStatus.CANCELLED]: [],
+        [BetStatus.REFUNDED]: [],
       };
       for (const ugLeg of ugLegs) {
         const bet = ugLeg.Bet;
@@ -93,7 +386,7 @@ export const grade = t.procedure
           switch (ugLeg.type) {
             case BetLegType.OVER_ODDS:
               if (
-                market.total_stat &&
+                _.isNumber(market.total_stat) &&
                 ugLeg.total.toNumber() < market.total_stat
               ) {
                 newBetStatus[BetStatus.WIN].push(ugLeg.id);
@@ -109,7 +402,7 @@ export const grade = t.procedure
               break;
             case BetLegType.UNDER_ODDS:
               if (
-                market.total_stat &&
+                _.isNumber(market.total_stat) &&
                 ugLeg.total.toNumber() > market.total_stat
               ) {
                 newBetStatus[BetStatus.WIN].push(ugLeg.id);
@@ -164,257 +457,7 @@ export const grade = t.procedure
       });
 
       for (const bet of completelyGradedBets) {
-        let contestCategory = bet.ContestCategory;
-        let betPayout = Number(bet.payout);
-        const legPushStatuses = bet.legs.filter(
-          (leg) => leg.status === BetStatus.PUSH,
-        );
-        if (legPushStatuses) {
-          const legsCount = bet.legs.length;
-          const legPushStatusCount = legPushStatuses.length;
-          const remainingLegCount = legsCount - legPushStatusCount;
-
-          if (remainingLegCount < 2) {
-            // Cancelled bet
-            await prisma.$transaction([
-              prisma.wallets.update({
-                where: {
-                  userId_contestsId: {
-                    userId: bet.userId,
-                    contestsId: bet.ContestEntries.contestsId,
-                  },
-                },
-                data: {
-                  balance: {
-                    increment: bet.stake,
-                  },
-                },
-              }),
-              prisma.bet.update({
-                where: {
-                  id: bet.id,
-                },
-                data: {
-                  status: BetStatus.CANCELLED,
-                },
-              }),
-            ]);
-
-            try {
-              await createTransaction({
-                userId: bet.ContestEntries.userId,
-                amountProcess: Number(bet.stake),
-                amountBonus: 0,
-                transactionType: TransactionType.CREDIT,
-                actionType: ActionType.CASH_CONTEST_CANCELLED,
-                betId: bet.id,
-                contestEntryId: bet.ContestEntries.id,
-              });
-            } catch (e) {
-              logger.warn(` Duplicate transaction error.`);
-            }
-            continue;
-          } else {
-            // Update bet contest category
-            const newContestCategory = await prisma.contestCategory.findFirst({
-              where: {
-                numberOfPicks: remainingLegCount,
-              },
-            });
-
-            if (!newContestCategory) {
-              throw Error('Unsupported contest category');
-            }
-
-            contestCategory = newContestCategory;
-            betPayout =
-              newContestCategory.allInPayoutMultiplier * Number(bet.stake);
-            await prisma.bet.update({
-              where: {
-                id: bet.id,
-              },
-              data: {
-                payout: betPayout,
-                contestCategoryId: newContestCategory.id,
-              },
-            });
-          }
-        }
-
-        if (bet.stakeType === BetStakeType.ALL_IN) {
-          if (
-            bet.legs
-              .filter((l) => l.status !== BetStatus.PUSH)
-              .some((l) => l.status === BetStatus.LOSS)
-          ) {
-            // user has lost, update the bet
-            await prisma.$transaction([
-              prisma.wallets.update({
-                where: {
-                  userId_contestsId: {
-                    userId: bet.userId,
-                    contestsId: bet.ContestEntries.contestsId,
-                  },
-                },
-                data: {
-                  balance: {
-                    decrement: betPayout,
-                  },
-                },
-              }),
-              prisma.bet.update({
-                where: {
-                  id: bet.id,
-                },
-                data: {
-                  status: BetStatus.LOSS,
-                },
-              }),
-            ]);
-          }
-          if (
-            bet.legs
-              .filter((l) => l.status !== BetStatus.PUSH)
-              .every((l) => l.status === BetStatus.WIN)
-          ) {
-            // user has won, pay them out
-            await prisma.$transaction([
-              prisma.wallets.update({
-                where: {
-                  userId_contestsId: {
-                    userId: bet.userId,
-                    contestsId: bet.ContestEntries.contestsId,
-                  },
-                },
-                data: {
-                  balance: {
-                    increment: betPayout,
-                  },
-                },
-              }),
-              prisma.bet.update({
-                where: {
-                  id: bet.id,
-                },
-                data: {
-                  status: BetStatus.WIN,
-                },
-              }),
-            ]);
-
-            // Increment user cash amount
-            if (
-              bet.ContestEntries?.contest?.wagerType === ContestWagerType.CASH
-            ) {
-              try {
-                await createTransaction({
-                  userId: bet.ContestEntries.userId,
-                  amountProcess: Number(betPayout),
-                  amountBonus: 0,
-                  transactionType: TransactionType.CREDIT,
-                  actionType: ActionType.CASH_CONTEST_WIN,
-                  betId: bet.id,
-                  contestEntryId: bet.ContestEntries.id,
-                });
-              } catch (e) {
-                logger.warn(` Duplicate transaction error.`);
-              }
-            }
-          }
-        }
-
-        if (bet.stakeType === BetStakeType.INSURED) {
-          const winCount = bet.legs.filter(
-            (l) => l.status === BetStatus.WIN,
-          ).length;
-
-          let insuredPayout = 0;
-          switch (winCount) {
-            case contestCategory.numberOfPicks:
-              insuredPayout =
-                Number(bet.stake) *
-                contestCategory.primaryInsuredPayoutMultiplier;
-              break;
-            case contestCategory.numberOfPicks - 1:
-              insuredPayout =
-                Number(bet.stake) *
-                contestCategory.secondaryInsuredPayoutMultiplier;
-              break;
-            default:
-          }
-
-          if (insuredPayout > 0) {
-            // user has won primary insured amount, pay them out
-            await prisma.$transaction([
-              prisma.wallets.update({
-                where: {
-                  userId_contestsId: {
-                    userId: bet.userId,
-                    contestsId: bet.ContestEntries.contestsId,
-                  },
-                },
-                data: {
-                  balance: {
-                    increment: insuredPayout,
-                  },
-                },
-              }),
-              prisma.bet.update({
-                where: {
-                  id: bet.id,
-                },
-                data: {
-                  payout: insuredPayout,
-                  status: BetStatus.WIN,
-                },
-              }),
-            ]);
-
-            // Increment cash amount
-            if (
-              bet.ContestEntries?.contest?.wagerType === ContestWagerType.CASH
-            ) {
-              try {
-                await createTransaction({
-                  userId: bet.ContestEntries.userId,
-                  amountProcess: insuredPayout,
-                  amountBonus: 0,
-                  transactionType: TransactionType.CREDIT,
-                  actionType: ActionType.CASH_CONTEST_WIN,
-                  betId: bet.id,
-                  contestEntryId: bet.ContestEntries.id,
-                });
-              } catch (e) {
-                logger.warn(` Duplicate transaction error.`);
-              }
-            }
-          } else {
-            // user has lost, update the bet and wallet
-            await prisma.$transaction([
-              prisma.wallets.update({
-                where: {
-                  userId_contestsId: {
-                    userId: bet.userId,
-                    contestsId: bet.ContestEntries.contestsId,
-                  },
-                },
-                data: {
-                  balance: {
-                    decrement: insuredPayout,
-                  },
-                },
-              }),
-              prisma.bet.update({
-                where: {
-                  id: bet.id,
-                },
-                data: {
-                  status: BetStatus.LOSS,
-                },
-              }),
-            ]);
-          }
-        }
+        await settleBet(bet);
       }
     } catch (error) {
       logger.error('There was an error grading bets.', error);

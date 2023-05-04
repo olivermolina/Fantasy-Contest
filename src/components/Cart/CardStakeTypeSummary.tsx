@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import {
   BetStakeType,
@@ -15,22 +15,35 @@ interface Props {
   payout: string;
   contestCategory: ContestCategory;
   wagerType: ContestWagerType;
+  /**
+   *  Boolean to show Free Entry
+   * @example true
+   */
+  isFreeEntry: boolean;
+  /**
+   * The app setting string value of Free Entry stake type options
+   * @example 'ALL_IN, INSURED'
+   */
+  stakeTypeFreeEntry: string;
 
   onUpdateBetStakeType(stakeType: BetStakeType): void;
 }
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(() => ({
   '& .MuiToggleButtonGroup-grouped': {
-    color: 'black',
+    borderColor: 'white',
+    color: 'white',
     '&.Mui-disabled': {
       border: 0,
     },
     '&.Mui-selected': {
-      backgroundColor: '#bbdefb',
-      color: '#0d47a1',
+      backgroundColor: 'white',
+      color: '#315a8c',
     },
+    backgroundColor: '#315a8c',
     fontWeight: 'bold',
-    borderRadius: 28,
+    borderRadius: 5,
+    textTransform: 'none',
   },
 }));
 
@@ -48,21 +61,21 @@ const PayoutItem = (props: PayoutItemProps) => (
     justifyContent="space-evenly"
     alignItems="center"
     spacing={1}
-    className={'text-sm md:text-md'}
+    className={'text-sm md:text-md text-light'}
   >
-    <span className={'font-bold w-5'}>
+    <span className={'font-bold w-5 text-white text-md'}>
       {props.correct}/{props.numberOfPicks}
     </span>
     <span>Correct</span>
     <div
       className={
-        'flex bg-blue-200 font-bold p-2 h-12 w-12 rounded-full items-center justify-center'
+        'flex bg-[#315A8CFF] text-white text-md font-bold p-2 h-12 w-12 rounded-full  items-center justify-center'
       }
     >
       {props.multiplier}x
     </div>
     <span>Payout</span>
-    <span className={'font-bold w-10'}>
+    <span className={'font-bold w-10 text-white text-md'}>
       {showDollarPrefix(Number(props.payout), props.isShowDollarPrefix)}
     </span>
   </Stack>
@@ -73,15 +86,34 @@ const CardStakeTypeSummary = (props: Props) => {
     event: React.MouseEvent<HTMLElement>,
     nextStakeType: BetStakeType,
   ) => {
-    props.onUpdateBetStakeType(nextStakeType);
+    if (nextStakeType) {
+      props.onUpdateBetStakeType(nextStakeType);
+    }
   };
+
+  const { stakeTypeFreeEntry, isFreeEntry } = props;
+  const stakeTypeOptions = useMemo(() => {
+    if (isFreeEntry) {
+      return stakeTypeFreeEntry.split(',').filter((n) => n);
+    }
+
+    return [BetStakeType.ALL_IN.toString(), BetStakeType.INSURED.toString()];
+  }, [stakeTypeFreeEntry, isFreeEntry]);
+
+  useEffect(() => {
+    if (stakeTypeOptions.length === 1) {
+      props.onUpdateBetStakeType(stakeTypeOptions[0] as BetStakeType);
+    }
+  }, [stakeTypeOptions]);
 
   return (
     <Stack
       sx={(theme) => ({
         p: 2,
-        backgroundColor: 'white',
-        borderRadius: 10,
+        backgroundColor: '#1A477FFF',
+        border: 1,
+        borderColor: 'white',
+        borderRadius: 2,
         width: '100%',
         [theme.breakpoints.up('lg')]: {
           p: 4,
@@ -92,11 +124,15 @@ const CardStakeTypeSummary = (props: Props) => {
       <StyledToggleButtonGroup
         value={props.stakeType}
         onChange={onChangeBetStakeType}
-        exclusive={true}
+        exclusive
         fullWidth
       >
-        <ToggleButton value={BetStakeType.INSURED}>Insured</ToggleButton>
-        <ToggleButton value={BetStakeType.ALL_IN}>All In</ToggleButton>
+        {stakeTypeOptions.includes(BetStakeType.INSURED.toString()) && (
+          <ToggleButton value={BetStakeType.INSURED}>Insured</ToggleButton>
+        )}
+        {stakeTypeOptions.includes(BetStakeType.ALL_IN.toString()) && (
+          <ToggleButton value={BetStakeType.ALL_IN}>All In</ToggleButton>
+        )}
       </StyledToggleButtonGroup>
 
       {props.stakeType === BetStakeType.INSURED ? (

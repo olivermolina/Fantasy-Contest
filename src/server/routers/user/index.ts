@@ -12,11 +12,15 @@ import accountSavePaymentMethod from './accountSavePaymentMethod';
 import logout from './logout';
 import userTotalBalance from './userTotalBalance';
 import users from './users';
-import addCredit from './addCredit';
 import contactUs from './contactUs';
 import passwordReset from './passwordReset';
 import passwordUpdate from './passwordUpdate';
 import passwordResetTokenVerify from './passwordResetTokenVerify';
+import transactionHistory from './transactionHistory';
+import addRemoveWithdrawable from './addRemoveWithdrawable';
+import getWithdrawBonusCreditOfferChances from './getWithdrawBonusCreditOfferChances';
+import addWithdrawBonusCredit from './addWithdrawBonusCredit';
+import syncSendGridContacts from './syncSendGridContacts';
 
 export const userRouter = t.router({
   accountDeposit,
@@ -32,11 +36,15 @@ export const userRouter = t.router({
   logout,
   userTotalBalance,
   users,
-  addCredit,
   contactUs,
   passwordReset,
   passwordUpdate,
   passwordResetTokenVerify,
+  transactionHistory,
+  addRemoveWithdrawable,
+  getWithdrawBonusCreditOfferChances,
+  addWithdrawBonusCredit,
+  syncSendGridContacts,
 });
 
 export default userRouter;

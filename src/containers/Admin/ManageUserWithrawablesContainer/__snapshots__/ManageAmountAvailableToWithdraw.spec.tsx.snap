@@ -1,0 +1,326 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ManageAmountAvailableToWithdrawContainer should render correctly 1`] = `
+<div>
+  <div
+    aria-hidden="true"
+    class="MuiBackdrop-root css-kq809n-MuiBackdrop-root"
+    data-testid="backdrop-loading"
+    style="opacity: 0; visibility: hidden;"
+  >
+    <div
+      class="MuiBox-root css-rmz4vk"
+    >
+      <span
+        class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorInherit css-62e83j-MuiCircularProgress-root"
+        role="progressbar"
+        style="width: 55px; height: 55px;"
+      >
+        <svg
+          class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
+          viewBox="22 22 44 44"
+        >
+          <circle
+            class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate MuiCircularProgress-circleDisableShrink css-79nvmn-MuiCircularProgress-circle"
+            cx="44"
+            cy="44"
+            fill="none"
+            r="20.2"
+            stroke-width="3.6"
+          />
+        </svg>
+      </span>
+      <div
+        class="MuiBox-root css-1o8dslu"
+      >
+        <div
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-wn51m9-MuiAvatar-root"
+        >
+          <svg
+            height="36"
+            preserveAspectRatio="xMidYMid meet"
+            role="loading"
+            version="1.0"
+            viewBox="0 0 176.000000 192.000000"
+            width="28"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              fill="#fff"
+              id="top"
+            />
+            <g
+              fill="#2463eb"
+              stroke="#2463eb"
+              transform="translate(0.000000,192.000000) scale(0.100000,-0.100000)"
+            >
+              <path
+                d="M385 1891 c-40 -10 -66 -27 -90 -59 -18 -25 -20 -45 -23 -229 l-3 -203 60 0 61 0 0 173 c0 94 4 178 8 185 7 10 111 12 488 10 l479 -3 3 -187 2 -188 66 0 65 0 -3 204 c-3 224 -5 230 -72 280 -27 20 -39 21 -519 23 -271 1 -505 -2 -522 -6z"
+              />
+              <path
+                d="M153 1309 c-24 -12 -52 -37 -65 -57 l-23 -37 0 -536 0 -535 25 -37 c46 -68 81 -77 289 -77 l182 0 23 53 24 52 -102 5 c-74 4 -109 10 -132 24 -73 44 -86 129 -39 245 l28 71 143 0 143 0 -15 -35 c-22 -52 -19 -56 33 -53 l47 3 28 69 c15 38 28 75 28 83 0 10 -22 13 -97 13 -79 0 -104 4 -130 20 -87 52 -89 127 -12 315 62 150 121 235 193 280 47 29 56 30 185 35 l136 5 16 35 c9 19 20 45 23 58 l7 22 -448 0 c-434 0 -449 -1 -490 -21z"
+              />
+              <path
+                d="M1255 1275 c-14 -30 -25 -57 -25 -59 0 -3 49 -6 109 -8 105 -3 111 -4 140 -32 59 -57 63 -120 15 -241 l-26 -65 -140 0 -140 0 5 23 c3 12 9 32 12 45 7 21 4 22 -37 22 l-45 0 -29 -72 c-16 -40 -30 -76 -32 -80 -2 -5 36 -8 85 -8 119 -1 166 -21 195 -86 26 -60 22 -92 -31 -223 -60 -148 -87 -197 -139 -253 -75 -81 -105 -92 -258 -96 l-131 -4 -16 -46 c-10 -26 -17 -50 -17 -54 0 -5 184 -8 408 -8 403 0 408 0 452 23 24 12 53 35 64 50 21 28 21 41 24 563 3 597 5 578 -66 632 -34 26 -39 27 -194 30 l-158 3 -25 -56z"
+              />
+              <path
+                d="M843 948 c-8 -13 -63 -140 -63 -146 0 -2 23 -2 51 0 l51 3 29 75 c16 41 29 76 29 78 0 9 -90 -1 -97 -10z"
+              />
+              <path
+                d="M933 493 c-48 -110 -48 -103 1 -103 51 0 55 4 89 93 l25 67 -44 0 -45 0 -26 -57z"
+              />
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex flex-col gap-2"
+  >
+    <p
+      class="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+    >
+      Add or remove balance from the amount available to withdraw
+    </p>
+    <form>
+      <div
+        class="flex flex-col md:flex-row items-start gap-4"
+      >
+        <div
+          class="MuiAutocomplete-root MuiAutocomplete-fullWidth css-qm9mjt-MuiAutocomplete-root"
+          name="user"
+        >
+          <div
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1pysi21-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="false"
+              for="userId"
+              id="userId-label"
+            >
+              Select User
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-154xyx0-MuiInputBase-root-MuiOutlinedInput-root"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-invalid="false"
+                autocapitalize="none"
+                autocomplete="off"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-19qh8xo-MuiInputBase-input-MuiOutlinedInput-input"
+                id="userId"
+                role="combobox"
+                spellcheck="false"
+                type="text"
+                value=""
+              />
+              <span
+                class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorInherit css-62e83j-MuiCircularProgress-root"
+                role="progressbar"
+                style="width: 20px; height: 20px;"
+              >
+                <svg
+                  class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
+                  viewBox="22 22 44 44"
+                >
+                  <circle
+                    class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-176wh8e-MuiCircularProgress-circle"
+                    cx="44"
+                    cy="44"
+                    fill="none"
+                    r="20.2"
+                    stroke-width="3.6"
+                  />
+                </svg>
+              </span>
+              <fieldset
+                aria-hidden="true"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="css-yjsfm1"
+                >
+                  <span>
+                    Select User
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1pysi21-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="false"
+            id="select-transactionType-label"
+          >
+            Select transaction type
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall  css-1ualgfl-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+          >
+            <div
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="select-transactionType-label select-transactionType"
+              class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+              id="select-transactionType"
+              role="button"
+              tabindex="0"
+            >
+              <span
+                class="notranslate"
+              >
+                ​
+              </span>
+            </div>
+            <input
+              aria-hidden="true"
+              class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
+              name="transactionType"
+              tabindex="-1"
+              value=""
+            />
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+              data-testid="ArrowDropDownIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M7 10l5 5 5-5z"
+              />
+            </svg>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-yjsfm1"
+              >
+                <span>
+                  Select transaction type
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="outlined-basic"
+            id="outlined-basic-label"
+          >
+            Amount
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall MuiInputBase-adornedStart css-8j6b76-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeSmall css-ittuaa-MuiInputAdornment-root"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-1pnmrwp-MuiTypography-root"
+              >
+                $
+              </p>
+            </div>
+            <input
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall MuiInputBase-inputAdornedStart css-1ua80n0-MuiInputBase-input-MuiOutlinedInput-input"
+              id="outlined-basic"
+              name="amount"
+              type="number"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-14lo706"
+              >
+                <span>
+                  Amount
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="submit"
+        >
+          Submit
+          <span
+            class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="flex flex-col gap-2 mt-2"
+      >
+        <p
+          class="flex flex-row"
+        >
+          Amount Available to withdraw:
+          <span
+            class="font-bold ml-1"
+          >
+            <span
+              class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-werose-MuiSkeleton-root"
+            />
+          </span>
+        </p>
+        <p
+          class="flex flex-row"
+        >
+          Cash Balance:
+          <span
+            class="font-bold ml-1"
+          >
+            <span
+              class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-werose-MuiSkeleton-root"
+            />
+          </span>
+        </p>
+        <p
+          class="flex flex-row"
+        >
+          Bonus Balance:
+          <span
+            class="font-bold ml-1"
+          >
+            <span
+              class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-werose-MuiSkeleton-root"
+            />
+          </span>
+        </p>
+        <p
+          class="flex flex-row"
+        >
+          Total Balance:
+          <span
+            class="font-bold ml-1"
+          >
+            <span
+              class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-werose-MuiSkeleton-root"
+            />
+          </span>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+`;

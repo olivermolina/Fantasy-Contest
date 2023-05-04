@@ -13,11 +13,9 @@ interface Props {
 const ProfileWithdrawFunds = (props: Props) => {
   return (
     <LayoutContainer>
-      <div className={'flex w-full'}>
-        <ProfileContainer>
-          <ProfileWithdrawFundsContainer clientIp={props.clientIp} />
-        </ProfileContainer>
-      </div>
+      <ProfileContainer>
+        <ProfileWithdrawFundsContainer clientIp={props.clientIp} />
+      </ProfileContainer>
     </LayoutContainer>
   );
 };

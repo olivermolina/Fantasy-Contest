@@ -1,7 +1,6 @@
 import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import {
-  AppSettingName,
   PaymentMethodType,
   Session,
   Transaction,
@@ -15,8 +14,8 @@ import GIDX, {
 import { prisma } from '~/server/prisma';
 import dayjs from 'dayjs';
 import { ActionType } from '~/constants/ActionType';
-import { createTransaction } from '~/server/routers/bets/createTransaction';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import referralBonus from '~/server/routers/user/referralBonus';
 
 export interface AccountDepositResponseInterface {
   transactionId: string | number;
@@ -133,52 +132,8 @@ const accountDeposit = t.procedure
         url: data?.Action?.URL,
       };
 
-      if (user.isFirstDeposit && paymentStatus === 'Complete') {
-        // Disable isFirstDeposit after a successful deposit
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            isFirstDeposit: false,
-          },
-        });
-
-        const referralUser = await prisma.user.findFirst({
-          where: {
-            username: user.referral,
-          },
-        });
-
-        if (referralUser) {
-          const referralAppSetting = await prisma.appSettings.findFirst({
-            where: {
-              name: AppSettingName.REFERRAL_CREDIT_AMOUNT,
-            },
-          });
-          await createTransaction({
-            userId: referralUser.id,
-            amountProcess: 0,
-            amountBonus: Number(referralAppSetting?.value) || 25,
-            actionType: ActionType.ADD_FREE_CREDIT,
-            transactionType: TransactionType.CREDIT,
-          });
-        }
-      }
-
-      if (!user.isFirstDeposit) {
-        const reloadBonusAppSetting = await prisma.appSettings.findFirst({
-          where: {
-            name: AppSettingName.RELOAD_BONUS_AMOUNT,
-          },
-        });
-        if (reloadBonusAppSetting && Number(reloadBonusAppSetting.value) > 0) {
-          await createTransaction({
-            userId,
-            amountProcess: 0,
-            amountBonus: Number(reloadBonusAppSetting.value),
-            actionType: ActionType.ADD_FREE_CREDIT,
-            transactionType: TransactionType.CREDIT,
-          });
-        }
+      if (paymentStatus === 'Complete') {
+        await referralBonus(user);
       }
 
       return depositResponse;

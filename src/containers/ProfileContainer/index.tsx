@@ -16,12 +16,12 @@ const MENUS = [
   {
     key: UrlPaths.ProfileAccountDeposit,
     label: 'Account Deposit',
-    icon: <Icons.CurrencyDollar className={'h-8'} />,
+    icon: <Icons.MoneyBillTransfer className={'h-6 ml-0.5'} />,
   },
   {
     key: UrlPaths.ProfileWithdrawFunds,
     label: 'Withdraw Funds',
-    icon: <Icons.WithdrawFunds className={'h-8'} />,
+    icon: <Icons.MoneyFromBracket className={'h-6 ml-0.5'} />,
   },
   {
     key: UrlPaths.ProfileDetails,
@@ -29,14 +29,26 @@ const MENUS = [
     icon: <Icons.User className={'h-8'} />,
   },
   {
-    key: UrlPaths.ProfileSettings,
-    label: 'Settings',
-    icon: <Icons.Settings className={'h-8'} />,
+    key: UrlPaths.ProfileTransactionHistory,
+    label: 'Transaction History',
+    icon: <Icons.RectangleHistory className={'h-6'} />,
   },
   {
     key: UrlPaths.ProfileReferral,
     label: 'My Referral Code',
     icon: <Icons.UserAdd className={'h-8'} />,
+  },
+];
+const LEGAL_MENUS = [
+  {
+    key: UrlPaths.ResponsibleGaming,
+    label: 'Responsible Gaming',
+    icon: <Icons.FileContract className={'h-6 ml-1'} />,
+  },
+  {
+    key: UrlPaths.RefundPolicy,
+    label: 'Refund Policy',
+    icon: <Icons.FileContract className={'h-6 ml-1'} />,
   },
   {
     key: 'logout',
@@ -50,23 +62,18 @@ const ProfileContainer = (props: Props) => {
   const dispatch = useAppDispatch();
   const [activeMenu, setActiveMenu] = useState<SettingsItemMenuProps | null>();
   const { data: appSettingsData, isLoading: appSettingsIsLoading } =
-    trpc.appSettings.list.useQuery(undefined, {
-      refetchOnWindowFocus: false,
-      retry: false,
-    });
+    trpc.appSettings.list.useQuery();
 
-  const { data, isLoading } = trpc.user.userDetails.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    retry: false,
-  });
+  const { data, isLoading } = trpc.user.userDetails.useQuery();
 
   const logoutMutation = trpc.user.logout.useMutation();
 
   const user = useMemo(
     () => ({
+      id: data?.id || '',
       username: data?.username || '',
       email: data?.email || '',
-      image: `https://eu.ui-avatars.com/api/?name=${data?.username}&size=250`,
+      image: `https://eu.ui-avatars.com/api/?name=${data?.username}&size=250&color=fff&background=1A487F`,
       followers: 502,
       following: 300,
       showFollowers: false,
@@ -114,6 +121,7 @@ const ProfileContainer = (props: Props) => {
       {...props}
       activeMenu={activeMenu}
       menus={MENUS}
+      legalMenus={LEGAL_MENUS}
       user={user}
       onSelectCallback={onSelectCallback}
       isLoading={isLoading || appSettingsIsLoading}

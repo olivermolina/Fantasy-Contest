@@ -3,8 +3,8 @@ import { DefaultPickProps } from '~/components/Picks/PickCards/StraightCard';
 import {
   CheckCircle,
   MinusCircle,
-  XCircle,
   PendingCircle,
+  XCircle,
 } from '~/components/Picks/Icons';
 import { PickStatus } from '~/constants/PickStatus';
 import { BetLegType } from '@prisma/client';
@@ -50,19 +50,21 @@ const ParlayBetPicks: React.FC<ParlayBetPicksProps> = (props) => {
                 {status === PickStatus.WIN && (
                   <CheckCircle className="w-6 h-6 fill-green-500" />
                 )}
-                {status === PickStatus.PUSH && (
+                {(status === PickStatus.PUSH ||
+                  status === PickStatus.CANCELLED ||
+                  status === PickStatus.REFUNDED) && (
                   <MinusCircle className="w-6 h-6 fill-yellow-400" />
                 )}
               </div>
-              <div className="w-px h-full bg-gray-300" />
+              <div className="w-px h-full bg-slate-500" />
             </div>
             <div className="flex flex-col justify-between w-full h-full">
-              <div className="flex flex-column justify-between items-center border-b pb-1 mb-1">
-                <div className={'flex flex-col gap-1 text-sm text-gray-400'}>
-                  <p className="font-bold text-black">{name}</p>
+              <div className="flex flex-column justify-between items-center border-b border-slate-500 pb-1 mb-1">
+                <div className={'flex flex-col gap-1 text-sm text-lightText'}>
+                  <p className="font-bold text-white">{name}</p>
                   <p>{gameInfo}</p>
                   <p>{matchTime}</p>
-                  <div className={'flex flex-row gap-2'}>
+                  <div className={'flex flex-wrap gap-0.5 lg:gap-2'}>
                     <CardTag>{description}</CardTag>
                     <CardTag>{team}</CardTag>
                     <CardTag>{league}</CardTag>
@@ -71,7 +73,7 @@ const ParlayBetPicks: React.FC<ParlayBetPicksProps> = (props) => {
                 <div className={'p-1 lg:p-4 text-right'}>
                   <p className={'font-bold text-sm md:text-md'}>
                     {odd === BetLegType.OVER_ODDS ? 'More ' : 'Less '}
-                    {value} {category}
+                    {value?.toFixed(2)} {category}
                   </p>
                 </div>
               </div>

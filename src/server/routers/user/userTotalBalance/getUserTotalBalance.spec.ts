@@ -1,10 +1,39 @@
 import { prismaMock } from '~/server/singleton';
 import { TRPCError } from '@trpc/server';
-import { Prisma, TransactionType, PaymentMethodType } from '@prisma/client';
+import {
+  PaymentMethodType,
+  Prisma,
+  TransactionType,
+  UserType,
+} from '@prisma/client';
 import getUserTotalBalance, {
   TransactionStatusWithTransaction,
 } from './getUserTotalBalance';
 import { ActionType } from '~/constants/ActionType';
+import { getJSONDataFromFile } from '~/utils/getJSONDataFromFile';
+
+const formatTransactionStatus = (rawTransactionStatus: any) => ({
+  ...rawTransactionStatus,
+  transactionScore: new Prisma.Decimal(rawTransactionStatus.transactionScore),
+  approvalDateTime: new Date(rawTransactionStatus.approvalDateTime),
+  statusDateTime: new Date(rawTransactionStatus.statusDateTime),
+  created_at: new Date(rawTransactionStatus.created_at),
+  updated_at: new Date(rawTransactionStatus.updated_at),
+  transactionType: rawTransactionStatus.transactionType as TransactionType,
+  transactionMethodType:
+    rawTransactionStatus.transactionMethodType as PaymentMethodType,
+  Transaction: {
+    ...rawTransactionStatus.Transaction,
+    created_at: new Date(rawTransactionStatus.Transaction.created_at),
+    amountProcess: new Prisma.Decimal(
+      rawTransactionStatus.Transaction.amountProcess,
+    ),
+    actionType: rawTransactionStatus.Transaction.actionType as ActionType,
+    amountBonus: new Prisma.Decimal(
+      rawTransactionStatus.Transaction.amountBonus,
+    ),
+  },
+});
 
 describe('Test getUserTotalBalance', () => {
   beforeEach(() => {
@@ -26,6 +55,8 @@ describe('Test getUserTotalBalance', () => {
       reasonCodes: ['ID-VERIFIED', 'LL-GEO-US-NJ'],
       isAdmin: false,
       phone: null,
+      type: UserType.PLAYER,
+      agentId: null,
     });
     prismaMock.transactionStatus.findMany.mockResolvedValue([]);
   });
@@ -299,5 +330,44 @@ describe('Test getUserTotalBalance', () => {
       userTotalBalanceBefore.creditAmount +
         Number(cashContestCancelledTrans.Transaction.amountProcess),
     ).toEqual(Number(userTotalBalanceAfter.creditAmount));
+  });
+
+  it('should be able to withdraw the winning bets ', async () => {
+    // LOC-375 from transaction history of user 93a4065f-49d6-43d2-8ba4-61f52abbae62
+    const testData = (await getJSONDataFromFile(
+      'src/server/routers/user/userTotalBalance/testData/loc-375.json',
+    )) as {
+      transactions: [];
+    };
+    const transactions: TransactionStatusWithTransaction[] =
+      testData.transactions.map((transactionStatus) =>
+        formatTransactionStatus(transactionStatus),
+      );
+    prismaMock.transactionStatus.findMany.mockResolvedValue(transactions);
+
+    const userTotalBalance = await getUserTotalBalance(
+      '0dca00b1-ebcb-40f1-aa14-de3eae2b0c15',
+    );
+    expect(Number(userTotalBalance.withdrawableAmount)).toEqual(Number(85));
+  });
+
+  it('should show 0 amount available to withdraw if total balance is 0', async () => {
+    // LOC-418 transaction history snapshot of user 93a4065f-49d6-43d2-8ba4-61f52abbae62
+    const testData = (await getJSONDataFromFile(
+      'src/server/routers/user/userTotalBalance/testData/loc-418.json',
+    )) as {
+      transactions: [];
+    };
+    const transactions: TransactionStatusWithTransaction[] =
+      testData.transactions.map((transactionStatus) =>
+        formatTransactionStatus(transactionStatus),
+      );
+    prismaMock.transactionStatus.findMany.mockResolvedValue(transactions);
+
+    const userTotalBalance = await getUserTotalBalance(
+      '0dca00b1-ebcb-40f1-aa14-de3eae2b0c15',
+    );
+
+    expect(Number(userTotalBalance.withdrawableAmount)).toEqual(0);
   });
 });

@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 import { Banner } from '@prisma/client';
-import { Grid, IconButton } from '@mui/material';
+import { Grid, IconButton, Skeleton } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 interface Props {
   banners: Banner[];
+  isLoading: boolean;
 }
 
 const ContentBanner = (props: Props) => {
@@ -29,26 +30,30 @@ const ContentBanner = (props: Props) => {
         />
       </Grid>
       <Grid item xs={8} md={8}>
-        <Carousel
-          showArrows={false}
-          showIndicators={false}
-          showStatus={false}
-          showThumbs={false}
-          selectedItem={selectedItem}
-          autoPlay
-          infiniteLoop
-        >
-          {props.banners.map((banner) => (
-            <div
-              key={banner.id}
-              className={'flex justify-center items-center h-full w-full'}
-            >
-              <p className="text-[#348BFF] text-[22px] font-bold tracking-normal leading-[28px] text-center">
-                {banner.text}
-              </p>
-            </div>
-          ))}
-        </Carousel>
+        {props.isLoading ? (
+          <Skeleton variant="rectangular" />
+        ) : (
+          <Carousel
+            showArrows={false}
+            showIndicators={false}
+            showStatus={false}
+            showThumbs={false}
+            selectedItem={selectedItem}
+            autoPlay
+            infiniteLoop
+          >
+            {props.banners.map((banner) => (
+              <div
+                key={banner.id}
+                className={'flex justify-center items-center h-full w-full'}
+              >
+                <p className="text-secondary text-[22px] font-bold tracking-normal leading-[28px] text-center">
+                  {banner.text}
+                </p>
+              </div>
+            ))}
+          </Carousel>
+        )}
       </Grid>
 
       <Grid item xs={2} container justifyContent={'flex-end'}>

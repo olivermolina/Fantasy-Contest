@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import Deposit from '.';
+import { mockDepositAmountProps } from './__mocks__/mockDepositAmountProps';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -24,14 +25,4 @@ const Template: ComponentStory<typeof Deposit> = (args) => (
 
 export const DepositAmount = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-DepositAmount.args = {
-  setDepositAmount: () => {
-    alert('Set Deposit amount');
-  },
-  handleNext: () => {
-    alert('handleNext');
-  },
-  depositAmount: 10,
-  isFirstDeposit: false,
-  maxMatchDeposit: 50,
-};
+DepositAmount.args = mockDepositAmountProps;

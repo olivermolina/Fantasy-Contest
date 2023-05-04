@@ -1,8 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import * as yup from '~/utils/yup';
 import { prisma } from '~/server/prisma';
 import { Market } from '@prisma/client';
+import { adminProcedure } from './middleware/isAdmin';
 
 interface MarketResultMeta {
   totalRowCount: number;
@@ -14,7 +13,7 @@ export interface MarketResult {
   meta: MarketResultMeta;
 }
 
-const markets = t.procedure
+const markets = adminProcedure
   .output(yup.mixed<MarketResult>())
   .input(
     yup.object({
@@ -23,20 +22,7 @@ const markets = t.procedure
       cursor: yup.string(),
     }),
   )
-  .query(async ({ ctx, input }) => {
-    const userId = ctx.session.user?.id;
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-    if (!userId || !user) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
-      });
-    }
-
+  .query(async ({ input }) => {
     if (!input.offerId) {
       return {
         markets: [],

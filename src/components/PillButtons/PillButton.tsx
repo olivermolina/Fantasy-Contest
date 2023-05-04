@@ -18,11 +18,14 @@ export function PillButton(props: Props) {
     <button
       onClick={props.onClick}
       disabled={props.disabled}
-      className={classNames('px-4 py-1 rounded-full flex-none', {
-        'bg-white shadow': props.selected,
-        'bg-slate-200': !props.selected,
-        'cursor-not-allowed': props.disabled,
-      })}
+      className={classNames(
+        'px-4 py-1 rounded-full flex-none text-sm lg:text-md',
+        {
+          'font-bold bg-white shadow text-primary': props.selected,
+          'bg-primary text-white border border-slate-500': !props.selected,
+          'cursor-not-allowed': props.disabled,
+        },
+      )}
     >
       {props.children}
     </button>

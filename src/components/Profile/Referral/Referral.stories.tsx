@@ -22,4 +22,6 @@ export const Referral = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Referral.args = {
   referralCode: 'jsmith321',
+  referralCustomText:
+    'Refer a friend from the link or code in your profile and get $25 in bonus credit!',
 };

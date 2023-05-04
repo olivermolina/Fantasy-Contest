@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { t } from '~/server/trpc';
 import * as yup from '~/utils/yup';
-import { prisma } from '~/server/prisma';
+import { getAgentByReferralCode } from '~/server/routers/user/getAgentByReferralCode';
 
 const checkReferral = t.procedure
   .input(
@@ -10,17 +10,8 @@ const checkReferral = t.procedure
     }),
   )
   .mutation(async ({ input }) => {
-    const user = await prisma.user.findUnique({
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        referral: true,
-      },
-      where: {
-        username: input.referralCode,
-      },
-    });
+    const agent = await getAgentByReferralCode(input.referralCode);
+    const user = agent?.User;
     if (!user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',

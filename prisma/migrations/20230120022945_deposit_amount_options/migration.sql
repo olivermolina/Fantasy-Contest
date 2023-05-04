@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AppSettingName" ADD VALUE 'DEPOSIT_AMOUNT_OPTIONS';

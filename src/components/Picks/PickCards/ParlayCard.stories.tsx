@@ -26,6 +26,7 @@ ParlayCard.args = {
     'Golden State Warriors, Tampa Bay Lightning, Woverhampton Wanderers',
   contestType: 'Token Contest',
   pickTime: '12/06/2022',
+  settledTime: '12/06/2022',
   picks: [
     {
       id: 1,

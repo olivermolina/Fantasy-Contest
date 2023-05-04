@@ -1,15 +1,14 @@
-import {
-  TransactionStatusWithTransaction,
-  PaymentStatusCode,
-} from './getUserTotalBalance';
+import { TransactionStatusWithTransaction } from './getUserTotalBalance';
 import { TransactionType } from '@prisma/client';
 import { ActionType } from '~/constants/ActionType';
+import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
 
 /**
  * This function calculates the user total credits
  *
  * @param transactionStatus TransactionStatusWithTransaction
  * @param previousTotalCreditAmount number
+ * @param totalAmount number
  */
 const calculateCredits = (
   transactionStatus: TransactionStatusWithTransaction,
@@ -19,7 +18,7 @@ const calculateCredits = (
   const transaction = transactionStatus.Transaction;
   const transactionAmount = Number(transaction.amountProcess);
   const transactionBonusAmount = Number(transaction.amountBonus);
-  let newTotalCreditAmount = 0;
+  let newTotalCreditAmount = previousTotalCreditAmount;
 
   // Deposit / Cancelled / Stake won transaction
   if (
@@ -35,6 +34,7 @@ const calculateCredits = (
         //Increment credit amount with refunded amount
         newTotalCreditAmount = previousTotalCreditAmount + transactionAmount;
         break;
+      case ActionType.WITHDRAW_BONUS_CREDIT:
       case ActionType.ADD_FREE_CREDIT:
         //Increment credit amount with free credits and total amount
         newTotalCreditAmount =
@@ -46,6 +46,10 @@ const calculateCredits = (
   // Payout / Join contest / More or Less transaction
   if (transactionStatus.transactionType === TransactionType.DEBIT) {
     switch (transaction.actionType) {
+      case ActionType.ADD_FREE_CREDIT:
+        newTotalCreditAmount =
+          previousTotalCreditAmount - transactionBonusAmount;
+        break;
       case ActionType.PLACE_BET:
       case ActionType.JOIN_CONTEST:
         // Deduct credit amount with the stake amount if it's greater than

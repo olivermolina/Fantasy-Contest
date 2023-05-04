@@ -1,20 +1,22 @@
 import React from 'react';
 import { trpc } from '~/utils/trpc';
 import BackdropLoading from '~/components/BackdropLoading';
+import ChangeRouteLoadingContainer from '~/containers/ChangeRouteLoadingContainer/ChangeRouteLoadingContainer';
+import AdminHome from '~/components/Pages/Admin/AdminHome/AdminHome';
+import { useRouter } from 'next/router';
+import AdminLayoutContainer from '~/containers/AdminLayoutContainer/AdminLayoutContainer';
 
-const AdminContainer = (props: any) => {
-  const { data, isLoading } = trpc.user.userDetails.useQuery();
-  if (!isLoading && !data?.isAdmin)
-    return (
-      <p className="p-4">
-        You don&lsquo;t have permission to access this page.
-      </p>
-    );
+const AdminContainer = () => {
+  const { data, isLoading } = trpc.admin.getMenus.useQuery();
+  const router = useRouter();
 
   return (
     <>
+      <ChangeRouteLoadingContainer />
       <BackdropLoading open={isLoading} />
-      {props.children}
+      <AdminLayoutContainer>
+        <AdminHome router={router} menus={data || []} />
+      </AdminLayoutContainer>
     </>
   );
 };

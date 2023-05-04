@@ -1,4 +1,5 @@
 export enum CustomErrorMessages {
+  DEFAULT = 'Oops! Something went wrong. Please try again later.',
   SIGNUP_ERROR = 'There was an error registering. Please try again later.',
   SIGNUP_DUPLICATE_ERROR = 'Sorry, user already registered.',
   NOT_VERIFIED = 'Your account is not verified. Please contact support with questions!',
@@ -22,4 +23,5 @@ export enum CustomErrorMessages {
   PASSWORD_UPDATE_LINK = 'There was an error updating your password. Please request a new password reset link.',
   SUBMIT_ENTRY_ERROR = 'Error submitting entry. Please try again!',
   INSUFFICIENT_FUNDS_ERROR = 'Insufficient funds. Please deposit funds in your account and try again.',
+  NOT_OF_AGE_STATE_ERROR = 'Sorry you’re not of age to participate in your state!',
 }

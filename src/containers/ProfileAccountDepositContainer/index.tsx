@@ -42,6 +42,8 @@ import { ActionType } from '~/constants/ActionType';
 import { AccountDepositResponseInterface } from '~/server/routers/user/accountDeposit';
 import { setOpenLocationDialog } from '~/state/profile';
 import { useDeviceGPS } from '~/hooks/useDeviceGPS';
+import { ReloadBonusType } from '~/constants/ReloadBonusType';
+import { calculateReloadBonusAmount } from '~/utils/calculateReloadBonusAmount';
 
 export const PAYMENT_METHODS = [
   {
@@ -147,6 +149,16 @@ const AccountDepositContainer = ({
     )?.value || 0,
   );
 
+  const reloadBonusAmount = Number(
+    appSettings?.find(
+      (appSetting) => appSetting.name === AppSettingName.RELOAD_BONUS_AMOUNT,
+    )?.value || 0,
+  );
+
+  const reloadBonusType =
+    appSettings?.find(
+      (appSetting) => appSetting.name === AppSettingName.RELOAD_BONUS_TYPE,
+    )?.value || ReloadBonusType.FLAT;
   const handleSubmitDeposit = async (data?: PaymentFormDataInterface) => {
     if (!selectedPaymentMethod || !data) return;
 
@@ -159,13 +171,20 @@ const AccountDepositContainer = ({
     }
 
     try {
+      // First deposit match bonus
       const creditAmount =
         depositAmount <= maxMatchDeposit ? depositAmount : maxMatchDeposit;
+      // Reload bonus
+      const reloadCreditAmount = calculateReloadBonusAmount(
+        depositAmount,
+        reloadBonusAmount,
+        reloadBonusType,
+      );
 
       return await mutateAccountDeposit({
         ...data,
         amountProcess: depositAmount,
-        amountBonus: isFirstDeposit ? creditAmount : 0,
+        amountBonus: isFirstDeposit ? creditAmount : reloadCreditAmount,
         session: createMerchantTransactionData?.session,
         transaction: createMerchantTransactionData?.transaction,
       });
@@ -209,12 +228,19 @@ const AccountDepositContainer = ({
       return;
     }
     try {
+      // First deposit match bonus
       const creditAmount =
         depositAmount <= maxMatchDeposit ? depositAmount : maxMatchDeposit;
+      // Reload bonus
+      const reloadCreditAmount = calculateReloadBonusAmount(
+        depositAmount,
+        reloadBonusAmount,
+        reloadBonusType,
+      );
       const response = await mutateCreateMerchantTransactionData({
         ipAddress: clientIp,
         amountProcess: depositAmount,
-        amountBonus: creditAmount,
+        amountBonus: isFirstDeposit ? creditAmount : reloadCreditAmount,
         deviceGPS,
         serviceType: ActionType.PAY,
       });
@@ -368,6 +394,20 @@ const AccountDepositContainer = ({
     }
   };
 
+  const depositAmountOptions = useMemo(
+    () =>
+      appSettings
+        ? appSettings
+            .find(
+              (appSetting) =>
+                appSetting.name === AppSettingName.DEPOSIT_AMOUNT_OPTIONS,
+            )
+            ?.value.split(',')
+            .map((option) => Number(option)) || []
+        : [],
+    [appSettings],
+  );
+
   const steps = useMemo(
     () => [
       {
@@ -379,6 +419,10 @@ const AccountDepositContainer = ({
             isFirstDeposit={isFirstDeposit}
             depositAmount={depositAmount}
             maxMatchDeposit={maxMatchDeposit}
+            depositAmountOptions={depositAmountOptions}
+            reloadBonusAmount={reloadBonusAmount}
+            reloadBonusType={reloadBonusType}
+            showBonusCreditStyles={isFirstDeposit || reloadBonusAmount > 0}
           />
         ),
       },
@@ -419,6 +463,8 @@ const AccountDepositContainer = ({
       activeStep,
       isFirstDeposit,
       depositAmount,
+      reloadBonusAmount,
+      reloadBonusType,
       selectedPaymentMethod,
       deviceGPS,
       transaction,
@@ -431,7 +477,7 @@ const AccountDepositContainer = ({
   );
 
   return (
-    <div className="flex flex-col w-full h-full gap-4 lg:p-4">
+    <div className="flex flex-col w-full h-full gap-4">
       {steps[activeStep]?.content}
       <BackdropLoading
         open={

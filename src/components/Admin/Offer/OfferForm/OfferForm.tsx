@@ -156,7 +156,7 @@ const OfferForm = (props: Props) => {
 
   const onSubmit = async (data: OfferInput) => {
     const formattedGameDate = dayjs(data.gamedate).format('YYYY-MM-DD');
-    const formattedGameTime = dayjs(data.gametime).format('hh:mm:ss');
+    const formattedGameTime = dayjs(data.gametime).format('hh:mm:ss A');
     const league = mapLeagueEnumToPrismaLeague(data?.league as LeagueEnum);
     await props.handleSave({
       gid: data.id,
@@ -327,6 +327,10 @@ const OfferForm = (props: Props) => {
                         helperText={error?.message}
                         size={'small'}
                         value={field.value}
+                        inputProps={{
+                          'data-testid': 'gametime',
+                          ...params.inputProps,
+                        }}
                       />
                     )}
                     value={field.value}

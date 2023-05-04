@@ -2,11 +2,11 @@ import { Session, User } from '@prisma/client';
 import GIDX, {
   CustomerProfileResponse,
   IDeviceGPS,
-  isVerified,
 } from '~/lib/tsevo-gidx/GIDX';
 import { ActionType } from '~/constants/ActionType';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
+import { isVerified } from '~/utils/isVerified';
 
 export const customerProfile = async (input: {
   user: User;

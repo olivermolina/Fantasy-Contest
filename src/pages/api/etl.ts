@@ -46,6 +46,10 @@ const handleIngest = async (
     }
     await Promise.allSettled(gradePromise);
 
+    caller.bets.createMissingWinTransaction({
+      token: TOKEN,
+    });
+
     if (isGradingOnly) {
       logger.info(
         'Ingesting data for league is cancelled. Only grading is allowed',

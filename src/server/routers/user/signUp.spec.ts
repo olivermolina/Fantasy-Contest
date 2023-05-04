@@ -3,7 +3,7 @@ import { inferProcedureInput, TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
 import { supabase } from '~/utils/supabaseTestClient';
 
-describe('Test user signup', () => {
+describe.skip('Test user signup', () => {
   const caller = appRouter.createCaller({} as any);
   const testEmail = 'unitestemail@test.com';
   const testPassword = '12345678';

@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FreeSquare should render correctly 1`] = `
+<div>
+  <div
+    class="flex justify-evenly p-1 rounded-t-lg bg-yellow-600 font-bold text-md lg:text-md text-white "
+  >
+    <span
+      class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1staz2m-MuiSkeleton-root"
+    />
+    <span
+      class="whitespace-nowrap text-black"
+    >
+      95
+      % OFF
+    </span>
+  </div>
+</div>
+`;

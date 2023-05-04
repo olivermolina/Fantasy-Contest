@@ -17,9 +17,9 @@ describe('PayoutAmountForm', () => {
     };
     render(<PayoutAmountForm {...props} />);
 
-    expect(screen.getByText('$10.99')).toBeDefined();
-    expect(screen.getByText('$11.99')).toBeDefined();
-    expect(screen.getByText('$13.99')).toBeDefined();
+    expect(screen.getAllByText('$10.99').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('$11.99').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('$13.99').length).toBeGreaterThan(0);
     expect(screen.getByText('$5.12')).toBeDefined();
   });
 });

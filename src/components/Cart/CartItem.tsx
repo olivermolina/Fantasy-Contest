@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ICartItemProps } from './ICartItemProps';
 import { SmallText } from './SmallText';
 import { CartItemSummaryBox } from './CartItemSummaryBox';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { blue } from '@mui/material/colors';
 import CardStakeTypeSummary from '~/components/Cart/CardStakeTypeSummary';
 
 const StyledToggleButton = styled(ToggleButton)({
   '&.Mui-selected, &.Mui-selected:hover': {
-    backgroundColor: blue[100],
-    color: blue[900],
+    backgroundColor: 'white',
+    color: 'black',
   },
-  color: 'black',
+  color: 'white',
+  backgroundColor: '#003370',
+  borderColor: 'white',
   textTransform: 'none',
 });
 
@@ -20,6 +21,13 @@ export function CartItem(props: ICartItemProps) {
   const onChange = (newValue: number) => {
     props.onUpdateCartItem(props.id, newValue || 0);
   };
+
+  useEffect(() => {
+    if (props.freeEntryCount > 0) {
+      props.onUpdateCartItem(props.id, props.freeEntryStake || 0);
+    }
+  }, [props]);
+
   return (
     <>
       {props.legs.map((leg) => (
@@ -28,26 +36,23 @@ export function CartItem(props: ICartItemProps) {
           className="p-4 flex flex-row border-b border-gray-300 justify-between"
         >
           <div className={'flex flex-col gap-2'}>
-            <span className="font-bold">{leg.betName}</span>
-            <SmallText>
+            <span className="font-bold text-white">{leg.betName}</span>
+            <SmallText textColor={'text-[#69a4f3]'}>
               <span className="uppercase">{leg.league}</span> | {leg.matchTime}
             </SmallText>
-            <SmallText>
+            <SmallText textColor={'text-[#69a4f3]'}>
               {leg.awayTeamName} vs. {leg.homeTeamName}
             </SmallText>
 
             <p>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-[#69a4f3]">
                 Proj {leg.statName}:{' '}
               </span>
-              <span className="font-bold">{leg.betType}</span>
+              <span className="font-bold text-[#69a4f3]">{leg.betType}</span>
             </p>
           </div>
           <div className={'flex flex-col justify-between items-end gap-2'}>
-            <button
-              onClick={leg.onClickDeleteCartItem}
-              className="text-gray-400"
-            >
+            <button onClick={leg.onClickDeleteCartItem} className="text-white">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -67,6 +72,7 @@ export function CartItem(props: ICartItemProps) {
                 value={leg.betOption}
                 exclusive
                 sx={{ width: 150 }}
+                onChange={leg.onClickMoreLess}
               >
                 <StyledToggleButton value="over" aria-label="more">
                   <span className="font-bold  text-sm capitalize">More</span>
@@ -79,15 +85,25 @@ export function CartItem(props: ICartItemProps) {
           </div>
         </div>
       ))}
-      <div className="flex flex-grow flex-col bg-blue-200 justify-center items-center p-4 gap-5">
-        <CartItemSummaryBox
-          isAbleToEdit
-          label="Entry"
-          value={props.stake}
-          isPrimary
-          onChange={onChange}
-          wagerType={props.wagerType}
-        />
+      <div className="flex flex-grow flex-col bg-primary justify-center items-center p-4 gap-5">
+        {props.freeEntryCount > 0 ? (
+          <div className="text-center">
+            <p className={'text-lg font-bold'}> Free Entry</p>
+            <SmallText>Bonus Credit Stake: ${props.freeEntryStake}</SmallText>
+          </div>
+        ) : (
+          <CartItemSummaryBox
+            isAbleToEdit
+            label="Entry"
+            value={props.stake}
+            isPrimary
+            onChange={onChange}
+            wagerType={props.wagerType}
+            maxBetAmount={props.maxBetAmount}
+            minBetAmount={props.minBetAmount}
+          />
+        )}
+
         <CardStakeTypeSummary
           stakeType={props.stakeType}
           onUpdateBetStakeType={props.onUpdateBetStakeType}
@@ -95,6 +111,8 @@ export function CartItem(props: ICartItemProps) {
           contestCategory={props.contestCategory}
           payout={props.payout}
           wagerType={props.wagerType!}
+          stakeTypeFreeEntry={props.stakeTypeFreeEntry || ''}
+          isFreeEntry={props.freeEntryCount > 0}
         />
       </div>
     </>

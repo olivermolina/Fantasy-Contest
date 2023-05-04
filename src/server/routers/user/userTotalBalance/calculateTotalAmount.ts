@@ -1,8 +1,6 @@
 import { TransactionType } from '@prisma/client';
-import {
-  TransactionStatusWithTransaction,
-  PaymentStatusCode,
-} from './getUserTotalBalance';
+import { TransactionStatusWithTransaction } from './getUserTotalBalance';
+import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
 
 /**
  * This function calculates the user total transaction amount
@@ -14,7 +12,7 @@ const calculateTotalAmount = (
   transactionStatus: TransactionStatusWithTransaction,
   previousTotalTotalAmount: number,
 ): number => {
-  let newTotalAmount = 0;
+  let newTotalAmount = previousTotalTotalAmount;
   const transaction = transactionStatus.Transaction;
   const transactionAmount = Number(transaction.amountProcess);
   const transactionBonusAmount = Number(transaction.amountBonus);
@@ -36,7 +34,8 @@ const calculateTotalAmount = (
       transactionStatus.statusCode as PaymentStatusCode,
     )
   ) {
-    newTotalAmount = previousTotalTotalAmount - transactionAmount;
+    newTotalAmount =
+      previousTotalTotalAmount - transactionAmount - transactionBonusAmount;
   }
 
   return newTotalAmount;

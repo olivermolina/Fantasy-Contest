@@ -29,7 +29,23 @@ export default trpcNext.createNextApiHandler({
   /**
    * @link https://trpc.io/docs/caching#api-response-caching
    */
-  // responseMeta() {
-  //   // ...
-  // },
+  responseMeta({ ctx, paths, type }) {
+    // Check path if all contest queries
+    const allContestPath =
+      paths && paths.every((path) => path.includes('contest'));
+    // checking we're doing a query request
+    const isQuery = type === 'query';
+
+    if (ctx?.res && allContestPath && isQuery) {
+      // cache request for 1 day + revalidate once every second
+      const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+      return {
+        headers: {
+          'cache-control': `s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
+        },
+      };
+    }
+
+    return {};
+  },
 });

@@ -1,6 +1,7 @@
 import * as StatNames from '~/server/routers/IStatNames';
 import { IContest } from '../../IContest';
 import { IOffer } from '../../IOffer';
+import type { FantasyCardFreeSquareProps } from '~/components/FantasyPicker/FantasyCard';
 
 export type Match = {
   name: string;
@@ -63,6 +64,25 @@ export type FantasyOffer = {
    * Market type
    */
   type: string;
+  /**
+   * Over odds
+   * @example 100
+   */
+  overOdds: number;
+  /**
+   * Under odds
+   * @example -100
+   */
+  underOdds: number;
+  /**
+   * The ID of the player
+   * @example 43122
+   */
+  playerId: string;
+  /**
+   * The Free Square object
+   */
+  freeSquare: FantasyCardFreeSquareProps | null;
 };
 
 export type GetContestOffers = {

@@ -118,7 +118,7 @@ const DepositMethod = (props: DepositMethodProps) => {
   }, [paymentMethodOption]);
 
   return (
-    <div className="flex flex-col shadow-md rounded-md divide-y gap-2 bg-white">
+    <div className="flex flex-col shadow-md rounded-md divide-y gap-2 bg-primary">
       <div className="flex flex-col p-6 gap-2">
         <p className="font-bold text-lg">
           Select deposit method below to continue Deposit
@@ -205,7 +205,7 @@ const DepositMethod = (props: DepositMethodProps) => {
       />
       <div className="flex flex-col p-6 gap-2">
         <button
-          className="p-4 capitalize text-white rounded font-bold w-auto h-auto bg-blue-600 disabled:opacity-50"
+          className="p-4 capitalize bg-white text-primary rounded font-bold w-auto h-auto disabled:opacity-10"
           type="submit"
           disabled={!selectedPaymentMethod}
           form="deposit-method-form"

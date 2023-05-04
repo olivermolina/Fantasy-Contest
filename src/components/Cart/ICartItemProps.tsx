@@ -18,11 +18,17 @@ type LegType = {
   homeTeamName: string;
   statName: string;
   betOption: string;
+  onClickMoreLess: (
+    event: React.MouseEvent<HTMLElement>,
+    value: 'away' | 'home' | 'over' | 'under',
+  ) => void;
 };
 
 export interface ICartItemProps {
   id: string;
+
   onUpdateCartItem(id: string, value: number): void;
+
   legs: LegType[];
   stake: string;
   payout: string;
@@ -30,5 +36,28 @@ export interface ICartItemProps {
   wagerType?: ContestWagerType;
   stakeType: BetStakeType;
   contestCategory: ContestCategory;
+
   onUpdateBetStakeType(stakeType: BetStakeType): void;
+
+  /**
+   * The minimum bet amount that the user is allowed to bet using the UI.
+   */
+  minBetAmount: number;
+  /**
+   * The maximum bet amount that the user is allowed to bet using the UI.
+   */
+  maxBetAmount: number;
+  /**
+   * User's free entry count
+   */
+  freeEntryCount: number;
+  /**
+   * Free entry stake amount
+   */
+  freeEntryStake?: number;
+  /**
+   * The app setting string value of Free Entry stake type options
+   * @example 'ALL_IN, INSURED'
+   */
+  stakeTypeFreeEntry?: string;
 }

@@ -1,6 +1,7 @@
 // .storybook/preview.js
 import '../src/styles/globals.css';
 import * as NextImage from 'next/image';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
 
 const OriginalNextImage = NextImage.default;
 
@@ -26,5 +27,8 @@ export const parameters = {
       { name: 'facebook', value: '#3b5998' },
       { name: 'lockspread', value: '#2463eb' },
     ],
+  },
+  nextRouter: {
+    Provider: RouterContext.Provider,
   },
 };

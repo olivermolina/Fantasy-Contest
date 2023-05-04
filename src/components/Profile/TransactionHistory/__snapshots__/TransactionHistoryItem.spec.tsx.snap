@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TransactionHistoryItem should render correctly 1`] = `
+<div>
+  <div
+    class="grid grid-cols-2 lg:grid-cols-6 gap-2 lg:gap-4 bg-inherit p-4"
+  >
+    <p
+      class="flex flex-col gap-2"
+    >
+      <span
+        class="text-lightText text-sm lg:text-md"
+      >
+        Transaction Date
+      </span>
+      <span
+        class="text-white text-md lg:text-lg"
+      >
+        Dec 22, 2022 03:25 AM
+      </span>
+    </p>
+    <p
+      class="flex flex-col gap-2"
+    >
+      <span
+        class="text-lightText text-sm lg:text-md"
+      >
+        Amount
+      </span>
+      <span
+        class="text-white text-md lg:text-lg"
+      >
+        25.00
+      </span>
+    </p>
+    <p
+      class="flex flex-col gap-2"
+    >
+      <span
+        class="text-lightText text-sm lg:text-md"
+      >
+        Type
+      </span>
+      <span
+        class="text-white text-md lg:text-lg"
+      >
+        CREDIT
+      </span>
+    </p>
+    <p
+      class="flex flex-col gap-2"
+    >
+      <span
+        class="text-lightText text-sm lg:text-md"
+      >
+        Free Credits
+      </span>
+      <span
+        class="text-white text-md lg:text-lg"
+      >
+        0.00
+      </span>
+    </p>
+    <p
+      class="flex flex-col gap-2"
+    >
+      <span
+        class="text-lightText text-sm lg:text-md"
+      >
+        Details
+      </span>
+      <span
+        class="text-white text-md lg:text-lg"
+      >
+        Win
+      </span>
+    </p>
+    <p
+      class="flex flex-col gap-2"
+    >
+      <span
+        class="text-lightText text-sm lg:text-md"
+      >
+        Status
+      </span>
+      <div
+        class="flex w-fit text-md rounded-lg lg:text-lg bg-[#1A4265] items-center gap-2 p-2 "
+      >
+        <span
+          class="rounded-full p-2 w-2 h-2 bg-green-500"
+        />
+        <p
+          class="uppercase text-md text-white text-green-500"
+        >
+          COMPLETE
+        </p>
+      </div>
+    </p>
+  </div>
+</div>
+`;

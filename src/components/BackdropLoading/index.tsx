@@ -7,7 +7,11 @@ interface Props {
 
 const BackdropLoading = (props: Props) => {
   return (
-    <Backdrop sx={{ color: '#fff', zIndex: 12000 }} open={props.open}>
+    <Backdrop
+      sx={{ color: '#fff', zIndex: 12000 }}
+      open={props.open}
+      data-testid="backdrop-loading"
+    >
       <Box position="relative" display="inline-flex">
         <CircularProgress color="inherit" size={55} disableShrink />
         <Box
@@ -28,6 +32,7 @@ const BackdropLoading = (props: Props) => {
               preserveAspectRatio="xMidYMid meet"
               width={28}
               height={36}
+              role="loading"
             >
               <circle id="top" fill="#fff" />
               <g

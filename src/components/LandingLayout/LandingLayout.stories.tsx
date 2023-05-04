@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import LandingLayout from '.';
 import Content from '~/components/LandingLayout/Content';
-import { Banner } from '@prisma/client';
+import { mockCards } from './__mocks__/mockCards';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -20,42 +20,6 @@ const Template: ComponentStory<typeof LandingLayout> = (args) => (
 
 export const Main = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-
-const cards = [
-  {
-    onClickLess: () => console.log('clicked'),
-    onClickMore: () => console.log('clicked'),
-    stat: 'Passing Yards',
-    value: 99.5,
-    gameInfo: 'DAL @ DEN',
-    playerName: 'Patrick Mahomes',
-    image: '/assets/images/patrick-mahomes.png',
-    playerPosition: 'QB',
-    playerTeam: 'KC',
-  },
-  {
-    onClickLess: () => console.log('clicked'),
-    onClickMore: () => console.log('clicked'),
-    stat: 'Passing Yards',
-    value: 112.5,
-    gameInfo: 'NYG @ DEN',
-    playerName: 'Tyrod Taylor',
-    image: '/assets/images/tyrod-taylor.png',
-    playerPosition: 'QB',
-    playerTeam: 'KC',
-  },
-  {
-    onClickLess: () => console.log('clicked'),
-    onClickMore: () => console.log('clicked'),
-    stat: 'Passing Yards',
-    value: 99.2,
-    gameInfo: 'PE @ DEN',
-    playerName: 'Dallas Goedert',
-    image: '/assets/images/dallas-goedert.png',
-    playerPosition: 'QB',
-    playerTeam: 'KC',
-  },
-];
 
 const explainers = [
   {
@@ -80,7 +44,7 @@ const explainers = [
 Main.args = {
   children: (
     <Content
-      cards={cards}
+      cards={mockCards}
       explainers={explainers}
       banners={[
         {
@@ -91,6 +55,7 @@ Main.args = {
           updated_at: new Date(),
         },
       ]}
+      isLoading={false}
     />
   ),
 };

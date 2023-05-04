@@ -1,9 +1,7 @@
 import { TransactionType } from '@prisma/client';
 import { ActionType } from '~/constants/ActionType';
-import {
-  PaymentStatusCode,
-  TransactionStatusWithTransaction,
-} from './getUserTotalBalance';
+import { TransactionStatusWithTransaction } from './getUserTotalBalance';
+import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
 
 /**
  * This function calculates the user un-played amount
@@ -20,7 +18,7 @@ const calculateUnPlayedAmount = (
   const transaction = transactionStatus.Transaction;
   const transactionAmount = Number(transaction.amountProcess);
 
-  let newTotalUnPlayedAmount = 0;
+  let newTotalUnPlayedAmount = previousTotalUnPlayedAmount;
   if (
     transactionStatus.transactionType === TransactionType.CREDIT &&
     transactionStatus.statusCode === PaymentStatusCode.COMPLETE &&

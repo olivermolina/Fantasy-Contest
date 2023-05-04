@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { PaymentMethodInterface } from '~/components/Profile/AccountDeposit/DepositMethod/DepositMethod';
 import {
   PayoutAmountForm,
@@ -23,6 +23,8 @@ import PayoutConfirmation from '~/components/Profile/WithdrawFunds/PayoutConfirm
 import { useAppDispatch, useAppSelector } from '~/state/hooks';
 import { setOpenLocationDialog } from '~/state/profile';
 import { useDeviceGPS } from '~/hooks/useDeviceGPS';
+import WithdrawBonusCreditOffer from '~/components/Profile/WithdrawFunds/WithdrawBonusCreditOffer';
+import { fetchAppSettings } from '~/state/appSettings';
 
 interface Props {
   clientIp: string;
@@ -30,6 +32,8 @@ interface Props {
 
 const ProfileWithdrawFundsContainer = (props: Props) => {
   const { clientIp } = props;
+  const appSettings = useAppSelector((state) => state.appSettings);
+  const [openOffer, setOpenOffer] = React.useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const deviceGPS = useDeviceGPS();
@@ -44,6 +48,11 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethodInterface>();
 
+  const maxRetentionBonus = Number(appSettings?.MAX_RETENTION_BONUS);
+
+  const retentionBonusMatchMultiplier = Number(
+    appSettings?.RETENTION_BONUS_MATCH_MULTIPLIER || 1,
+  );
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setNextLoading(false);
@@ -68,10 +77,18 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
   const { mutateAsync: mutateAccountVerify, data: verifiedData } =
     trpc.user.accountVerify.useMutation();
 
+  const { data: offerChances, isLoading: offerChancesIsLoading } =
+    trpc.user.getWithdrawBonusCreditOfferChances.useQuery();
+
   const {
     mutateAsync: mutateAccountSavePaymentMethod,
     isLoading: savedPaymentMethodLoading,
   } = trpc.user.accountSavePaymentMethod.useMutation();
+
+  const {
+    mutateAsync: mutateAddWithdrawBonusCredit,
+    isLoading: mutateAddWithdrawBonusCreditLoading,
+  } = trpc.user.addWithdrawBonusCredit.useMutation();
 
   const {
     mutateAsync: mutateAccountPayout,
@@ -80,7 +97,7 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
   } = trpc.user.accountPayout.useMutation();
 
   const { data: userTotalBalance, refetch } =
-    trpc.user.userTotalBalance.useQuery();
+    trpc.user.userTotalBalance.useQuery({ userId: userDetails?.id });
 
   const handleSavePaymentMethod = async (data: AchInputs, save: boolean) => {
     if (!createMerchantTransactionData) return;
@@ -149,8 +166,8 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
 
     if (data.payoutAmount > Number(userTotalBalance?.withdrawableAmount)) {
       toast.error(
-        `Whoops.. looks like you haven’t played with "$${data.payoutAmount}" amount yet. 
-        Please place "$${data.payoutAmount}" amount on a contest entry to be able to withdraw. 
+        `Whoops.. looks like you haven’t played with "$${data.payoutAmount}" amount yet.
+        Please place "$${data.payoutAmount}" amount on a contest entry to be able to withdraw.
         Otherwise email support@lockspread.com and your refund request will be reviewed`,
       );
       setNextLoading(false);
@@ -179,7 +196,11 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
       });
 
       setSelectedPaymentMethod(undefined);
-      handleNext();
+      if (offerChances) {
+        setOpenOffer(true);
+      } else {
+        handleNext();
+      }
     } catch (error) {
       const e = error as TRPCClientError<any>;
       toast.error(e?.message);
@@ -190,6 +211,23 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
   const handleCancel = async () => {
     setNextLoading(true);
     await router.push(UrlPaths.Challenge);
+  };
+
+  const handleSubmitOffer = async (
+    cashBalance: number,
+    bonusCredit: number,
+  ) => {
+    try {
+      await mutateAddWithdrawBonusCredit({
+        cashBalance,
+        bonusCredit,
+      });
+      refetch();
+
+      toast.success('Bonus credit submitted successfully!');
+    } catch (error) {
+      toast.error('Something went wrong. Please try again later.');
+    }
   };
 
   const steps = useMemo(
@@ -248,6 +286,8 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
       savedPaymentMethodLoading,
       createMerchantTransactionDataLoading,
       userTotalBalance,
+      offerChances,
+      userDetails,
     ],
   );
 
@@ -319,25 +359,31 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
     }
   };
 
+  useEffect(() => {
+    dispatch(fetchAppSettings());
+  }, [dispatch]);
+
   return (
-    <div className="flex flex-col w-full h-full gap-4 lg:p-4">
+    <div className="flex flex-col gap-4 p-2 lg:p-2 bg-primary rounded-lg text-white">
       <BackdropLoading
         open={
           nextLoading ||
           savedPaymentMethodLoading ||
           accountPayoutLoading ||
-          createMerchantTransactionDataLoading
+          createMerchantTransactionDataLoading ||
+          offerChancesIsLoading ||
+          mutateAddWithdrawBonusCreditLoading
         }
       />
-      <div className="flex flex-col shadow-md rounded-md divide-y gap-2 bg-white w-full">
-        <div className="flex flex-col p-6 gap-4">
-          <p className="font-bold text-xl">Withdraw Funds</p>
+      <div className="flex flex-col rounded-md divide-y gap-2">
+        <div className="flex flex-col p-2 lg:p-6 gap-2 h-full">
+          <p className="font-bold text-xl hidden lg:block">Withdraw Funds</p>
           {steps[activeStep]?.content}
         </div>
         {activeStep < 2 && (
           <div className="flex flex-col p-6 gap-2">
             <button
-              className="p-4 capitalize text-white rounded font-bold w-auto h-auto bg-blue-600 disabled:opacity-50"
+              className="p-4 capitalize text-primary bg-white rounded font-bold w-auto h-auto disabled:opacity-50"
               type="submit"
               form="deposit-method-form"
               disabled={
@@ -354,6 +400,15 @@ const ProfileWithdrawFundsContainer = (props: Props) => {
           </div>
         )}
       </div>
+      <WithdrawBonusCreditOffer
+        open={openOffer}
+        setOpen={setOpenOffer}
+        handleSubmit={handleSubmitOffer}
+        cashBalance={userTotalBalance?.withdrawableAmount || 0}
+        retentionBonusMatchMultiplier={retentionBonusMatchMultiplier}
+        maxRetentionBonus={maxRetentionBonus}
+        handleNext={handleNext}
+      />
     </div>
   );
 };

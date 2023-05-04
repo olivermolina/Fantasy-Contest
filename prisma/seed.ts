@@ -145,6 +145,26 @@ async function main() {
         name: AppSettingName.REFERRAL_CREDIT_AMOUNT,
         value: '25',
       },
+      {
+        id: faker.datatype.uuid(),
+        name: AppSettingName.RELOAD_BONUS_AMOUNT,
+        value: '0',
+      },
+      {
+        id: faker.datatype.uuid(),
+        name: AppSettingName.DEPOSIT_AMOUNT_OPTIONS,
+        value: '10,25,50,75,100,200',
+      },
+      {
+        id: faker.datatype.uuid(),
+        name: AppSettingName.MIN_BET_AMOUNT,
+        value: '1',
+      },
+      {
+        id: faker.datatype.uuid(),
+        name: AppSettingName.MAX_BET_AMOUNT,
+        value: '50',
+      },
     ],
   });
 
@@ -240,7 +260,7 @@ async function main() {
     inplay: false,
     status: Status.Scheduled,
     matchup: 'BAYLOR @ WVU',
-    gametime: gamedate.format('HH:MM:SS'),
+    gametime: gamedate.format('HH:MM:ss'),
     homeTeamId: `1544-ncaaf`,
     awayTeamId: `1430-ncaaf`,
   };

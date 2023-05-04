@@ -4,7 +4,15 @@ import { useAppSelector } from '~/state/hooks';
 
 const ReferralContainer = () => {
   const { userDetails } = useAppSelector((state) => state.profile);
-  return <Referral referralCode={userDetails?.username || ''} />;
+  const referralCustomText = useAppSelector(
+    (state) => state.appSettings.REFERRAL_CUSTOM_TEXT,
+  );
+  return (
+    <Referral
+      referralCode={userDetails?.username || ''}
+      referralCustomText={referralCustomText}
+    />
+  );
 };
 
 export default ReferralContainer;

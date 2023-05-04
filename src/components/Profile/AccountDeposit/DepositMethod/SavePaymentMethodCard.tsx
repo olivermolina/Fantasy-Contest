@@ -3,7 +3,8 @@ import classNames from 'classnames';
 import { GIDXPaymentMethod } from '~/lib/tsevo-gidx/GIDX';
 import { PaymentMethodInterface } from '~/components/Profile/AccountDeposit/DepositMethod/DepositMethod';
 import { PaymentMethodType } from '@prisma/client';
-import CreditCard from '~/assets/credit-card.svg';
+import CreditCard from '~/assets/icons/ico_credit-card.svg';
+import CreditCardDark from '~/assets/icons/ico_credit-card_dark.svg';
 import ACH from '~/assets/ach.svg';
 import { IconButton } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -53,10 +54,12 @@ const SavePaymentMethodCard = (props: Props) => {
       <div
         key={paymentMethod.Token}
         className={classNames(
-          `flex flex-col justify-between p-2 shadow-md rounded-lg cursor-pointer transform transition duration-500 hover:scale-y-100 hover:border-4 hover:border-blue-300 min-h-[107px] min-w-[170px] relative`,
+          `flex flex-col justify-between p-2 rounded-lg cursor-pointer transform transition duration-500 hover:scale-y-100 min-h-[107px] min-w-[170px] relative`,
           {
-            'border-4 border-blue-300':
+            'text-primary bg-white':
               selectedPaymentMethod?.key === paymentMethod?.Token,
+            'text-white bg-[#1A487F]':
+              selectedPaymentMethod?.key !== paymentMethod?.Token,
           },
         )}
         onClick={() => {
@@ -74,25 +77,62 @@ const SavePaymentMethodCard = (props: Props) => {
         }}
       >
         {paymentMethod?.Type === PaymentMethodType.CC && (
-          <div>
-            <CreditCard height={35} width={35} />
-            <p>Card: {paymentMethod.DisplayName}</p>
-            <p>Expiry Date: {paymentMethod.ExpirationDate}</p>
+          <div className={'text-xs'}>
+            {selectedPaymentMethod?.key === paymentMethod?.Token ? (
+              <CreditCardDark height={35} width={35} />
+            ) : (
+              <CreditCard height={35} width={35} />
+            )}
+
+            <p>
+              Card:{' '}
+              <span className={'font-semibold text-sm'}>
+                {paymentMethod.DisplayName}
+              </span>
+            </p>
+            <p>
+              Card:{' '}
+              <span className={'font-semibold text-sm'}>
+                {paymentMethod.ExpirationDate}
+              </span>
+            </p>
           </div>
         )}
         {paymentMethod?.Type === PaymentMethodType.ACH && (
-          <div>
+          <div className={'text-xs'}>
             <ACH height={35} width={35} />
-            <p>Account: {paymentMethod.DisplayName}</p>
-            <p>Routing: {paymentMethod.RoutingNumber}</p>
+            <p>
+              Account:{' '}
+              <span className={'font-semibold text-sm'}>
+                {paymentMethod.DisplayName}
+              </span>
+            </p>
+            <p>
+              Routing:
+              <span className={'font-semibold text-sm'}>
+                {paymentMethod.RoutingNumber}{' '}
+              </span>
+            </p>
           </div>
         )}
         <IconButton
-          sx={{ top: 1, right: 1, position: 'absolute' }}
+          sx={{
+            top: 1,
+            right: 1,
+            position: 'absolute',
+          }}
           size="small"
           onClick={handleClickOpen}
         >
-          <ClearIcon fontSize="small" />
+          <ClearIcon
+            fontSize="small"
+            sx={{
+              color:
+                selectedPaymentMethod?.key === paymentMethod?.Token
+                  ? '#003370'
+                  : 'white',
+            }}
+          />
         </IconButton>
       </div>
       <Dialog

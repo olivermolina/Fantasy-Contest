@@ -1,9 +1,7 @@
 import { isServerSide } from '../utils/isServerSide';
 import { useRouter } from 'next/router';
 import { IOffer } from '~/types';
-import { useEffect } from 'react';
-import { UrlPaths } from '~/constants/UrlPaths';
-import { League } from '@prisma/client';
+import { GetServerSidePropsContext } from 'next';
 
 type useQueryParamsReturnType = {
   setParam: (
@@ -18,9 +16,12 @@ type useQueryParamsReturnType = {
 /**
  * Will provide an interface to all the supported query parameters available in the project.
  */
-export function useQueryParams(): useQueryParamsReturnType {
+export function useQueryParams(props?: {
+  query?: GetServerSidePropsContext['query'];
+}): useQueryParamsReturnType {
   const router = useRouter();
   const params = {
+    ...props?.query,
     ...router.query,
   } as Omit<useQueryParamsReturnType, 'setParam'>;
 
@@ -41,16 +42,6 @@ export function useQueryParams(): useQueryParamsReturnType {
     );
   };
 
-  useEffect(() => {
-    if (
-      router.asPath.includes(UrlPaths.Challenge) &&
-      params.league === undefined
-    ) {
-      setParam('league', League.NFL);
-      params.league = League.NFL;
-    }
-  }, []);
-
   if (isServerSide()) {
     return {
       setParam: () => {
@@ -59,6 +50,7 @@ export function useQueryParams(): useQueryParamsReturnType {
       contestId: null,
       league: null,
       contestFilter: null,
+      ...props?.query,
     };
   }
 

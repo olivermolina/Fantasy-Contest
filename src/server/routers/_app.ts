@@ -6,7 +6,7 @@ import { healthRouter } from './health';
 import { contestRouter } from './contest';
 import { userRouter } from './user';
 import { etlRouter } from './etl';
-import { appSettingsRouter } from './appSettings';
+import { appSettingsRouter } from './appSettings/appSettings';
 import { betsRouter } from './bets/bets';
 import { integrationRouter } from './integration';
 import { adminRouter } from './admin';

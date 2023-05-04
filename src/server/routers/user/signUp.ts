@@ -7,6 +7,7 @@ import * as yup from '~/utils/yup';
 import { setAuthResponse } from './setAuthResponse';
 import { autoJoinDefaultContest } from '~/server/routers/user/autoJoinDefaultContest';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { getAgentByReferralCode } from '~/server/routers/user/getAgentByReferralCode';
 
 const signUp = t.procedure
   .input(
@@ -79,6 +80,12 @@ const signUp = t.procedure
         });
       }
 
+      let agentId;
+      if (input.referralCode) {
+        const agent = await getAgentByReferralCode(input.referralCode);
+        agentId = agent?.id;
+      }
+
       await prisma.user.upsert({
         where: {
           id: uid,
@@ -91,6 +98,7 @@ const signUp = t.procedure
           DOB: input.DOB,
           username: input.username,
           referral: input.referralCode,
+          agentId,
         },
         update: {
           email: user.email!,
@@ -99,6 +107,7 @@ const signUp = t.procedure
           DOB: input.DOB,
           username: input.username,
           referral: input.referralCode,
+          agentId,
         },
       });
 

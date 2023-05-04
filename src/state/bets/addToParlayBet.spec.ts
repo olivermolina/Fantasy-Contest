@@ -16,7 +16,7 @@ describe('addToParlayBet', () => {
 
     expect(removeBetLegFromParlayMock).toHaveBeenCalledWith({
       betId: '960',
-      betLegName: 'Isiah Pacheco',
+      marketId: '5381-252-15852',
     });
   });
 

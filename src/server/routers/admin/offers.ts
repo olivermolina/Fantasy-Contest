@@ -1,29 +1,15 @@
-import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import * as yup from '~/utils/yup';
 import { prisma } from '~/server/prisma';
+import { adminProcedure } from './middleware/isAdmin';
 
-const offers = t.procedure
+const offers = adminProcedure
   .input(
     yup.object({
       limit: yup.number().required(),
       cursor: yup.string(),
     }),
   )
-  .query(async ({ ctx, input }) => {
-    const userId = ctx.session.user?.id;
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-    if (!userId || !user) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
-      });
-    }
-
+  .query(async ({ input }) => {
     const limit = input.limit ?? 50;
     const { cursor } = input;
 

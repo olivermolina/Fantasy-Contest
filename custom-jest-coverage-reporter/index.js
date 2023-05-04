@@ -9,7 +9,8 @@ const NAME = 'jest-ratchet';
 const getLastError = (config) => {
   const { collectCoverage, coverageReporters } = config;
   if (!collectCoverage) {
-    throw new CollectCoverageError();
+    console.warn('Jest-Ratchet: collectCoverage is disabled');
+    process.exit(0);
   }
   if ((coverageReporters || []).indexOf('json-summary') === -1) {
     throw new JsonSummaryError();

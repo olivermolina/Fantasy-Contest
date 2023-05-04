@@ -24,11 +24,7 @@ const defaultClasses =
 const Create = () => {
   const router = useRouter();
   const mutation = trpc.user.login.useMutation();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       await mutation.mutateAsync(data);
@@ -65,13 +61,13 @@ const Create = () => {
             />
 
             <button
-              className="p-4 capitalize text-white rounded-full font-bold text-2xl bg-blue-600 w-full"
+              className="p-4 capitalize text-white rounded-full font-bold text-2xl bg-primary w-full"
               type="submit"
             >
               submit
             </button>
           </form>
-          <p className={'text-blue-800'}>
+          <p className={'text-secondary'}>
             <Link href="/auth/forgot-password">Forgot Password? </Link>
           </p>
         </div>

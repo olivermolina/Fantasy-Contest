@@ -32,6 +32,9 @@ const envSchema = yup.object().shape({
   SEND_GRID_API_KEY: yup.string(),
   STATIC_IP_INBOUND_PROXY: yup.string(),
   STATIC_IP_OUTBOUND_PROXY: yup.string(),
+  TWILIO_ACCOUNT_SID: yup.string(),
+  TWILIO_AUTH_TOKEN: yup.string(),
+  TWILIO_MESSAGING_SERVICE_ID: yup.string(),
   VERCEL_URL: yup.string(),
 });
 

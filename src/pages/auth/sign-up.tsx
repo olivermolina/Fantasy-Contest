@@ -3,7 +3,7 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import LandingLayout from '~/components/LandingLayout';
 import { UrlPaths } from '~/constants/UrlPaths';
@@ -13,6 +13,7 @@ import ReferralModal from '~/components/ReferralModal';
 import ChangeRouteLoadingContainer from '~/containers/ChangeRouteLoadingContainer/ChangeRouteLoadingContainer';
 import BackdropLoading from '~/components/BackdropLoading';
 import { TRPCClientError } from '@trpc/client';
+import { FormErrorText } from '~/components/Form/FormErrorText';
 
 export type SignupInputs = {
   email: string;
@@ -113,17 +114,26 @@ const Auth = () => {
             className={classNames(defaultClasses, 'col-span-1 lg:col-span-2')}
             {...register('email')}
           />
-          <input
-            placeholder="Username"
-            type="username"
-            id="username"
-            required
-            style={{
-              maxHeight: 64,
-            }}
-            className={classNames(defaultClasses)}
-            {...register('username')}
-          />
+          <div className={'flex flex-col gap-1'}>
+            <input
+              placeholder="Username"
+              type="username"
+              id="username"
+              required
+              style={{
+                maxHeight: 64,
+              }}
+              className={defaultClasses}
+              {...register('username', {
+                pattern: {
+                  value: /^(?=.{6,20}$)(?!.*[_.]{2})[a-zA-Z0-9._]+(?![_.]).*$/,
+                  message:
+                    'Invalid username. Please use 6-20 alphanumeric characters, periods, or underscores. Do not start/end with periods or underscores, and avoid consecutive periods or underscores.',
+                },
+              })}
+            />
+            <FormErrorText>{errors.username?.message}</FormErrorText>
+          </div>
           <input
             placeholder="State of Residence"
             type="state"
@@ -198,14 +208,14 @@ const Auth = () => {
             style={{
               maxHeight: 64,
             }}
-            className="p-4 text-white rounded-full font-bold text-2xl bg-blue-600"
+            className="p-4 text-white rounded-full font-bold text-2xl bg-primary"
           >
             Sign Up
           </button>
           <div className="flex gap-4 items-center">
             <div>
               <input
-                className="rounded-full scale-150"
+                className="rounded-full scale-150 accent-primary"
                 id="verify"
                 name="verify"
                 required

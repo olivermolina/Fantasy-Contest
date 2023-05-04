@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -7,41 +8,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserType {
+  PLAYER
+  AGENT
+  ADMIN
+  SUB_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model User {
-  id             String         @id @default(uuid())
-  email          String         @unique
-  ContestEntries ContestEntry[]
-  Bets           Bet[]
-  username       String?        @unique
-  phone          BigInt?
-  DOB            DateTime?
-  isFirstDeposit Boolean        @default(true)
+  id              String            @id @default(uuid())
+  email           String            @unique
+  ContestEntries  ContestEntry[]
+  Bets            Bet[]
+  username        String?           @unique
+  phone           BigInt?
+  DOB             DateTime?
+  isFirstDeposit  Boolean           @default(true)
   // Username of the other user
-  referral       String?
-  Wallets        Wallets[]
-  Sessions Session[]
-  Transactions Transaction[]
-  firstname String?
-  lastname String?
-  address1 String?
-  address2 String?
-  city String?
-  state String?
-  postalCode String?
-  identityStatus Boolean        @default(false)
-  reasonCodes String[]
-  isAdmin        Boolean        @default(false)
+  referral        String?
+  Wallets         Wallets[]
+  Sessions        Session[]
+  Transactions    Transaction[]
+  firstname       String?
+  lastname        String?
+  address1        String?
+  address2        String?
+  city            String?
+  state           String?
+  postalCode      String?
+  identityStatus  Boolean           @default(false)
+  reasonCodes     String[]
+  isAdmin         Boolean           @default(false)
+  type            UserType          @default(PLAYER)
+  agentId         String?
+  agent           Agent?            @relation(fields: [agentId], references: [id])
+  // List of users referrals under the agent
+  UserAsAgents    Agent[]           @relation("UserAsAgent")
+  referralCodes   ReferralCode[]
+  UserAppSettings UserAppSettings[]
+  permissions     Permission[]      @relation("PermissionUser")
+  status          UserStatus        @default(ACTIVE)
+  // List of agents assigned to the Sub-admin user
+  SubAdminAgents  Agent[]           @relation("SubAdminUser")
 }
 
 model ContestEntry {
-  id         String  @id @default(uuid())
-  contest    Contest @relation(fields: [contestsId], references: [id])
-  bets       Bet[]
-  tokens     Decimal
-  User       User    @relation(fields: [userId], references: [id])
-  userId     String
-  contestsId String
-  transactions Transaction[]
+  id                   String                @id @default(uuid())
+  contest              Contest               @relation(fields: [contestsId], references: [id])
+  bets                 Bet[]
+  tokens               Decimal
+  User                 User                  @relation(fields: [userId], references: [id])
+  userId               String
+  contestsId           String
+  transactions         Transaction[]
   DepositDistributions DepositDistribution[]
 }
 
@@ -51,6 +75,7 @@ enum BetStatus {
   LOSS
   PUSH
   CANCELLED
+  REFUNDED
 }
 
 enum BetType {
@@ -77,7 +102,7 @@ model BetLeg {
   status BetStatus  @default(PENDING)
 
   created_at   DateTime @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
   marketId     String
   marketSel_id Int
   Bet          Bet?     @relation(fields: [betId], references: [id])
@@ -85,30 +110,33 @@ model BetLeg {
 }
 
 model Bet {
-  id               String       @id @default(uuid())
-  stake            Decimal      @db.Decimal(10, 2)
-  status           BetStatus
-  owner            User         @relation(fields: [userId], references: [id])
-  payout           Decimal      @db.Decimal(10, 2)
-  type             BetType
-  legs             BetLeg[]
-  odds             Int
-  ContestEntries   ContestEntry @relation(fields: [contestEntriesId], references: [id])
-  contestEntriesId String
-  userId           String
-  ContestCategory  ContestCategory @relation(fields: [contestCategoryId], references: [id])
-  contestCategoryId  String
-  stakeType        BetStakeType
+  id                   String                @id @default(uuid())
+  stake                Decimal               @db.Decimal(10, 2)
+  cashStake            Decimal               @default(0) @db.Decimal(10, 2)
+  bonusCreditStake     Decimal               @default(0) @db.Decimal(10, 2)
+  status               BetStatus
+  owner                User                  @relation(fields: [userId], references: [id])
+  payout               Decimal               @db.Decimal(10, 2)
+  type                 BetType
+  legs                 BetLeg[]
+  odds                 Int
+  ContestEntries       ContestEntry          @relation(fields: [contestEntriesId], references: [id])
+  contestEntriesId     String
+  userId               String
+  ContestCategory      ContestCategory       @relation(fields: [contestCategoryId], references: [id])
+  contestCategoryId    String
+  stakeType            BetStakeType
   DepositDistributions DepositDistribution[]
-  Transactions Transaction[]
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  Transactions         Transaction[]
+  created_at           DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime              @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
 enum BetStakeType {
   ALL_IN
   INSURED
 }
+
 enum ContestWagerType {
   TOKEN
   CASH
@@ -128,13 +156,13 @@ model Contest {
   bgImageUrl     String         @db.VarChar(255)
   ContestEntries ContestEntry[]
 
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  created_at DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
   Wallets    Wallets[]
   entryFee   Decimal
   totalPrize Decimal
-  wagerType ContestWagerType @default(TOKEN)
-  priority  Int  @default(autoincrement())
+  wagerType  ContestWagerType @default(TOKEN)
+  priority   Int              @default(autoincrement())
 }
 
 enum League {
@@ -158,7 +186,7 @@ enum Status {
 }
 
 model Team {
-  id       String      @id
+  id       String   @id
   name     String
   code     String
   homeTeam Offer[]  @relation("homeTeam")
@@ -180,13 +208,13 @@ enum MarketResult {
 }
 
 model Player {
-  id       String      @id
+  id       String   @id
   name     String
   position String
   teamid   String
   team     String
   Market   Market[]
-  Team     Team?      @relation(fields: [teamid], references: [id])
+  Team     Team?    @relation(fields: [teamid], references: [id])
   headshot String?
 }
 
@@ -227,6 +255,10 @@ model Market {
   teamId           String?
   playerId         String?
   BetLeg           BetLeg[]
+  FreeSquare       FreeSquare?  @relation(fields: [freeSquareId], references: [id])
+  freeSquareId     String?      @unique
+  created_at       DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
 
   @@id([id, sel_id])
 }
@@ -246,11 +278,11 @@ model Offer {
   away      Team     @relation("awayTeam", fields: [awayTeamId], references: [id])
   markets   Market[]
 
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
-  homeTeamId String
-  awayTeamId String
-  manualEntry      Boolean      @default(false)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  homeTeamId  String
+  awayTeamId  String
+  manualEntry Boolean  @default(false)
 }
 
 enum ContestType {
@@ -261,8 +293,18 @@ enum ContestType {
 // For in-house purposes
 model AppSettings {
   id    String         @id @default(uuid())
-  name  AppSettingName
+  name  AppSettingName @unique
   value String
+}
+
+model UserAppSettings {
+  id     String         @id @default(uuid())
+  name   AppSettingName
+  value  String
+  User   User           @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([userId, name])
 }
 
 enum AppSettingName {
@@ -270,8 +312,36 @@ enum AppSettingName {
   MAX_MATCH_DEPOSIT_AMOUNT
   // Credit amount for firt successful deposit of referral
   REFERRAL_CREDIT_AMOUNT
+  // Custom referral text
+  REFERRAL_CUSTOM_TEXT
   // Reload bonus
   RELOAD_BONUS_AMOUNT
+  // Deposit amount options
+  DEPOSIT_AMOUNT_OPTIONS
+  // Minimum bet amount
+  MIN_BET_AMOUNT
+  // Maximum bet amount
+  MAX_BET_AMOUNT
+  // Reload bonus type ie. FLAT or PERCENTAGE
+  RELOAD_BONUS_TYPE
+  // Minimum market odds
+  MIN_MARKET_ODDS
+  // Maximum market odds
+  MAX_MARKET_ODDS
+  // Maximum retention bonus when the user keeps the withdrawable balance on site
+  MAX_RETENTION_BONUS
+  // How many times a week the user can see the retention bonus offer pops up
+  RETENTION_BONUS_WEEKLY_CHANCE
+  // Match the available cash balace to withdraw to x times if the user accepts the offer
+  RETENTION_BONUS_MATCH_MULTIPLIER
+  // Number of players/picks required in a bonus credit free entry
+  NUMBER_OF_PLAYERS_FREE_ENTRY
+  // Stake type applicable to the bonus credit free entry i.e. INSURED / ALL_IN
+  STAKE_TYPE_FREE_ENTRY
+  // Bonus credit amount to convert as 1 free entry
+  BONUS_CREDIT_FREE_ENTRY_EQUIVALENT
+  // The promo message shown in the challenge page
+  CHALLENGE_PROMO_MESSAGE
 }
 
 // TODO: [LOC-173] Wallets should go on contest entries?
@@ -286,34 +356,34 @@ model Wallets {
   created_by String
   updated_by String
   created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
   @@unique([userId, contestsId])
 }
 
 model Session {
-  id String @id @default(uuid())
-  serviceType String
-  User User @relation(fields: [userId], references: [id])
-  userId String
-  deviceLocation String
-  sessionRequestRaw String?
+  id                        String            @id @default(uuid())
+  serviceType               String
+  User                      User              @relation(fields: [userId], references: [id])
+  userId                    String
+  deviceLocation            String
+  sessionRequestRaw         String?
   completeSessionRequestRaw String?
-  SessionResponses SessionResponse[]
-  Transactions Transaction[]
-  created_at DateTime @default(now()) @db.Timestamptz(6)
+  SessionResponses          SessionResponse[]
+  Transactions              Transaction[]
+  created_at                DateTime          @default(now()) @db.Timestamptz(6)
 }
 
 model SessionResponse {
-  id String @id @default(uuid())
-  Session Session @relation(fields: [sessionId], references: [id])
-  sessionId String
-  reasonCodes String[]
+  id                 String   @id @default(uuid())
+  Session            Session  @relation(fields: [sessionId], references: [id])
+  sessionId          String
+  reasonCodes        String[]
   sessionResponseRaw String
-  statusCode Int
-  statusMessage String
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  statusCode         Int
+  statusMessage      String
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
 enum TransactionType {
@@ -329,91 +399,172 @@ enum PaymentMethodType {
 }
 
 model Transaction {
-  id String @id
-  actionType String
-  Session Session @relation(fields: [sessionId], references: [id])
-  sessionId String
-  User User @relation(fields: [userId], references: [id])
-  userId String
-  amountProcess Decimal
-  amountBonus Decimal
-  transactionCurrency String //USD or other ISO 4217 Currency Code
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  TransactionStatuses TransactionStatus[]
-  ContestEntry ContestEntry? @relation(fields: [contestEntryId], references: [id])
-  contestEntryId String?
+  id                   String                @id
+  actionType           String
+  Session              Session               @relation(fields: [sessionId], references: [id])
+  sessionId            String
+  User                 User                  @relation(fields: [userId], references: [id])
+  userId               String
+  amountProcess        Decimal
+  amountBonus          Decimal
+  transactionCurrency  String //USD or other ISO 4217 Currency Code
+  created_at           DateTime              @default(now()) @db.Timestamptz(6)
+  TransactionStatuses  TransactionStatus[]
+  ContestEntry         ContestEntry?         @relation(fields: [contestEntryId], references: [id])
+  contestEntryId       String?
   DepositDistributions DepositDistribution[]
-  betId String? @unique
-  Bet   Bet?  @relation(fields: [betId], references: [id])
+  betId                String?               @unique
+  Bet                  Bet?                  @relation(fields: [betId], references: [id])
 }
 
 model TransactionStatus {
-  id String @id @default(uuid())
-  Transaction Transaction @relation(fields: [transactionId], references: [id])
-  transactionId String
-  statusCode Int
-  statusMessage String?
-  transactionType TransactionType
-  transactionScore Decimal
+  id                       String            @id @default(uuid())
+  Transaction              Transaction       @relation(fields: [transactionId], references: [id])
+  transactionId            String
+  statusCode               Int
+  statusMessage            String?
+  transactionType          TransactionType
+  transactionScore         Decimal
   // Text description of the payment method used by the customer.
-  transactionMethod String
-  transactionMethodType PaymentMethodType
+  transactionMethod        String
+  transactionMethodType    PaymentMethodType
   //Account of the payment method used: VISA, MC, AMEX, PAYPAL, etc.
   transactionMethodAccount String
-  approvalDateTime DateTime
-  statusDateTime DateTime
-  processDateTime DateTime?
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  approvalDateTime         DateTime
+  statusDateTime           DateTime
+  processDateTime          DateTime?
+  created_at               DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
 model ContestCategory {
-  id                String         @id @default(uuid())
-  numberOfPicks     Int
-  allInPayoutMultiplier  Float
-  primaryInsuredPayoutMultiplier Float
+  id                               String @id @default(uuid())
+  numberOfPicks                    Int
+  allInPayoutMultiplier            Float
+  primaryInsuredPayoutMultiplier   Float
   secondaryInsuredPayoutMultiplier Float
-  Bets           Bet[]
+  Bets                             Bet[]
+  FreeSquareContestCategories      FreeSquareContestCategory[]
 }
 
 // To determine how much the user can withdraw without payout request approval
 model DepositDistribution {
-  id             String         @id @default(uuid())
-  Transaction    Transaction    @relation(fields: [transactionId], references: [id])
+  id             String        @id @default(uuid())
+  Transaction    Transaction   @relation(fields: [transactionId], references: [id])
   transactionId  String
-  Bet            Bet?           @relation(fields: [betId], references: [id])
+  Bet            Bet?          @relation(fields: [betId], references: [id])
   betId          String?
-  ContestEntry   ContestEntry?  @relation(fields: [contestEntryId], references: [id])
+  ContestEntry   ContestEntry? @relation(fields: [contestEntryId], references: [id])
   contestEntryId String?
   amount         Decimal
-  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+  created_at     DateTime      @default(now()) @db.Timestamptz(6)
 }
 
 model ContactUs {
-  id            String      @id @default(uuid())
-  name          String
-  email         String
-  phoneNumber   String
-  category      String
-  description   String
-  emailSent     Boolean     @default(false)
-  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  phoneNumber String
+  category    String
+  description String
+  emailSent   Boolean  @default(false)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
 }
 
 model Banner {
-  id            String      @id @default(uuid())
-  text          String
-  priority      Int         @default(autoincrement())
-  created_at    DateTime    @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+  id         String   @id @default(uuid())
+  text       String
+  priority   Int      @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
 model SpecialRestriction {
-  id  String  @id @default(uuid())
-  code  String
+  id                 String   @id @default(uuid())
+  code               String
+  description        String?
+  blockedReasonCodes String[]
+  blockedLeagues     League[]
+  created_at         DateTime @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model ReferralCode {
+  id     String @id @default(uuid())
+  code   String @unique
+  userId String
+  User   User   @relation(fields: [userId], references: [id])
+}
+
+model Agent {
+  id     String @id @default(uuid())
+  userId String @unique
+  User   User   @relation(name: "UserAsAgent", fields: [userId], references: [id])
+  users  User[]
+  subAdminId    String?
+  subAdminUser  User?   @relation(name: "SubAdminUser", fields: [subAdminId], references: [id])
+}
+
+model FreeSquare {
+  id                String     @id @default(uuid())
+  discount          Decimal
+  // Maximum stake amount
+  maxStake          Decimal   @default(0)
+  // Option to allow Free Square in a Free Entry (bonus credit stake entry)
+  freeEntryEnabled  Boolean    @default(false)
+  market            Market?
+  // Only use the free square on selected 2 picks, or 3 picks etc.
+  FreeSquareContestCategory  FreeSquareContestCategory[]
+  created_at        DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime   @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model FreeSquareContestCategory {
+  id                String     @id @default(uuid())
+  freeSquare        FreeSquare @relation(fields: [freeSquareId], references: [id])
+  contestCategory   ContestCategory @relation(fields: [contestCategoryId], references: [id])
+  freeSquareId      String
+  contestCategoryId String
+
+  @@unique([freeSquareId, contestCategoryId])
+}
+
+model Permission {
+  id          String       @id @default(uuid())
+  read        Boolean
+  write       Boolean
+  module      Module       @relation("PermissionModule", fields: [moduleId], references: [id])
+  moduleId    String
+  user        User         @relation("PermissionUser", fields: [userId], references: [id])
+  userId      String
+
+  @@unique([moduleId, userId])
+}
+
+enum ModuleName {
+  MANAGEMENT_INSERT_BONUS_CREDIT
+  MANAGEMENT_AMOUNT_AVAILABLE_TO_WITHDRAW
+  MANAGEMENT_MANUALLY_ENTER_OFFER_LINES
+  MANAGEMENT_BALANCE_BY_USER_ID
+  MANAGEMENT_UPDATE_USERS_LIMITS
+  MANAGEMENT_WITHDRAWAL_OFFER
+  MANAGEMENT_ADD_REMOVE_FREE_SQUARE_PROMOTIONS
+  MANAGEMENT_AGENT_REFERRAL_CODES
+  MANAGEMENT_BONUS_CREDIT_LIMITS
+  MANAGEMENT_SEND_SMS
+  MANAGEMENT_APPSETTINGS
+  MANAGEMENT_MANAGE_USER_PERMISSIONS
+  MANAGEMENT_MANAGE_USERS
+  FIGURES_WEEKLY_BALANCE
+  FIGURES_LINE_EXPOSURES
+  FIGURES_PLAYER_TOTALS_BY_RANGE
+  ACTION_DELETE_PICKS
+}
+
+model Module {
+  id          String          @id @default(uuid())
+  name        ModuleName      @unique
   description String?
-  blockedReasonCodes  String[]
-  blockedLeagues  League[]
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  urlPath     String?
+  permissions Permission[]    @relation("PermissionModule")
 }

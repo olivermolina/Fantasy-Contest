@@ -14,16 +14,10 @@ import {
 } from '@prisma/client';
 import { prisma } from '~/server/prisma';
 import { PickSummaryProps } from '~/components/Picks/Picks';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { PickStatus } from '~/constants/PickStatus';
 import { calculateInsuredPayout } from '~/utils/calculateInsuredPayout';
-import {
-  EntryDateFormat,
-  EntryDatetimeFormat,
-} from '~/constants/EntryDatetimeFormat';
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
+import { EntryDatetimeFormat } from '~/constants/EntryDatetimeFormat';
 
 const mapBetStatusToPickStatus = (status: BetStatus) => {
   switch (status) {
@@ -34,8 +28,10 @@ const mapBetStatusToPickStatus = (status: BetStatus) => {
     case BetStatus.PENDING:
       return PickStatus.PENDING;
     case BetStatus.PUSH:
-      return PickStatus.SETTLED;
+      return PickStatus.PUSH;
     case BetStatus.CANCELLED:
+      return PickStatus.CANCELLED;
+    case BetStatus.REFUNDED:
       return PickStatus.CANCELLED;
   }
 };
@@ -51,8 +47,9 @@ const getInsuredPayout = (stake: number, contestCategory: ContestCategory) => {
 export const listBets = t.procedure
   .input(
     yup.object({
-      startDate: yup.mixed<Dayjs>(),
-      endDate: yup.mixed<Dayjs>(),
+      startDate: yup.string(),
+      endDate: yup.string(),
+      userId: yup.string(),
     }),
   )
   .output(
@@ -65,6 +62,7 @@ export const listBets = t.procedure
           | 'setDateRangeValue'
           | 'isLoading'
           | 'dateRangeValue'
+          | 'isAdminView'
         >
       >()
       .required(),
@@ -75,22 +73,32 @@ export const listBets = t.procedure
         code: 'UNAUTHORIZED',
       });
     }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: ctx.session.user.id,
+      },
+    });
+
+    const userId =
+      user?.isAdmin && input.userId ? input.userId : ctx.session.user.id;
+
     const { startDate, endDate } = input;
     const bets = await prisma.bet.findMany({
       where: {
         owner: {
-          id: ctx.session.user.id,
+          id: userId,
         },
         ...(startDate &&
           endDate && {
-            created_at: {
-              gte: dayjs(startDate).toDate(),
-              lte: dayjs(endDate).toDate(),
+            updated_at: {
+              gte: dayjs(`${startDate}`).tz('America/New_York').toDate(),
+              lte: dayjs(`${endDate}`).tz('America/New_York').toDate(),
             },
           }),
       },
       orderBy: {
-        created_at: 'desc',
+        updated_at: 'desc',
       },
       include: {
         legs: {
@@ -121,7 +129,12 @@ export const listBets = t.procedure
                 b?.ContestEntries?.contest?.wagerType === ContestWagerType.CASH
                   ? 'More or Less'
                   : 'Token Contest',
-              pickTime: dayjs(b.created_at).format(EntryDateFormat),
+              pickTime: dayjs(b.created_at)
+                .tz('America/New_York')
+                .format(EntryDatetimeFormat),
+              settledTime: dayjs(b.updated_at)
+                .tz('America/New_York')
+                .format(EntryDatetimeFormat),
               picks: b.legs.map((l) => ({
                 id: l.id,
                 name: l.market.name,
@@ -143,6 +156,7 @@ export const listBets = t.procedure
                   ? getInsuredPayout(b.stake.toNumber(), b.ContestCategory)
                   : b.payout.toNumber(),
               risk: b.stake.toNumber(),
+              bonusCreditStake: b.bonusCreditStake.toNumber(),
               stakeType: b.stakeType,
               payout: b.payout.toNumber(),
             },
@@ -156,12 +170,18 @@ export const listBets = t.procedure
               description: b.legs[0]!.market.name,
               gameInfo: b.legs[0]!.market.offer?.matchup,
               contestType: 'More or Less',
-              pickTime: dayjs(b.created_at).format(EntryDateFormat),
+              pickTime: dayjs(b.created_at)
+                .tz('America/New_York')
+                .format(EntryDatetimeFormat),
+              settledTime: dayjs(b.updated_at)
+                .tz('America/New_York')
+                .format(EntryDatetimeFormat),
               potentialWin:
                 b.stakeType === BetStakeType.INSURED
                   ? getInsuredPayout(b.stake.toNumber(), b.ContestCategory)
                   : b.payout.toNumber(),
               risk: b.stake.toNumber(),
+              bonusCreditStake: b.bonusCreditStake.toNumber(),
               status: mapBetStatusToPickStatus(b.status),
               value: b.legs[0]!.total.toNumber(),
               odd: b.legs[0]!.type,

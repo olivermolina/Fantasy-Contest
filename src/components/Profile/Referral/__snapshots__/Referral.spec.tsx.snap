@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Referral should render correctly 1`] = `
+<div>
+  <div
+    class="w-full lg:p-4"
+  >
+    <div
+      class="flex flex-col p-2 lg:p-6 gap-2 rounded-lg shadow-md gap-4"
+    >
+      <p
+        class="font-bold text-xl"
+      >
+        Referral
+      </p>
+      <p
+        class="font-semibold text-md"
+      >
+        Refer a friend from the link or code in your profile and get $25 in bonus credit!
+      </p>
+      <div
+        class="flex flex-col lg:flex-row justify-start gap-4 lg:gap-10"
+      >
+        <div
+          class="flex flex-col rounded-lg gap-2"
+        >
+          <p>
+            Referral Code
+          </p>
+          <div
+            class="flex justify-start items-center bg-[#2F5F98] rounded-lg divide-x divide-slate-500 border-slate-500 border"
+          >
+            <div
+              class="bg-[#2F5F98] rounded-l-lg px-1"
+            >
+              <button
+                aria-label="Copied to clipboard!"
+                class=""
+                data-mui-internal-clone-element="true"
+              >
+                <svg
+                  class="h-6 w-6"
+                  data-file-name="SvgClipboardDocument"
+                />
+              </button>
+            </div>
+            <p
+              class="p-2 bg-[#1A487F] w-full rounded-r-lg"
+            >
+              jsmith321
+            </p>
+          </div>
+        </div>
+        <div
+          class="flex flex-col rounded-lg gap-2"
+        >
+          <p>
+            Referral Link
+          </p>
+          <div
+            class="flex justify-start items-center bg-[#2F5F98] rounded-lg divide-x divide-slate-500 border-slate-500 border"
+          >
+            <div
+              class="bg-[#2F5F98] rounded-l-lg px-1"
+            >
+              <button
+                aria-label="Copied to clipboard!"
+                class=""
+                data-mui-internal-clone-element="true"
+              >
+                <svg
+                  class="h-6 w-6"
+                  data-file-name="SvgClipboardDocument"
+                />
+              </button>
+            </div>
+            <p
+              class="p-2 bg-[#1A487F] w-full rounded-r-lg"
+            >
+              http://localhost/auth/sign-up?referral=jsmith321
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

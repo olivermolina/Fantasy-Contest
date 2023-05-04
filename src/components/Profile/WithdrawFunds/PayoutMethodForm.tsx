@@ -110,16 +110,18 @@ const PayoutMethodForm = (props: Props) => {
       </div>
       {selectedPayoutMethod?.key === PaymentMethodType.ACH ? (
         <div className={'mt-5'}>
-          <SavedPaymentMethodCardList
-            paymentMethods={PAYMENT_METHODS}
-            onPaymentSelect={onPaymentSelect}
-            selectedPaymentMethod={selectedPaymentMethod}
-            savedPaymentMethods={achPaymentMethods}
-            showAddButton={!isLoading && achPaymentMethods?.length < 5}
-            handleAdd={handleOpen}
-            onDeletePaymentMethod={handleDeletePaymentMethod}
-            isLoading={isLoading}
-          />
+          {achPaymentMethods.length > 0 && (
+            <SavedPaymentMethodCardList
+              paymentMethods={PAYMENT_METHODS}
+              onPaymentSelect={onPaymentSelect}
+              selectedPaymentMethod={selectedPaymentMethod}
+              savedPaymentMethods={achPaymentMethods}
+              showAddButton={!isLoading && achPaymentMethods?.length < 5}
+              handleAdd={handleOpen}
+              onDeletePaymentMethod={handleDeletePaymentMethod}
+              isLoading={isLoading}
+            />
+          )}
 
           {!isLoading && !achPaymentMethods?.length && (
             <div className={'flex flex-col items-center justify-center gap-2'}>
@@ -132,7 +134,7 @@ const PayoutMethodForm = (props: Props) => {
                 Add a payout method to receive payouts.
               </p>
               <button
-                className="p-2 capitalize text-white rounded font-bold w-auto h-auto bg-blue-600 disabled:opacity-50"
+                className="p-2 capitalize text-white rounded font-bold w-auto h-auto bg-white text-primary disabled:opacity-50"
                 onClick={handleOpen}
               >
                 Add Payout Method
@@ -143,19 +145,22 @@ const PayoutMethodForm = (props: Props) => {
           <Dialog open={open} fullWidth maxWidth={'md'}>
             <Card
               className={'flex h-full w-full'}
-              sx={{
+              sx={(theme) => ({
                 '&.MuiCard-root': {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
                 },
-              }}
+              })}
             >
               <CardHeader
-                className={'bg-blue-600'}
                 sx={{
                   color: '#fff',
                   textAlign: 'center',
+                  borderBottom: '1px solid gray ',
+                  marginBottom: 1,
                 }}
                 action={
                   <IconButton aria-label="settings" onClick={handleClose}>
@@ -173,7 +178,7 @@ const PayoutMethodForm = (props: Props) => {
               </CardContent>
               <CardActions style={{ justifyContent: 'center' }}>
                 <button
-                  className="p-4 capitalize text-white rounded font-bold w-screen h-auto bg-blue-600 disabled:opacity-50"
+                  className="p-4 capitalize text-white rounded font-bold w-screen h-auto bg-white text-primary disabled:opacity-50"
                   type={'submit'}
                   form="deposit-method-form"
                   disabled={isLoading}
