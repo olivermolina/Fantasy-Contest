@@ -1,14 +1,6 @@
 {
   "crons": [
     {
-      "path": "/api/sendgrid",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/preCacheListOffers",
-      "schedule": "0 5 * * *"
-    },
-    {
       "path": "/api/etl",
       "schedule": "0 5 * * *"
     }
