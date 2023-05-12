@@ -1,15 +1,11 @@
 import { render } from '@testing-library/react';
 import UserForm from './UserForm';
-import {
-  manageUserMocks,
-  subAdminUsersMock,
-} from './__mocks__/manageUserMocks';
+import { userMock } from './__mocks__/userMock';
 
 describe('UserForm', () => {
   it('should render correctly', () => {
     const mockProps = {
-      user: manageUserMocks[0]!,
-      subAdminUsers: subAdminUsersMock,
+      user: userMock,
       closeForm: jest.fn(),
       onSubmit: jest.fn(),
     };

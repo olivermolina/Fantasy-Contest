@@ -36,6 +36,26 @@ export const settleBet = async (
     (leg) => leg.status === BetStatus.PUSH,
   );
 
+  await prisma.wallets.upsert({
+    where: {
+      userId_contestsId: {
+        userId: bet.userId,
+        contestsId: bet.ContestEntries.contestsId,
+      },
+    },
+    create: {
+      userId: bet.userId,
+      contestsId: bet.ContestEntries.contestsId,
+      balance: 0,
+      created_by: 'system',
+      updated_by: 'system',
+    },
+    update: {
+      userId: bet.userId,
+      contestsId: bet.ContestEntries.contestsId,
+    },
+  });
+
   if (bet.status === 'REFUNDED') {
     // Cancelled bet
     await prisma.$transaction([

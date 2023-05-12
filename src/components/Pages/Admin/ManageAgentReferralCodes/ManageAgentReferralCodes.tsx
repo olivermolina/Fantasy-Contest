@@ -102,14 +102,14 @@ export default function ManageAgentReferralCodes(props: ManageUserAgentProps) {
   return (
     <form>
       <div className={'flex flex-col gap-4 p-4 shadow-lg'}>
-        <p className={'text-lg font-semibold'}>Agent Referral Codes</p>
+        <p className={'text-lg font-semibold'}>Partner Referral Codes</p>
         <div className={'flex flex-col gap-4'}>
           <UserAutocomplete
             control={control}
             users={users.filter((user) => user.type === UserType.AGENT)}
             isLoading={isLoading}
             setSelectedUserId={setUserId}
-            label={'Select Agent'}
+            label={'Select Partner'}
           />
         </div>
 

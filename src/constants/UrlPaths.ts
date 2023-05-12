@@ -44,5 +44,12 @@ export enum UrlPaths {
   AppSettings = '/admin/app-settings',
   AccessDenied = '/admin/access-denied',
   ManageUsers = '/admin/manage-users',
+  ManagePartnersPams = '/admin/manage-partners-pams',
   ManageUserPermissions = '/admin/manage-user-permissions',
+  ViewPicksByUser = '/admin/view-picks-by-user',
+  Partners = '/partners',
+  PartnersReferralCodes = '/partners/manage-agent-referral-codes',
+  PartnersManageUsers = '/partners/manage-users',
+  AdminViewUsersBets = '/admin/view-users-bets',
+  PartnerViewUsersBets = '/partners/view-users-bets',
 }

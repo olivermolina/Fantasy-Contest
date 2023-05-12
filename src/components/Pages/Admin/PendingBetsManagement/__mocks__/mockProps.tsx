@@ -20,6 +20,9 @@ export const mockProps = {
           total: 5,
         },
       ],
+      name: 'John Doe',
+      status: 'Pending',
+      type: 'Parlay',
     },
     {
       ticket: '2',
@@ -38,6 +41,9 @@ export const mockProps = {
           total: 5,
         },
       ],
+      name: 'John Doe',
+      status: 'Pending',
+      type: 'Parlay',
     },
     {
       ticket: '3',
@@ -56,6 +62,9 @@ export const mockProps = {
           total: 5,
         },
       ],
+      name: 'John Doe',
+      status: 'Pending',
+      type: 'Parlay',
     },
   ],
 };

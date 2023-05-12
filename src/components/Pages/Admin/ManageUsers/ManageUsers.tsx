@@ -9,11 +9,19 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { User } from '@prisma/client';
 import { IconButton } from '@mui/material';
+import dayjs from 'dayjs';
+import { convertUserAddressToString } from '~/utils/convertUserAddressToString';
 
-export type ManageUserRowModel = Pick<
+export type ManageUserRowModel = Omit<
   User,
-  'id' | 'username' | 'email' | 'status' | 'type'
-> & { subAdminId: string; phone: string; password?: string };
+  | 'isFirstDeposit'
+  | 'isAdmin'
+  | 'identityStatus'
+  | 'reasonCodes'
+  | 'type'
+  | 'agentId'
+  | 'phone'
+> & { phone: string; password?: string };
 
 interface Props {
   users: ManageUserRowModel[];
@@ -36,11 +44,54 @@ export default function ManageUsers(props: Props) {
       field: 'email',
       headerName: 'Email',
     },
-    { flex: 1, field: 'type', headerName: 'Type' },
+    {
+      flex: 1,
+      field: 'name',
+      headerName: 'Name',
+      renderCell: (params) => {
+        const user = params.row as typeof rows[0];
+        return `${user.firstname || ''} ${user.lastname || ''}`;
+      },
+    },
+    {
+      flex: 1,
+      field: 'phone',
+      headerName: 'Phone',
+    },
+    {
+      flex: 1,
+      field: 'DOB',
+      headerName: 'DOB',
+      renderCell: (params) => {
+        const user = params.row as typeof rows[0];
+        return dayjs(user.DOB).format('YYYY-MM-DD');
+      },
+    },
+    {
+      flex: 1,
+      field: 'address',
+      headerName: 'Address',
+      renderCell: (params) => {
+        const { address1, address2, city, state, postalCode } =
+          params.row as typeof rows[0];
+        return convertUserAddressToString({
+          address1,
+          address2,
+          city,
+          state,
+          postalCode,
+        });
+      },
+    },
     {
       flex: 1,
       field: 'status',
       headerName: 'Status',
+    },
+    {
+      flex: 1,
+      field: 'referral',
+      headerName: 'Referral Code',
     },
     {
       flex: 1,

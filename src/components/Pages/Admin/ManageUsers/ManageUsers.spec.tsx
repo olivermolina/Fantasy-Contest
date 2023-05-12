@@ -1,11 +1,10 @@
 import { render } from '@testing-library/react';
 import ManageUsers from './ManageUsers';
-import { manageUserMocks } from './__mocks__/manageUserMocks';
 
 describe('ManageUsers', () => {
   it('should render correctly', () => {
     const mockProps = {
-      users: manageUserMocks,
+      users: [],
       openUserForm: jest.fn(),
       addUser: jest.fn(),
     };

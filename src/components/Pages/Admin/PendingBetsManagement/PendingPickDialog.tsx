@@ -11,11 +11,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { RowModel } from './PendingBetsManagement';
+import { BetStatus } from '@prisma/client';
 
 const PendingPickTable = (props: { row?: RowModel }) => {
   return (
@@ -42,7 +44,7 @@ const PendingPickTable = (props: { row?: RowModel }) => {
               <TableCell align="center">{leg.type}</TableCell>
               <TableCell align="center">{leg.odds}</TableCell>
               <TableCell align="center">{leg.category}</TableCell>
-              <TableCell align="center">{leg.total}</TableCell>
+              <TableCell align="center">{leg.total.toFixed(2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -59,7 +61,7 @@ interface Props {
   /**
    * Delete pending pick callback function
    */
-  onClickDeleteRow: (currentRow: RowModel) => unknown;
+  onClickDeleteRow: (currentRow: RowModel, betStatus: BetStatus) => unknown;
   /**
    * Boolean to show dialog
    * @example true
@@ -77,6 +79,10 @@ interface Props {
    * Boolean to view only the pick legs
    */
   isViewOnly: boolean;
+  /**
+   * Bet status
+   */
+  betStatus?: BetStatus;
 }
 
 export default function PendingPickDialog(props: Props) {
@@ -87,10 +93,11 @@ export default function PendingPickDialog(props: Props) {
     row,
     clearSelectedRow,
     isViewOnly,
+    betStatus,
   } = props;
-  const handleDeleteRow = () => {
-    if (row) {
-      onClickDeleteRow(row);
+  const confirmAction = () => {
+    if (row && betStatus) {
+      onClickDeleteRow(row, betStatus);
       clearSelectedRow();
     }
   };
@@ -99,27 +106,113 @@ export default function PendingPickDialog(props: Props) {
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth={'lg'}>
       <AppBar sx={{ position: 'relative' }}>
         <Toolbar>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Pick Legs
+          <Typography sx={{ flex: 1 }} variant="h6" component="div">
+            {betStatus === BetStatus.REFUNDED &&
+              `Are you sure you want to REFUND this pick?`}
+            {betStatus &&
+              betStatus !== BetStatus.REFUNDED &&
+              `Are you sure you want to settle the pick status to ${betStatus}?`}
+            {!betStatus && `${row?.legs.length} Picks`}
           </Typography>
           <IconButton
             edge="start"
             color="inherit"
             onClick={handleClose}
             aria-label="close"
+            sx={{ position: 'absolute', right: 8, top: 8 }}
           >
             <CloseIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
       <div className={'flex flex-col gap-2 p-2'}>
+        <div
+          className={
+            'grid grid-cols-1 gap-x-1 lg:grid-cols-2 lg:gap-x-2 divide-y divide-dashed border-b'
+          }
+        >
+          <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
+            <span className={'font-semibold w-28'}>Ticket</span>
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row?.ticket}
+            />
+          </div>
+
+          <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
+            <span className={'font-semibold w-28'}>Risk/Win</span>
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row?.riskWin}
+            />
+          </div>
+
+          <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
+            <span className={'font-semibold w-28'}>Username</span>
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row?.username}
+            />
+          </div>
+          <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
+            <span className={'font-semibold w-28'}>Name</span>
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row?.name}
+            />
+          </div>
+          <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
+            <span className={'font-semibold w-28'}>Type</span>
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row?.type}
+            />
+          </div>
+          <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
+            <span className={'font-semibold w-28'}>Status</span>
+            <TextField
+              variant={'outlined'}
+              size={'small'}
+              fullWidth
+              InputProps={{
+                readOnly: true,
+              }}
+              value={row?.status}
+            />
+          </div>
+        </div>
         <PendingPickTable row={row} />{' '}
         {!isViewOnly && (
           <div className={'flex justify-center'}>
             <Button
               color="warning"
               autoFocus
-              onClick={handleDeleteRow}
+              onClick={confirmAction}
               variant="contained"
               sx={{ maxWidth: 100 }}
             >

@@ -28,6 +28,11 @@ function UsersBalanceDataTable(props: PropsOfferDataTable) {
         header: () => <span>Username</span>,
       },
       {
+        accessorKey: 'email',
+        cell: (info) => info.getValue(),
+        header: () => <span>Email</span>,
+      },
+      {
         accessorKey: 'firstname',
         cell: (info) => info.getValue(),
         header: () => <span>First Name</span>,

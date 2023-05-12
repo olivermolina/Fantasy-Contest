@@ -16,6 +16,6 @@ export const getServerSideProps: GetServerSideProps = withAuth(async () => {
   return {
     props: {},
   };
-});
+}, 'ADMIN');
 
 export default WeeklyBalancePage;

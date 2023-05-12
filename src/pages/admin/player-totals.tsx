@@ -8,7 +8,7 @@ import PickDatePickerRange from '~/components/Picks/PickDatePickerRange';
 import { DataGrid } from '@mui/x-data-grid';
 import AdminLayoutContainer from '~/containers/AdminLayoutContainer/AdminLayoutContainer';
 
-export default function UsersBalancePage() {
+export default function AdminPlayerTotalsPage() {
   const router = useRouter();
   const from = router.query.from
     ? dayjs(router.query.from as string)
@@ -38,22 +38,20 @@ export default function UsersBalancePage() {
           components={{
             Toolbar: () => {
               return (
-                <div className={'bg-secondary p-2'}>
-                  <PickDatePickerRange
-                    setDateRangeValue={({ startDate, endDate }) => {
-                      router.push({
-                        query: {
-                          from: startDate.startOf('D').toISOString(),
-                          to: endDate.startOf('D').toISOString(),
-                        },
-                      });
-                    }}
-                    dateRangeValue={{
-                      startDate: dayjs(from),
-                      endDate: dayjs(to),
-                    }}
-                  />
-                </div>
+                <PickDatePickerRange
+                  setDateRangeValue={({ startDate, endDate }) => {
+                    router.push({
+                      query: {
+                        from: startDate.startOf('D').toISOString(),
+                        to: endDate.startOf('D').toISOString(),
+                      },
+                    });
+                  }}
+                  dateRangeValue={{
+                    startDate: dayjs(from),
+                    endDate: dayjs(to),
+                  }}
+                />
               );
             },
           }}

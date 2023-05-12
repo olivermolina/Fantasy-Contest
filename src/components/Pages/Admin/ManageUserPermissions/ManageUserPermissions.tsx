@@ -85,7 +85,7 @@ export default function ManageUserPermissions(props: Props) {
       headerName: 'ID',
       valueFormatter: (params) => params.value.toLocaleString(),
     },
-    { flex: 1, field: 'username', headerName: 'Agent' },
+    { flex: 1, field: 'username', headerName: 'Username' },
     {
       flex: 1,
       field: 'status',
@@ -135,7 +135,7 @@ export default function ManageUserPermissions(props: Props) {
         toggleAccordion={toggleAccordion}
       >
         <span className={'font-semibold flex-grow align-middle mt-2'}>
-          LockSpread Employee: {props.subAdmin.username}
+          PAM: {props.subAdmin.username}
         </span>
         {props.subAdmin.id !== 'unassigned' && props.user?.type === 'ADMIN' && (
           <>
@@ -167,7 +167,7 @@ export default function ManageUserPermissions(props: Props) {
       </AccordionSummary>
       <AccordionDetails>
         <div className={'flex flex-col gap-2'}>
-          <span className={'font-semibold text-lg'}>Agents</span>
+          <span className={'font-semibold text-lg'}>Partners</span>
           <div style={{ height: 400, width: '100%' }}>
             <DataGrid
               getRowId={(row) => row.id}

@@ -30,21 +30,6 @@ interface Props {
   dateRangeValue: DateRangeInterface | null;
 }
 
-const textFieldStyles = {
-  input: { color: 'white' },
-  label: {
-    color: 'white',
-  },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: 'white',
-    },
-    '&:hover fieldset': {
-      border: 'solid 3px #144e97',
-    },
-  },
-};
-
 export default function PickDatePickerRange(props: Props) {
   const { register, handleSubmit } = useForm<any>({
     resolver: yupResolver(InputValidationSchema),
@@ -87,7 +72,6 @@ export default function PickDatePickerRange(props: Props) {
                 {...register('startDate')}
                 size="small"
                 margin="dense"
-                sx={textFieldStyles}
               />
             )}
             value={dateRangeValue.startDate}
@@ -109,7 +93,6 @@ export default function PickDatePickerRange(props: Props) {
                 {...register('endDate')}
                 size="small"
                 margin="dense"
-                sx={textFieldStyles}
               />
             )}
             value={dateRangeValue.endDate}

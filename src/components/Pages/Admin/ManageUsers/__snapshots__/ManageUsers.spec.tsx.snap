@@ -20,9 +20,9 @@ exports[`ManageUsers should render correctly 1`] = `
       </button>
     </div>
     <div
-      aria-colcount="6"
+      aria-colcount="10"
       aria-multiselectable="false"
-      aria-rowcount="8"
+      aria-rowcount="1"
       class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
       role="grid"
     >
@@ -483,197 +483,27 @@ exports[`ManageUsers should render correctly 1`] = `
             style="overflow-x: hidden;"
           >
             <div
+              class="MuiDataGrid-overlayWrapper css-ql19fo-MuiDataGrid-overlayWrapper"
+            >
+              <div
+                class="MuiDataGrid-overlayWrapperInner css-1akuw9y-MuiDataGrid-overlayWrapperInner"
+                style="height: -56px; width: 0px;"
+              >
+                <div
+                  class="MuiDataGrid-overlay css-1w53k9d-MuiDataGrid-overlay"
+                >
+                  No rows
+                </div>
+              </div>
+            </div>
+            <div
               class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-              style="width: auto; height: 364px; min-height: auto;"
+              style="width: auto; height: 1px; min-height: auto;"
             >
               <div
                 class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                style="transform: translate3d(0px, 0px, 0px);"
-              >
-                <div
-                  aria-rowindex="2"
-                  aria-selected="false"
-                  class="MuiDataGrid-row"
-                  data-id="2"
-                  data-rowindex="0"
-                  role="row"
-                  style="max-height: 52px; min-height: 52px;"
-                >
-                  <div
-                    aria-colindex="1"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="0"
-                    data-field="id"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="2"
-                    >
-                      2
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="2"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="1"
-                    data-field="username"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="test2"
-                    >
-                      test2
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="3"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="2"
-                    data-field="email"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="test2@test.test"
-                    >
-                      test2@test.test
-                    </div>
-                  </div>
-                </div>
-                <div
-                  aria-rowindex="3"
-                  aria-selected="false"
-                  class="MuiDataGrid-row"
-                  data-id="1"
-                  data-rowindex="1"
-                  role="row"
-                  style="max-height: 52px; min-height: 52px;"
-                >
-                  <div
-                    aria-colindex="1"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="0"
-                    data-field="id"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="1"
-                    >
-                      1
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="2"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="1"
-                    data-field="username"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="test1"
-                    >
-                      test1
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="3"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="2"
-                    data-field="email"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="test1@test.test"
-                    >
-                      test1@test.test
-                    </div>
-                  </div>
-                </div>
-                <div
-                  aria-rowindex="4"
-                  aria-selected="false"
-                  class="MuiDataGrid-row"
-                  data-id="3"
-                  data-rowindex="2"
-                  role="row"
-                  style="max-height: 52px; min-height: 52px;"
-                >
-                  <div
-                    aria-colindex="1"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="0"
-                    data-field="id"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="3"
-                    >
-                      3
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="2"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="1"
-                    data-field="username"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="test3"
-                    >
-                      test3
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="3"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="2"
-                    data-field="email"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="test3@test.test"
-                    >
-                      test3@test.test
-                    </div>
-                  </div>
-                </div>
-              </div>
+                style="transform: translate3d(0px, undefinedpx, 0px);"
+              />
             </div>
           </div>
         </div>
@@ -746,7 +576,7 @@ exports[`ManageUsers should render correctly 1`] = `
             <p
               class="MuiTablePagination-displayedRows css-levciy-MuiTablePagination-displayedRows"
             >
-              1–7 of 7
+              0–0 of 0
             </p>
             <div
               class="MuiTablePagination-actions"

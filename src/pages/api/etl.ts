@@ -1,4 +1,4 @@
-import { verifySignature } from '@upstash/qstash/nextjs';
+// import { verifySignature } from '@upstash/qstash/nextjs';
 import chunk from 'lodash.chunk';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { TOKEN } from '~/constants/TOKEN';
@@ -182,9 +182,11 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
   res.status(200).end();
 }
 
-const handlerWrapper =
-  process.env.NODE_ENV === 'development' ? handler : verifySignature(handler);
-export default handlerWrapper;
+// const handlerWrapper =
+//   process.env.NODE_ENV === 'development' ? handler : verifySignature(handler);
+// export default handlerWrapper;
+
+export default handler;
 
 export const config = {
   api: {

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import { Button, Stack } from '@mui/material';
 import PendingPickDialog from './PendingPickDialog';
+import { BetStatus } from '@prisma/client';
 
 type Props = {
-  onClickDeleteRow(currentRow: RowModel): unknown;
+  onClickDeleteRow(currentRow: RowModel, betStatus: BetStatus): unknown;
   data: readonly RowModel[];
 };
 
@@ -12,9 +13,12 @@ export interface RowModel {
   ticket: string;
   placed: Date;
   userPhone: string;
+  status: string;
+  name: string;
   username: string;
   description: string;
   riskWin: string;
+  type: string;
   legs: {
     id: string;
     name: string;
@@ -28,6 +32,7 @@ export interface RowModel {
 export const PendingBetsManagement = (props: Props) => {
   const rows: GridRowsProp<RowModel> = props.data;
   const [selectedRow, setSelectedRow] = useState<RowModel | undefined>();
+  const [betStatus, setBetStatus] = useState<BetStatus | undefined>();
   const [open, setOpen] = useState(false);
   const [isViewOnly, setIsViewOnly] = useState(true);
 
@@ -74,28 +79,45 @@ export const PendingBetsManagement = (props: Props) => {
       },
     },
     {
-      flex: 1,
-      field: 'delete',
-      headerName: 'Delete',
+      flex: 2,
+      field: 'action',
+      headerName: 'Actions',
       renderCell: (params) => {
-        const onClick = () => {
+        const onClick = (betStatus: BetStatus) => {
           const currentRow = params.row as typeof rows[0];
           setSelectedRow(currentRow);
           setOpen(true);
           setIsViewOnly(false);
+          setBetStatus(betStatus);
         };
 
         return (
-          <Stack direction="row" spacing={2}>
+          <div className={'flex gap-1'}>
             <Button
               color="warning"
               size="small"
-              onClick={onClick}
+              onClick={() => onClick(BetStatus.WIN)}
               variant={'contained'}
             >
-              Delete
+              WIN
             </Button>
-          </Stack>
+            <Button
+              color="warning"
+              size="small"
+              onClick={() => onClick(BetStatus.LOSS)}
+              variant={'contained'}
+            >
+              LOSS
+            </Button>
+            <Button
+              color="warning"
+              size="small"
+              onClick={() => onClick(BetStatus.REFUNDED)}
+              variant={'contained'}
+            >
+              Refund
+            </Button>
+          </div>
         );
       },
     },
@@ -120,6 +142,7 @@ export const PendingBetsManagement = (props: Props) => {
         row={selectedRow}
         handleClose={handleClose}
         isViewOnly={isViewOnly}
+        betStatus={betStatus}
       />
     </div>
   );

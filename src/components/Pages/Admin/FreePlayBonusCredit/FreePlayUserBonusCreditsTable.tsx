@@ -13,12 +13,14 @@ import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
 declare module '@mui/x-data-grid' {
   interface FooterPropsOverrides {
     totalBonusCredits: number;
+    totalBonusCreditBalance: number;
   }
 }
 
 type Props = {
   onSubmitDeletePlayFreeCredit(currentRow: FreePlayRowModel): unknown;
   data: readonly FreePlayRowModel[];
+  totalBonusCreditBalance: number;
 };
 
 export interface FreePlayRowModel {
@@ -31,8 +33,19 @@ export interface FreePlayRowModel {
 
 function CustomFooter(props: NonNullable<GridSlotsComponentsProps['footer']>) {
   return (
-    <div className={'flex p-2 font-semibold text-lg'}>
-      Total Bonus Credits: {Number(props.totalBonusCredits).toFixed(2)}
+    <div className={'flex p-2 text-lg gap-2 divide-x-2 items-center'}>
+      <p className={'p-2'}>
+        Total Bonus Credits:{' '}
+        <span className={'font-semibold'}>
+          {Number(props.totalBonusCredits).toFixed(2)}
+        </span>
+      </p>
+      <p className={'p-2'}>
+        Total Bonus Credit Balance:{' '}
+        <span className={'font-semibold'}>
+          {Number(props.totalBonusCreditBalance).toFixed(2)}
+        </span>
+      </p>
     </div>
   );
 }
@@ -128,7 +141,10 @@ export default function FreePlayUserBonusCreditsTable(props: Props) {
             footer: CustomFooter,
           }}
           slotProps={{
-            footer: { totalBonusCredits },
+            footer: {
+              totalBonusCredits,
+              totalBonusCreditBalance: props.totalBonusCreditBalance,
+            },
           }}
         />
         <CancelFreePlayConfirmDialog

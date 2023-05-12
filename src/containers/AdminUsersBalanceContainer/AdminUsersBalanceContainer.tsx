@@ -25,17 +25,14 @@ const AdminUsersBalanceContainer = () => {
   const totalFetched = flatData.length;
 
   return (
-    <>
-      <h2 className={'text-xl font-bold'}>Users Balance</h2>
-      <UsersBalanceDataTable
-        flatData={flatData}
-        isLoading={isLoading}
-        totalDBRowCount={totalDBRowCount}
-        totalFetched={totalFetched}
-        isFetching={isFetching}
-        fetchNextPage={fetchNextPage}
-      />
-    </>
+    <UsersBalanceDataTable
+      flatData={flatData}
+      isLoading={isLoading}
+      totalDBRowCount={totalDBRowCount}
+      totalFetched={totalFetched}
+      isFetching={isFetching}
+      fetchNextPage={fetchNextPage}
+    />
   );
 };
 

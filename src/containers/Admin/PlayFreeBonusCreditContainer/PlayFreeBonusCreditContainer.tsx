@@ -19,6 +19,9 @@ const PlayFreeBonusCreditContainer = () => {
 
   const cancelCreditMutation = trpc.admin.cancelUserBonusCredits.useMutation();
 
+  const { data: userTotalBalance, refetch: refetchUserTotalBalance } =
+    trpc.user.userTotalBalance.useQuery({ userId });
+
   const { data: tableData, refetch } = trpc.admin.getUserBonusCredits.useQuery({
     userId: userId || '',
   });
@@ -47,6 +50,7 @@ const PlayFreeBonusCreditContainer = () => {
       await cancelCreditMutation.mutateAsync({ transactionId: row.id });
       toast.success(`Success!`);
       refetch();
+      refetchUserTotalBalance();
     } catch (error) {
       const e = error as TRPCClientError<any>;
       toast.error(e?.message || `Oops! Something went wrong.`);
@@ -70,6 +74,7 @@ const PlayFreeBonusCreditContainer = () => {
       <FreePlayUserBonusCreditsTable
         data={userBonusCredits}
         onSubmitDeletePlayFreeCredit={onSubmitDeletePlayFreeCredit}
+        totalBonusCreditBalance={userTotalBalance?.creditAmount || 0}
       />
     </>
   );

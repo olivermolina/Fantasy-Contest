@@ -5,6 +5,11 @@ import { Prisma, User, UserType } from '@prisma/client';
 import { z } from 'zod';
 import type { AgentUsersType } from '~/server/routers/admin/middleware/isAdmin';
 
+// @ts-expect-error Big int was not supported fix here https://github.com/prisma/studio/issues/614#issuecomment-795213237
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 /**
  * Set the where filter for the player query
  * @param user - User object
@@ -95,6 +100,10 @@ const users = t.procedure
             in: user.SubAdminAgents.map((agent) => agent.userId),
           };
           break;
+        case UserType.AGENT:
+          // return the agent itself
+          where.id = userId;
+          break;
         default:
           throw new TRPCError({
             code: 'BAD_REQUEST',
@@ -112,6 +121,16 @@ const users = t.procedure
         referral: true,
         referralCodes: true,
         type: true,
+        phone: true,
+        DOB: true,
+        firstname: true,
+        lastname: true,
+        address1: true,
+        address2: true,
+        city: true,
+        state: true,
+        postalCode: true,
+        status: true,
       },
     });
   });

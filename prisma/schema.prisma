@@ -555,9 +555,12 @@ enum ModuleName {
   MANAGEMENT_APPSETTINGS
   MANAGEMENT_MANAGE_USER_PERMISSIONS
   MANAGEMENT_MANAGE_USERS
+  MANAGEMENT_PARTNERS_PAMS
+  MANAGEMENT_VIEW_BETS
   FIGURES_WEEKLY_BALANCE
   FIGURES_LINE_EXPOSURES
   FIGURES_PLAYER_TOTALS_BY_RANGE
+  FIGURES_VIEW_PICKS_BY_USER
   ACTION_DELETE_PICKS
 }
 
@@ -567,4 +570,5 @@ model Module {
   description String?
   urlPath     String?
   permissions Permission[]    @relation("PermissionModule")
+  active      Boolean         @default(true)
 }

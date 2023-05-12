@@ -7,6 +7,7 @@ import { UrlPaths } from '~/constants/UrlPaths';
 import { ProfileLayout } from '~/components/Profile/ProfileLayout/ProfileLayout';
 import { useAppDispatch } from '~/state/hooks';
 import { setAppSettings, setUserDetails } from '~/state/profile';
+import { UserType } from '@prisma/client';
 
 interface Props {
   children?: JSX.Element;
@@ -37,6 +38,11 @@ const MENUS = [
     key: UrlPaths.ProfileReferral,
     label: 'My Referral Code',
     icon: <Icons.UserAdd className={'h-8'} />,
+  },
+  {
+    key: UrlPaths.Partners,
+    label: 'Partner Portal',
+    icon: <Icons.Portal className={'h-8'} />,
   },
 ];
 const LEGAL_MENUS = [
@@ -116,11 +122,18 @@ const ProfileContainer = (props: Props) => {
     if (currentMenu) setActiveMenu(currentMenu);
   }, [pathname]);
 
+  const menus = useMemo(() => {
+    if (data?.type !== UserType.AGENT) {
+      return MENUS.filter((menu) => menu.key !== UrlPaths.Partners);
+    }
+    return MENUS;
+  }, [data]);
+
   return (
     <ProfileLayout
       {...props}
       activeMenu={activeMenu}
-      menus={MENUS}
+      menus={menus}
       legalMenus={LEGAL_MENUS}
       user={user}
       onSelectCallback={onSelectCallback}

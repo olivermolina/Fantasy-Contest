@@ -1,4 +1,7 @@
-import { adminProcedure } from '~/server/routers/admin/middleware/isAdmin';
+import {
+  adminProcedure,
+  UpdatedContext,
+} from '~/server/routers/admin/middleware/isAdmin';
 import {
   UserFormInputs,
   UserFormValidationSchema,
@@ -8,26 +11,34 @@ import logger from '~/utils/logger';
 import { TRPCError } from '@trpc/server';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 import prisma from '~/server/prisma';
-import { NEW_USER_ID } from '~/constants/NewUserId';
 import { UserStatus, UserType } from '@prisma/client';
+import { NEW_USER_ID } from '~/constants/NewUserId';
 
 /**
- * This module defines a function named `saveUser` that handles user creation and update.
+ * This module defines a function named `savePartner` that handles Partner/PAM creation and update.
  * It takes an `input` object as an argument and returns an updated prisma `User` object.
- * The input object is validated against a `UserFormValidationSchema`,
+ * The input object is validated against a `EditFormValidationSchema`,
  * which should ensure that the input data is in the expected format and conforms to the validation rules.
  */
-export const innerFn = async ({ input }: { input: UserFormInputs }) => {
+export const innerFn = async ({
+  input,
+  ctx,
+}: {
+  input: UserFormInputs;
+  ctx: UpdatedContext;
+}) => {
   let prismaUser = null;
+  const { password, ...restInput } = input;
+  let uid = input.id;
 
-  // If the input user's ID is equal to a constant `NEW_USER_ID`,
-  // attempt to sign up a new user using the `supabase.auth.signUp` method
-  if (input.id === NEW_USER_ID) {
-    try {
+  try {
+    // If the input user's ID is equal to a constant `NEW_USER_ID`,
+    // attempt to sign up a new user using the `supabase.auth.signUp` method
+    if (input.id === NEW_USER_ID) {
       const result = await supabase.auth.signUp(
         {
           email: input.email,
-          password: input.password,
+          password: password,
         },
         {
           data: {
@@ -37,9 +48,10 @@ export const innerFn = async ({ input }: { input: UserFormInputs }) => {
           },
         },
       );
-      // If user signup was successful, create a new user record in the prisma database
+
       const user = result.user;
       if (!user) {
+        // If there was an error during signup, throw a TRPCError with a signup error message
         logger.error('There was an error adding user.', result.error);
         throw new TRPCError({
           code: 'BAD_REQUEST',
@@ -49,54 +61,43 @@ export const innerFn = async ({ input }: { input: UserFormInputs }) => {
               : CustomErrorMessages.SIGNUP_ERROR,
         });
       }
-
-      const uid = user.id;
-      prismaUser = await prisma.user.create({
-        data: {
-          id: uid,
-          email: input.email,
-          state: '',
-          phone: Number(input.phone),
-          DOB: new Date(),
-          username: input.username,
-          referral: '',
-          type: input.type,
-        },
-      });
-    } catch (error) {
-      // If there was an error during signup or user creation, throw a TRPCError with a custom error message
-      if (error instanceof TRPCError) throw error;
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: CustomErrorMessages.DEFAULT,
-      });
+      uid = user.id;
     }
-  } else {
-    // If the input user's ID is not equal to `NEW_USER_ID`, update the user's record in the `prisma` database using the `prisma.user.update` method
-    prismaUser = await prisma.user.update({
+
+    // Create or update a user record in the prisma database
+    const status = input.status ? UserStatus.ACTIVE : UserStatus.INACTIVE;
+    const phone = Number(input.phone);
+    const DOB = new Date(input.DOB);
+    prismaUser = await prisma.user.upsert({
       where: {
-        id: input.id,
-      },
-      data: {
-        status: input.status ? UserStatus.ACTIVE : UserStatus.INACTIVE,
-        phone: Number(input.phone),
-      },
-    });
-  }
-  // If the input user type is AGENT, create or update an agent record in the prisma database
-  if (input.type === UserType.AGENT) {
-    await prisma.agent.upsert({
-      where: {
-        userId: prismaUser.id,
+        id: uid,
       },
       create: {
-        userId: prismaUser.id,
-        subAdminId: input.subAdminId,
+        ...restInput,
+        id: uid,
+        type: UserType.PLAYER,
+        status,
+        phone,
+        DOB,
+        agentId:
+          ctx.user.type === UserType.AGENT
+            ? ctx.user.UserAsAgents[0]?.id
+            : null,
+        referral: ctx.user.type === UserType.AGENT ? ctx.user.username : '',
       },
       update: {
-        userId: prismaUser.id,
-        subAdminId: input.subAdminId,
+        ...restInput,
+        status,
+        phone,
+        DOB,
       },
+    });
+  } catch (error) {
+    // If there was an error during signup or user creation, throw a TRPCError with a custom error message
+    if (error instanceof TRPCError) throw error;
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: CustomErrorMessages.DEFAULT,
     });
   }
 

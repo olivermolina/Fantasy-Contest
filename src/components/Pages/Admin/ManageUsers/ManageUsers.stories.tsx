@@ -2,7 +2,6 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import ManageUserComponent from './ManageUsers';
-import { manageUserMocks } from './__mocks__/manageUserMocks';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -22,4 +21,4 @@ const Template: ComponentStory<typeof ManageUserComponent> = (args) => (
 export const ManageUsers = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 
-ManageUsers.args = { users: manageUserMocks };
+ManageUsers.args = { users: [] };

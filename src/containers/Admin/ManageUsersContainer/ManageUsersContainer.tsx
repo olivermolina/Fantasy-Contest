@@ -10,14 +10,14 @@ import UserForm, {
 import { toast } from 'react-toastify';
 import { TRPCClientError } from '@trpc/client';
 import { Dialog } from '@mui/material';
-import { UserStatus, UserType } from '@prisma/client';
+import { UserStatus } from '@prisma/client';
 import { NEW_USER_ID } from '~/constants/NewUserId';
 
 export const ManageUsersContainer = () => {
   const [selectedUser, setSelectedUser] = useState<ManageUserRowModel | null>(
     null,
   );
-  const { data, isLoading, refetch } = trpc.admin.getManageUserList.useQuery();
+  const { data, isLoading, refetch } = trpc.user.users.useQuery();
 
   const mutation = trpc.admin.saveUser.useMutation();
 
@@ -35,31 +35,19 @@ export const ManageUsersContainer = () => {
       username: '',
       password: '',
       email: '',
-      phone: '',
-      type: UserType.AGENT,
       status: UserStatus.ACTIVE,
-      subAdminId: '',
+      phone: '',
+      DOB: new Date(),
+      firstname: '',
+      lastname: '',
+      referral: '',
+      address1: '',
+      address2: '',
+      city: '',
+      state: '',
+      postalCode: '',
     });
   };
-
-  const users = useMemo(
-    () =>
-      data?.reduce((acc: ManageUserRowModel[], user) => {
-        const { subAdmin, agents } = user;
-        const agentsWithSubAdminId = agents.map((agent) => ({
-          ...agent,
-          subAdminId: subAdmin?.id,
-        }));
-
-        return [
-          ...acc,
-          ...(subAdmin.id !== 'unassigned' ? [subAdmin] : []),
-          ...agentsWithSubAdminId,
-        ] as ManageUserRowModel[];
-      }, []) || [],
-    [data],
-  );
-
   const onSubmit = async (formInputs: UserFormInputs) => {
     try {
       await mutation.mutateAsync(formInputs);
@@ -73,6 +61,18 @@ export const ManageUsersContainer = () => {
       );
     }
   };
+
+  const users = useMemo(
+    () =>
+      data?.reduce((acc: ManageUserRowModel[], user) => {
+        const { phone, ...fields } = user;
+        return [
+          ...acc,
+          { ...fields, phone: phone?.toString() },
+        ] as ManageUserRowModel[];
+      }, []) || [],
+    [data],
+  );
 
   return (
     <>
@@ -94,9 +94,6 @@ export const ManageUsersContainer = () => {
           <UserForm
             user={selectedUser}
             onSubmit={onSubmit}
-            subAdminUsers={users.filter(
-              (user) => user.type === UserType.SUB_ADMIN,
-            )}
             closeForm={closeForm}
           />
         </Dialog>

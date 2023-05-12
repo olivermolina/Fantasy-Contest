@@ -19,4 +19,5 @@ export const freePlayBonusCreditTableMockProps = {
       type: TransactionType.DEBIT,
     },
   ],
+  totalBonusCreditBalance: 0,
 };
