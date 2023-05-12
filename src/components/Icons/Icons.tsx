@@ -19,6 +19,7 @@ import MoneyFromBracket from '~/assets/icons/ico_money-from-bracket.svg';
 import MoneyBillTransfer from '~/assets/icons/ico_money-bill-transfer.svg';
 import RectangleHistory from '~/assets/icons/ico_rectangle-history-circle-plus.svg';
 import FileContract from '~/assets/icons/ico_file-contract.svg';
+import Portal from '~/assets/icons/settings-svgrepo-com.svg';
 
 const importedIcons = {
   Camera,
@@ -41,6 +42,7 @@ const importedIcons = {
   MoneyBillTransfer,
   RectangleHistory,
   FileContract,
+  Portal,
 };
 
 type IconName = keyof typeof importedIcons;

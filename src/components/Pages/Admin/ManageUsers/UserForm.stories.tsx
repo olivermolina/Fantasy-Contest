@@ -2,11 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import UserFormComponent from './UserForm';
-import {
-  manageUserMocks,
-  newUserMock,
-  subAdminUsersMock,
-} from './__mocks__/manageUserMocks';
+import { userMock } from './__mocks__/userMock';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -27,13 +23,11 @@ export const EditUserForm = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 
 EditUserForm.args = {
-  user: manageUserMocks[0],
-  subAdminUsers: subAdminUsersMock,
+  user: userMock,
 };
 
 export const AddUserForm = Template.bind({});
 
 AddUserForm.args = {
-  user: newUserMock,
-  subAdminUsers: subAdminUsersMock,
+  user: userMock,
 };

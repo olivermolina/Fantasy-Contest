@@ -23,7 +23,7 @@ jest.mock('~/utils/trpc', () => ({
           ],
         }),
       },
-      deleteAndRefundBet: {
+      settlePendingBet: {
         useMutation: jest.fn().mockReturnValue({
           isLoading: false,
           mutate: jest.fn(),

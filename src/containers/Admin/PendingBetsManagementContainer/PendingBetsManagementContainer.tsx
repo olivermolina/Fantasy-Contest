@@ -7,12 +7,13 @@ import {
 import { trpc } from '~/utils/trpc';
 import { toast } from 'react-toastify';
 import { useQueryClient } from '@tanstack/react-query';
+import { BetStatus } from '@prisma/client';
 
 export const PendingBetsManagementContainer = () => {
   const queryClient = useQueryClient();
   const { data, isLoading } = trpc.admin.getPendingBets.useQuery();
   const queryKey = trpc.admin.getPendingBets.getQueryKey();
-  const mutation = trpc.admin.deleteAndRefundBet.useMutation({
+  const mutation = trpc.admin.settlePendingBet.useMutation({
     // When mutate is called:
     onMutate: async (params) => {
       // Cancel any outgoing refetches
@@ -40,11 +41,13 @@ export const PendingBetsManagementContainer = () => {
       queryClient.invalidateQueries({ queryKey });
     },
   });
-  const deleteBetById = async (currentRow: RowModel) => {
+  const settlePick = async (currentRow: RowModel, betStatus: BetStatus) => {
     try {
-      await mutation.mutateAsync({ betId: currentRow.ticket });
+      await mutation.mutateAsync({ betId: currentRow.ticket, betStatus });
       toast.success(
-        `You successfully deleted the pick with ID ${currentRow.ticket}.`,
+        `You successfully ${
+          betStatus === BetStatus.REFUNDED ? 'refund' : 'settle'
+        } the pick with ID ${currentRow.ticket}.`,
       );
     } catch (e) {
       toast.error(
@@ -55,10 +58,7 @@ export const PendingBetsManagementContainer = () => {
   return (
     <>
       <BackdropLoading open={isLoading || mutation.isLoading} />
-      <PendingBetsManagement
-        data={data || []}
-        onClickDeleteRow={deleteBetById}
-      />
+      <PendingBetsManagement data={data || []} onClickDeleteRow={settlePick} />
     </>
   );
 };

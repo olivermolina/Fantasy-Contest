@@ -11,7 +11,7 @@ import deleteMarket from './deleteMarket';
 import usersBalance from './usersBalance';
 import addCredit from './addCredit';
 import getPendingBets from './getPendingBets';
-import { deleteAndRefundBet } from './deleteAndRefundBet';
+import { settlePendingBet } from './settlePendingBet';
 import { weeklyBalances } from './figures';
 import { setUserLimits } from './setUserLimits';
 import { playerStats } from './playerStats';
@@ -33,6 +33,8 @@ import getManageUserList from './getUserManagementList';
 import getModulePermissions from './getModulePermissions';
 import saveModulePermissions from './saveModulePermissions';
 import saveUser from './saveUser';
+import savePartnerPam from './savePartnerPam';
+import usersBetLists from './usersBetLists';
 
 /**
  * NOTE: All these procedures should use the adminProcedure as a base.
@@ -51,7 +53,7 @@ export const adminRouter = t.router({
   usersBalance,
   addCredit,
   getPendingBets,
-  deleteAndRefundBet,
+  settlePendingBet,
   weeklyBalances,
   setUserLimits,
   playerStats,
@@ -81,6 +83,8 @@ export const adminRouter = t.router({
   getManageUserList,
   saveModulePermissions,
   saveUser,
+  savePartnerPam,
+  usersBetLists,
 });
 
 export default adminRouter;

@@ -19,7 +19,7 @@ exports[`ManageUserPermissions should render correctly 1`] = `
         <span
           class="font-semibold flex-grow align-middle mt-2"
         >
-          LockSpread Employee: 
+          PAM: 
           Employee 1
         </span>
       </div>
@@ -64,7 +64,7 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                 <span
                   class="font-semibold text-lg"
                 >
-                  Agents
+                  Partners
                 </span>
                 <div
                   style="height: 400px; width: 100%;"
@@ -198,7 +198,7 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                             </div>
                             <div
                               aria-colindex="2"
-                              aria-label="Agent"
+                              aria-label="Username"
                               aria-sort="none"
                               class="MuiDataGrid-columnHeader MuiDataGrid-columnHeader--sortable MuiDataGrid-withBorderColor"
                               data-field="username"
@@ -221,7 +221,7 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                                       class="MuiDataGrid-columnHeaderTitle css-t89xny-MuiDataGrid-columnHeaderTitle"
                                       data-mui-internal-clone-element="true"
                                     >
-                                      Agent
+                                      Username
                                     </div>
                                   </div>
                                   <div

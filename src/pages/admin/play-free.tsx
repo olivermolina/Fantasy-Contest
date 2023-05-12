@@ -4,7 +4,7 @@ import { withAuth } from '~/hooks/withAuthServerSideProps';
 import PlayFreeBonusCreditContainer from '~/containers/Admin/PlayFreeBonusCreditContainer/PlayFreeBonusCreditContainer';
 import AdminLayoutContainer from '~/containers/AdminLayoutContainer/AdminLayoutContainer';
 
-export default function PlayFreeBonusCreditContainerPage() {
+export default function PlayFreeBonusCreditPage() {
   return (
     <AdminLayoutContainer>
       <PlayFreeBonusCreditContainer />

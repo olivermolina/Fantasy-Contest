@@ -64,6 +64,17 @@ const Header = (props: { isLoading: boolean }) => (
   </>
 );
 
+const NoMatches = () => (
+  <div className="flex flex-col justify-center items-center h-full text-white p-4">
+    <img
+      className="object-cover w-28 h-28"
+      src={'/assets/images/ico_smiley_sad_w_circle.svg'}
+      alt="No data available"
+    />
+    <span>NO GAMES AVAILABLE</span>
+  </div>
+);
+
 const MatchPickerTableContainer = () => {
   const [globalFilter, setGlobalFilter] = React.useState('');
   const { contestFilter, setParam, league, contestId } = useQueryParams();
@@ -140,16 +151,7 @@ const MatchPickerTableContainer = () => {
   }, [globalFilter, contestFilter, result.data]);
 
   if (league && !result.isLoading && !result.data) {
-    return (
-      <div className="flex flex-col justify-center items-center h-full text-white p-4">
-        <img
-          className="object-cover w-28 h-28"
-          src={'/assets/images/ico_smiley_sad_w_circle.svg'}
-          alt="No data available"
-        />
-        <span>NO GAMES AVAILABLE</span>
-      </div>
-    );
+    return <NoMatches />;
   } else if (result.data === null) {
     return (
       <>
@@ -399,7 +401,7 @@ const MatchPickerTableContainer = () => {
     return (
       <>
         <Header isLoading={result.isLoading} />
-        {!result.isLoading && 'Unknown match type...'}
+        {!result.isLoading && <NoMatches />}
       </>
     );
   }

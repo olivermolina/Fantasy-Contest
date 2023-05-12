@@ -3,7 +3,7 @@ import { supabase } from '~/utils/supabaseClient';
 import { UrlPaths } from '~/constants/UrlPaths';
 import prisma from '~/server/prisma';
 import { UserType } from '@prisma/client';
-import { findKey } from 'lodash';
+import { findKey, replace } from 'lodash';
 
 /**
  * Higher Order Function for server-side authentication
@@ -43,21 +43,6 @@ export const withAuth = (
         },
       });
 
-      // If the user is not a player and trying to access non-admin page, redirect to the admin page
-      if (
-        role === 'USER' &&
-        [UserType.SUB_ADMIN.toString(), UserType.AGENT.toString()].includes(
-          prismaUser.type,
-        )
-      ) {
-        return {
-          redirect: {
-            permanent: false,
-            destination: UrlPaths.Admin,
-          },
-        };
-      }
-
       if (role === 'ADMIN') {
         // If the user is not an admin, redirect to the challenge page
         if (prismaUser.type === UserType.PLAYER) {
@@ -70,17 +55,20 @@ export const withAuth = (
         }
 
         const { resolvedUrl } = context;
-        // If the user is a sub-admin or an agent, check if the role is allowed to access the admin page
+        // If the user is a sub-admin or an agent, check if the role is allowed to access the admin/partners page
         if (
           resolvedUrl !== UrlPaths.Admin &&
+          resolvedUrl !== UrlPaths.Partners &&
           [UserType.SUB_ADMIN.toString(), UserType.AGENT.toString()].includes(
             prismaUser.type,
           )
         ) {
+          // Replace partners with admin in the url to get the module path url key
+          const adminPathKey = replace(resolvedUrl, 'partners', 'admin');
           // Get the path key from the UrlPaths object
           const urlPathKey = findKey(
             UrlPaths,
-            (value) => value === resolvedUrl,
+            (value) => value === adminPathKey,
           );
           try {
             await prisma.permission.findFirstOrThrow({
@@ -102,6 +90,37 @@ export const withAuth = (
               },
             };
           }
+
+          if (
+            prismaUser.type === UserType.AGENT &&
+            resolvedUrl.includes('/admin')
+          ) {
+            // Redirect agent type to the partners page
+            const partnerDestination = replace(
+              resolvedUrl,
+              'admin',
+              'partners',
+            );
+            return {
+              redirect: {
+                permanent: false,
+                destination: partnerDestination,
+              },
+            };
+          }
+        }
+
+        if (
+          prismaUser.type === UserType.AGENT &&
+          resolvedUrl === UrlPaths.Admin
+        ) {
+          // Redirect agent type to the partners home page
+          return {
+            redirect: {
+              permanent: false,
+              destination: UrlPaths.Partners,
+            },
+          };
         }
       }
     } catch (e) {

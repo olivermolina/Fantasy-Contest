@@ -8,7 +8,7 @@ import { UrlPaths } from '~/constants/UrlPaths';
 
 const breadcrumbNameMap: { [key: string]: string } = {
   [UrlPaths.AdminOffer]: 'Offers',
-  [UrlPaths.AdminPendingBets]: 'Delete picks',
+  [UrlPaths.AdminPendingBets]: 'Settle Pending Picks',
   [UrlPaths.AdminUsersBalance]: 'Users Balance',
   [UrlPaths.AdminWeeklyBalance]: 'Weekly Balance',
   [UrlPaths.AdminPlayFreeBonusCredit]: 'Play Free Bonus Credit',
@@ -16,6 +16,10 @@ const breadcrumbNameMap: { [key: string]: string } = {
   [UrlPaths.AdminLineExposure]: 'Line Exposure',
   [UrlPaths.ManageWithdrawalOffer]: 'Manage Withdrawal Offer',
   [UrlPaths.SendSMS]: 'Send SMS',
+  [UrlPaths.ManageAgentReferralCodes]: 'Manage Partner Referral Codes',
+  [UrlPaths.PartnersReferralCodes]: 'Manage Partner Referral Codes',
+  [UrlPaths.ManagePartnersPams]: 'Add/Edit Agents & PAMs',
+  [UrlPaths.ManageUsers]: 'Add/Edit Users',
 };
 
 export default function AdminBreadCrumb() {
@@ -36,7 +40,7 @@ export default function AdminBreadCrumb() {
         <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
         Home
       </Link>
-      {pathname !== UrlPaths.Admin && (
+      {pathname !== UrlPaths.Admin && pathname !== UrlPaths.Partners && (
         <Link
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
@@ -46,6 +50,7 @@ export default function AdminBreadCrumb() {
           {breadcrumbNameMap[pathname] ||
             pathname
               .replace('/admin/', '')
+              .replace('/partners/', '')
               .replace(/\b[a-z]/g, (x) => x.toUpperCase())
               .replaceAll('-', ' ')}
         </Link>

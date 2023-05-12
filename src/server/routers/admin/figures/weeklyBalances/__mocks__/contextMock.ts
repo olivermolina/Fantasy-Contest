@@ -1,5 +1,3 @@
-import { UserType } from '@prisma/client';
-
 // Define a mocked trpc context value
 export const contextMock = {
   user: {
@@ -20,7 +18,7 @@ export const contextMock = {
     reasonCodes: ['ID-VERIFIED', 'LL-GEO-US-NJ'],
     isAdmin: false,
     phone: null,
-    type: UserType.ADMIN,
+    type: 'ADMIN',
     agentId: null,
     UserAsAgents: [],
     SubAdminAgents: [],

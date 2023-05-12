@@ -9,9 +9,18 @@ import ManageAgentReferralCodes, {
 } from '~/components/Pages/Admin/ManageAgentReferralCodes/ManageAgentReferralCodes';
 
 const ManageAgentReferralCodesContainer = () => {
-  const { data, isLoading, refetch } = trpc.user.users.useQuery({
-    userType: UserType.AGENT,
-  });
+  const { data, isLoading, refetch } = trpc.user.users.useQuery(
+    {
+      userType: UserType.AGENT,
+    },
+    {
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
+      },
+    },
+  );
 
   const addMutation = trpc.admin.addReferralCode.useMutation();
   const deleteMutation = trpc.admin.deleteReferralCode.useMutation();

@@ -36,7 +36,7 @@ const getMenus = adminProcedure.query(async ({ ctx }) => {
   const user = ctx.user;
   // Get all modules and user permissions
   const [appModules, userPermissions] = await prisma.$transaction([
-    prisma.module.findMany(),
+    prisma.module.findMany({ where: { active: true } }),
     prisma.permission.findMany({ where: { userId: user.id } }),
   ]);
 

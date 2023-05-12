@@ -19,6 +19,14 @@ jest.mock('~/utils/trpc', () => ({
           ],
         }),
       },
+      userTotalBalance: {
+        useQuery: jest.fn().mockReturnValue({
+          isLoading: false,
+          data: {
+            totalBalance: 0,
+          },
+        }),
+      },
     },
     admin: {
       addCredit: {
