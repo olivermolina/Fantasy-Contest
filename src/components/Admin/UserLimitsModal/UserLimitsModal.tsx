@@ -16,11 +16,16 @@ type Props = {
     | undefined;
   isLoading: boolean;
   isOpen: boolean;
-  onSubmit(data: { min: number; max: number }): Promise<void>;
+  onSubmit(data: {
+    min: number;
+    max: number;
+    repeatEntries: number;
+  }): Promise<void>;
   currentValues?: {
     username: string;
     min?: number | undefined;
     max?: number | undefined;
+    repeatEntries?: number | undefined;
   };
 };
 
@@ -29,6 +34,7 @@ const formSchema = z
     username: z.string(),
     min: z.coerce.number().min(1),
     max: z.coerce.number(),
+    repeatEntries: z.coerce.number(),
   })
   .refine((data) => data.max > data.min, {
     message: 'Maximum limit must be greater than minimum',
@@ -62,7 +68,7 @@ export const UserLimitsModal = (props: Props) => {
       <DialogContent>
         <form
           onSubmit={handleSubmit((data) => props.onSubmit(data))}
-          className="flex"
+          className="flex flex-col gap-2 p-1 lg:flex-row lg:gap-1 lg:p-2"
         >
           <TextField
             {...register('username')}
@@ -86,6 +92,14 @@ export const UserLimitsModal = (props: Props) => {
             defaultValue={props.currentValues?.max}
             type="number"
             label="Max"
+          />
+          <TextField
+            {...register('repeatEntries')}
+            error={!!errors?.repeatEntries}
+            helperText={errors?.repeatEntries?.message}
+            defaultValue={props.currentValues?.repeatEntries}
+            type="number"
+            label="Repeat Entries"
           />
           <Button disabled={props.isLoading} type="submit">
             {props.isLoading ? 'Submitting...' : 'Update'}

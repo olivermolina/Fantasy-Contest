@@ -18,6 +18,7 @@ enum UserType {
 enum UserStatus {
   ACTIVE
   INACTIVE
+  SUSPENDED
 }
 
 model User {
@@ -55,6 +56,8 @@ model User {
   status          UserStatus        @default(ACTIVE)
   // List of agents assigned to the Sub-admin user
   SubAdminAgents  Agent[]           @relation("SubAdminUser")
+  created_at      DateTime          @default(now()) @db.Timestamptz(6)
+  timezone        String?           @default("America/New_York")
 }
 
 model ContestEntry {
@@ -259,6 +262,8 @@ model Market {
   freeSquareId     String?      @unique
   created_at       DateTime     @default(now()) @db.Timestamptz(6)
   updated_at       DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+  MarketOverride   MarketOverride?  @relation(fields: [marketOverrideId], references: [id])
+  marketOverrideId String?      @unique
 
   @@id([id, sel_id])
 }
@@ -342,6 +347,8 @@ enum AppSettingName {
   BONUS_CREDIT_FREE_ENTRY_EQUIVALENT
   // The promo message shown in the challenge page
   CHALLENGE_PROMO_MESSAGE
+  // Limit for repeating the same offers in an entry
+  REPEAT_ENTRIES_LIMIT
 }
 
 // TODO: [LOC-173] Wallets should go on contest entries?
@@ -556,6 +563,7 @@ enum ModuleName {
   MANAGEMENT_MANAGE_USER_PERMISSIONS
   MANAGEMENT_MANAGE_USERS
   MANAGEMENT_PARTNERS_PAMS
+  MANAGEMENT_LIST_OFFERS
   MANAGEMENT_VIEW_BETS
   FIGURES_WEEKLY_BALANCE
   FIGURES_LINE_EXPOSURES
@@ -571,4 +579,14 @@ model Module {
   urlPath     String?
   permissions Permission[]    @relation("PermissionModule")
   active      Boolean         @default(true)
+}
+
+model MarketOverride {
+  id           String   @id @default(uuid())
+  market       Market?
+  total        Float?
+  over         Float?
+  under        Float?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 }

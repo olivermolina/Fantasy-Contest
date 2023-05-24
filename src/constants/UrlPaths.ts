@@ -52,4 +52,5 @@ export enum UrlPaths {
   PartnersManageUsers = '/partners/manage-users',
   AdminViewUsersBets = '/admin/view-users-bets',
   PartnerViewUsersBets = '/partners/view-users-bets',
+  ListOffers = '/admin/list-offers',
 }

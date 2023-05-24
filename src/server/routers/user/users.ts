@@ -131,6 +131,8 @@ const users = t.procedure
         state: true,
         postalCode: true,
         status: true,
+        isFirstDeposit: true,
+        created_at: true,
       },
     });
   });

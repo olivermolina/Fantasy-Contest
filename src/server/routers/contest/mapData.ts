@@ -5,6 +5,7 @@ import {
   Market,
   Offer,
   Player,
+  MarketOverride,
 } from '@prisma/client';
 import { FantasyOffer } from '~/types';
 import * as StatNames from '~/server/routers/IStatNames';
@@ -26,6 +27,7 @@ export type MarketMapData = Market & {
         })[];
       })
     | null;
+  MarketOverride: MarketOverride | null;
 };
 
 export const mapData = (data: MarketMapData): FantasyOffer => {

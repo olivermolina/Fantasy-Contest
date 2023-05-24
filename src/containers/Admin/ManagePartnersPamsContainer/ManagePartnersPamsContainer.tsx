@@ -12,6 +12,7 @@ import { TRPCClientError } from '@trpc/client';
 import { Dialog } from '@mui/material';
 import { UserStatus, UserType } from '@prisma/client';
 import { NEW_USER_ID } from '~/constants/NewUserId';
+import { USATimeZone } from '~/constants/USATimeZone';
 
 export const ManagePartnersPamsContainer = () => {
   const [selectedUser, setSelectedUser] =
@@ -38,6 +39,7 @@ export const ManagePartnersPamsContainer = () => {
       type: UserType.AGENT,
       status: UserStatus.ACTIVE,
       subAdminId: '',
+      timezone: USATimeZone['America/New_York'],
     });
   };
 

@@ -10,6 +10,7 @@ import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
 import { getUserTotalBalance } from '~/server/routers/user/userTotalBalance';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { USATimeZone } from '~/constants/USATimeZone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,6 +28,7 @@ export interface WeeklyBalanceDateRage {
 interface IPlayerWeeklyBalancesInput {
   player: IPlayerWithAgent;
   dateRange: WeeklyBalanceDateRage;
+  timezone?: string;
 }
 
 /**
@@ -57,20 +59,22 @@ function getPickBalanceByDate(weeklyPicks: Bet[], entryDate: Date): number {
  *
  * @param player - User object representing as a player type.
  * @param dateRange - The entry date range object
+ * @param timezone - The timezone string
  * @returns {Object} - Returns an IPlayerWeeklyBalance object
  *
  */
 export const playerWeeklyBalance = async ({
   player,
   dateRange,
+  timezone = USATimeZone['America/New_York'],
 }: IPlayerWeeklyBalancesInput) => {
   // Weekly settled/pending picks
   const weeklyPicks = await prisma.bet.findMany({
     where: {
       userId: player.id,
       updated_at: {
-        gte: dayjs(`${dateRange.from}`).tz('America/New_York').toDate(),
-        lte: dayjs(`${dateRange.to} `).tz('America/New_York').toDate(),
+        gte: dayjs(`${dateRange.from} 00:00:00`).tz(timezone).toDate(),
+        lte: dayjs(`${dateRange.to} 23:59:59`).tz(timezone).toDate(),
       },
       NOT: {
         status: BetStatus.PENDING,
@@ -96,8 +100,8 @@ export const playerWeeklyBalance = async ({
         in: [ActionType.PAY, ActionType.PAYOUT],
       },
       created_at: {
-        gte: dayjs(`${dateRange.from}`).tz('America/New_York').toDate(),
-        lte: dayjs(`${dateRange.to} `).tz('America/New_York').toDate(),
+        gte: dayjs(`${dateRange.from} 00:00:00`).tz(timezone).toDate(),
+        lte: dayjs(`${dateRange.to} 23:59:59`).tz(timezone).toDate(),
       },
       TransactionStatuses: {
         every: {

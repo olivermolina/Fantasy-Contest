@@ -25,6 +25,7 @@ export default function UserLimitsPage() {
     username: string;
     min?: number | undefined;
     max?: number | undefined;
+    repeatEntries?: number | undefined;
   }>();
   const loading = useAppSelector((state) => state.ui.loading);
 
@@ -57,6 +58,11 @@ export default function UserLimitsPage() {
                 { field: 'min', flex: 1, headerName: 'min' },
                 { field: 'max', flex: 1, headerName: 'max' },
                 {
+                  field: 'repeatEntries',
+                  flex: 1,
+                  headerName: 'Repeat Entries',
+                },
+                {
                   flex: 1,
                   headerName: 'Actions',
                   field: 'setLimits',
@@ -71,6 +77,7 @@ export default function UserLimitsPage() {
                               username: params.row.username,
                               min: params.row.min,
                               max: params.row.max,
+                              repeatEntries: params.row.repeatEntries,
                             });
                           }}
                         >
@@ -109,6 +116,7 @@ export default function UserLimitsPage() {
               username: currentValues?.username || '',
               min: currentValues?.min,
               max: currentValues?.max,
+              repeatEntries: currentValues?.repeatEntries,
             }}
             onSubmit={async (data) => {
               await setUserLimits.mutateAsync({

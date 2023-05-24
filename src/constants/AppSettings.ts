@@ -3,6 +3,7 @@ import { ReloadBonusType } from '~/constants/ReloadBonusType';
 export const DefaultAppSettings = {
   MIN_BET_AMOUNT: 1,
   MAX_BET_AMOUNT: 100,
+  REPEAT_ENTRIES: 0,
   MAX_RETENTION_BONUS: 100,
   RETENTION_BONUS_MATCH_MULTIPLIER: 1,
   RETENTION_BONUS_WEEKLY_CHANCE: 1,

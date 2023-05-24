@@ -18,6 +18,7 @@ export const appSettingsRouter = t.router({
               in: [
                 AppSettingName.MIN_BET_AMOUNT,
                 AppSettingName.MAX_BET_AMOUNT,
+                AppSettingName.REPEAT_ENTRIES_LIMIT,
               ],
             },
           },
@@ -28,6 +29,7 @@ export const appSettingsRouter = t.router({
               in: [
                 AppSettingName.MIN_BET_AMOUNT,
                 AppSettingName.MAX_BET_AMOUNT,
+                AppSettingName.REPEAT_ENTRIES_LIMIT,
               ],
             },
           },
@@ -46,6 +48,7 @@ export const appSettingsRouter = t.router({
         username: string;
         min: number;
         max: number;
+        repeatEntries: number;
       };
 
       const map = new Map<string, UserAppSettingsType>();
@@ -61,6 +64,7 @@ export const appSettingsRouter = t.router({
               username: record.User.username || 'unknown',
               min: Number(record.value),
               max: 0,
+              repeatEntries: 0,
             });
           }
         }
@@ -75,6 +79,22 @@ export const appSettingsRouter = t.router({
               username: record.User.username || 'unknown',
               min: 0,
               max: Number(record.value),
+              repeatEntries: 0,
+            });
+          }
+        }
+        if (record.name === AppSettingName.REPEAT_ENTRIES_LIMIT) {
+          const userSettings = map.get(record.userId);
+          if (userSettings) {
+            userSettings.repeatEntries = Number(record.value);
+            map.set(record.userId, userSettings);
+          } else {
+            map.set(record.userId, {
+              userId: record.userId,
+              username: record.User.username || 'unknown',
+              min: 0,
+              max: 0,
+              repeatEntries: Number(record.value),
             });
           }
         }
@@ -89,11 +109,15 @@ export const appSettingsRouter = t.router({
             if (cur.name === AppSettingName.MAX_BET_AMOUNT) {
               acc.max = Number(cur.value);
             }
+            if (cur.name === AppSettingName.REPEAT_ENTRIES_LIMIT) {
+              acc.repeatEntries = Number(cur.value);
+            }
             return acc;
           },
           {
             min: 0,
             max: 0,
+            repeatEntries: 0,
           },
         ),
         userAppSettings: Array.from(map.values()),

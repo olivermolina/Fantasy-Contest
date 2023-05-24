@@ -12,6 +12,7 @@ const envSchema = yup.object().shape({
   LOGTAIL_SOURCE: yup.string(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: yup.string().required(),
   NEXT_PUBLIC_SUPABASE_URL: yup.string().required(),
+  NEXT_SECRET_SERVICE_ROLE_KEY: yup.string().required(),
   NODE_ENV: yup
     .string()
     .oneOf(['development', 'preview', 'production'])

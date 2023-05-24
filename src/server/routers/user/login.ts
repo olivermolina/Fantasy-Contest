@@ -6,6 +6,7 @@ import { supabase } from '~/utils/supabaseClient';
 import { setAuthResponse } from './setAuthResponse';
 import { autoJoinDefaultContest } from '~/server/routers/user/autoJoinDefaultContest';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { UserStatus } from '@prisma/client';
 
 const login = t.procedure
   .input(
@@ -60,12 +61,20 @@ const login = t.procedure
       // Auto join more or less contest
       await autoJoinDefaultContest(userId);
 
+      if (prismaUser?.status === UserStatus.INACTIVE) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: CustomErrorMessages.ACCOUNT_INACTIVE,
+        });
+      }
+
       setAuthResponse(
         ctx,
         result.session?.access_token,
         result.session?.refresh_token,
       );
     } catch (e) {
+      if (e instanceof TRPCError) throw e;
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: CustomErrorMessages.LOGIN,

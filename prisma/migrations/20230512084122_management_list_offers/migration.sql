@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ModuleName" ADD VALUE 'MANAGEMENT_LIST_OFFERS';

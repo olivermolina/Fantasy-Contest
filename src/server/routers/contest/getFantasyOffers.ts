@@ -20,13 +20,15 @@ dayjs.tz.setDefault('America/New_York');
  * statline that will be 50/50 odds either way with a push for the exact value.
  *
  * @param league one of the supported league enums in the application
+ * @param cache whether or not to use the cache for this request
  */
 export async function getFantasyOffers(
   league: League,
+  cache?: boolean,
 ): Promise<FantasyOffer[]> {
   const marketOddsRange = await getMarketOddsRange();
 
-  let markets = appNodeCache.get(league) as MarketMapData[];
+  let markets = cache ? (appNodeCache.get(league) as MarketMapData[]) : [];
   if (!markets || markets.length === 0) {
     markets = await prisma.market.findMany({
       where: {
@@ -55,6 +57,7 @@ export async function getFantasyOffers(
             },
           },
         },
+        MarketOverride: true,
       },
     });
     appNodeCache.set(league, markets, 300);

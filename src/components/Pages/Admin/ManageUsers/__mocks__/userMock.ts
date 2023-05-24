@@ -17,4 +17,7 @@ export const userMock = {
   postalCode: 'test',
   DOB: dayjs().toDate(),
   referral: 'test',
+  created_at: new Date(),
+  isFirstDeposit: true,
+  timezone: 'America/New_York',
 };

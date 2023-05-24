@@ -5,22 +5,7 @@ import * as z from 'zod';
 import type { AdminModuleByCategoryType } from '~/server/routers/admin/getModulePermissions';
 import ModuleUserPermissions from './ModuleUserPermissions';
 import Button from '@mui/material/Button';
-
-export const UserPermissionFormValidationSchema = z.object({
-  userId: z.string().min(1),
-  userPermissions: z.array(
-    z.object({
-      category: z.string().min(1),
-      modulePermissions: z.array(
-        z.object({
-          moduleId: z.string().min(1),
-          label: z.string(),
-          checked: z.boolean(),
-        }),
-      ),
-    }),
-  ),
-});
+import { UserPermissionFormValidationSchema } from '~/server/routers/admin/saveModulePermissions';
 
 export type UserPermissionFormInputs = z.infer<
   typeof UserPermissionFormValidationSchema

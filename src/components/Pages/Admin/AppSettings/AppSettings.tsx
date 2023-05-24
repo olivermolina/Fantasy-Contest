@@ -35,6 +35,7 @@ const formSchema = z.object({
     .min(1, 'Referral custom text is required'),
   minBetAmount: z.coerce.number().min(1, 'Minimum bet amount is required'),
   maxBetAmount: z.coerce.number().min(1, 'Maximum bet amount is required'),
+  repeatEntries: z.coerce.number().min(0, 'Repeat entries limit is required'),
   minMarketOdds: z.coerce.number().min(-200, 'Minimum market odds is required'),
   maxMarketOdds: z.coerce.number().min(1, 'Maximum market odds is required'),
   challengePromoMessage: z.string().min(1, 'Promo message is required'),
@@ -80,6 +81,7 @@ export const AppSettings = (props: Props) => {
         referralCustomText: appSettings.REFERRAL_CUSTOM_TEXT,
         minBetAmount: Number(appSettings.MIN_BET_AMOUNT),
         maxBetAmount: Number(appSettings.MAX_BET_AMOUNT),
+        repeatEntries: Number(appSettings.REPEAT_ENTRIES_LIMIT),
         minMarketOdds: Number(appSettings.MIN_MARKET_ODDS),
         maxMarketOdds: Number(appSettings.MAX_MARKET_ODDS),
         challengePromoMessage: appSettings.CHALLENGE_PROMO_MESSAGE,
@@ -275,6 +277,18 @@ export const AppSettings = (props: Props) => {
             inputProps={{
               step: 0.01,
             }}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            type={'number'}
+            label="Repeat Entry Limit"
+            placeholder={'0'}
+            variant="outlined"
+            fullWidth
+            {...register('repeatEntries')}
+            error={!!errors?.repeatEntries}
+            helperText={errors?.repeatEntries?.message}
+            size={'small'}
             InputLabelProps={{ shrink: true }}
           />
         </div>

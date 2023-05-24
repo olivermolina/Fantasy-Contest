@@ -28,6 +28,7 @@ export type AppSettingsState = Record<
     | 'MIN_MARKET_ODDS'
     | 'MAX_MARKET_ODDS'
     | 'CHALLENGE_PROMO_MESSAGE'
+    | 'REPEAT_ENTRIES_LIMIT'
   >,
   string
 > & {
@@ -70,6 +71,8 @@ const initialappSettings: AppSettingsState = {
     DefaultAppSettings.MAX_MARKET_ODDS.toString(),
   [AppSettingName.CHALLENGE_PROMO_MESSAGE]:
     DefaultAppSettings.CHALLENGE_PROMO_MESSAGE,
+  [AppSettingName.REPEAT_ENTRIES_LIMIT]:
+    DefaultAppSettings.REPEAT_ENTRIES.toString(),
 
   initial: true,
 };

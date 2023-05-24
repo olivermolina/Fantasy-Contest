@@ -18,6 +18,8 @@ import dayjs from 'dayjs';
 import { PickStatus } from '~/constants/PickStatus';
 import { calculateInsuredPayout } from '~/utils/calculateInsuredPayout';
 import { EntryDatetimeFormat } from '~/constants/EntryDatetimeFormat';
+import { USATimeZone } from '~/constants/USATimeZone';
+import { z } from 'zod';
 
 const mapBetStatusToPickStatus = (status: BetStatus) => {
   switch (status) {
@@ -46,10 +48,11 @@ const getInsuredPayout = (stake: number, contestCategory: ContestCategory) => {
 
 export const listBets = t.procedure
   .input(
-    yup.object({
-      startDate: yup.string(),
-      endDate: yup.string(),
-      userId: yup.string(),
+    z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+      userId: z.string().optional(),
+      betStatus: z.nativeEnum(PickStatus).optional(),
     }),
   )
   .output(
@@ -83,19 +86,30 @@ export const listBets = t.procedure
     const userId =
       user?.isAdmin && input.userId ? input.userId : ctx.session.user.id;
 
-    const { startDate, endDate } = input;
+    const timezone = user?.timezone || USATimeZone['America/New_York'];
+    const startDate = dayjs(`${input.startDate}`).tz(timezone).toDate();
+    const endDate = dayjs(`${input.endDate}`).tz(timezone).toDate();
+    // Add 1 day to the end date to include all bets for the end date
+    endDate.setDate(endDate.getDate() + 1);
+
+    const updatedAtInput = {
+      gte: startDate,
+      lte: endDate,
+    };
+
     const bets = await prisma.bet.findMany({
       where: {
         owner: {
           id: userId,
         },
-        ...(startDate &&
-          endDate && {
-            updated_at: {
-              gte: dayjs(`${startDate}`).tz('America/New_York').toDate(),
-              lte: dayjs(`${endDate}`).tz('America/New_York').toDate(),
-            },
-          }),
+        // If betStatus is PENDING, return only pending bets without the date range filter
+        ...(input.betStatus === PickStatus.PENDING
+          ? {
+              status: BetStatus.PENDING,
+            }
+          : {
+              updated_at: updatedAtInput,
+            }),
       },
       orderBy: {
         updated_at: 'desc',
@@ -130,10 +144,10 @@ export const listBets = t.procedure
                   ? 'More or Less'
                   : 'Token Contest',
               pickTime: dayjs(b.created_at)
-                .tz('America/New_York')
+                .tz(timezone)
                 .format(EntryDatetimeFormat),
               settledTime: dayjs(b.updated_at)
-                .tz('America/New_York')
+                .tz(timezone)
                 .format(EntryDatetimeFormat),
               picks: b.legs.map((l) => ({
                 id: l.id,
@@ -171,10 +185,10 @@ export const listBets = t.procedure
               gameInfo: b.legs[0]!.market.offer?.matchup,
               contestType: 'More or Less',
               pickTime: dayjs(b.created_at)
-                .tz('America/New_York')
+                .tz(timezone)
                 .format(EntryDatetimeFormat),
               settledTime: dayjs(b.updated_at)
-                .tz('America/New_York')
+                .tz(timezone)
                 .format(EntryDatetimeFormat),
               potentialWin:
                 b.stakeType === BetStakeType.INSURED

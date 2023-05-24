@@ -24,4 +24,6 @@ export enum CustomErrorMessages {
   SUBMIT_ENTRY_ERROR = 'Error submitting entry. Please try again!',
   INSUFFICIENT_FUNDS_ERROR = 'Insufficient funds. Please deposit funds in your account and try again.',
   NOT_OF_AGE_STATE_ERROR = 'Sorry you’re not of age to participate in your state!',
+  SUSPENDED_PLACE_BET = 'Sorry you’re  not allowed to place bets at this time. Please contact support with questions!',
+  ACCOUNT_INACTIVE = 'Your account is inactive. Please contact support.',
 }

@@ -223,6 +223,7 @@ describe('playerWeeklyBalance', () => {
         lastname: 'GROUP',
         agent: null,
         isFirstDeposit: false,
+        referral: '',
       },
       dateRange,
     });
@@ -231,8 +232,12 @@ describe('playerWeeklyBalance', () => {
       where: {
         userId: playerId,
         updated_at: {
-          gte: dayjs(`${dateRange.from}`).tz('America/New_York').toDate(),
-          lte: dayjs(`${dateRange.to} `).tz('America/New_York').toDate(),
+          gte: dayjs(`${dateRange.from} 00:00:00`)
+            .tz('America/New_York')
+            .toDate(),
+          lte: dayjs(`${dateRange.to} 23:59:59`)
+            .tz('America/New_York')
+            .toDate(),
         },
         NOT: {
           status: BetStatus.PENDING,

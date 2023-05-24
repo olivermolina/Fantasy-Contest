@@ -1,7 +1,7 @@
 import { AppRouter, appRouter } from '~/server/routers/_app';
 import { inferProcedureInput, TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
-import { supabase } from '~/utils/supabaseTestClient';
+import { supabase } from '~/utils/supabaseAdminClient';
 
 describe.skip('Test user signup', () => {
   const caller = appRouter.createCaller({} as any);

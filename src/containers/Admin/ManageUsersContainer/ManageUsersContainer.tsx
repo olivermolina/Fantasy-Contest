@@ -12,6 +12,7 @@ import { TRPCClientError } from '@trpc/client';
 import { Dialog } from '@mui/material';
 import { UserStatus } from '@prisma/client';
 import { NEW_USER_ID } from '~/constants/NewUserId';
+import { USATimeZone } from '~/constants/USATimeZone';
 
 export const ManageUsersContainer = () => {
   const [selectedUser, setSelectedUser] = useState<ManageUserRowModel | null>(
@@ -46,6 +47,9 @@ export const ManageUsersContainer = () => {
       city: '',
       state: '',
       postalCode: '',
+      isFirstDeposit: false,
+      created_at: new Date(),
+      timezone: USATimeZone['America/New_York'],
     });
   };
   const onSubmit = async (formInputs: UserFormInputs) => {

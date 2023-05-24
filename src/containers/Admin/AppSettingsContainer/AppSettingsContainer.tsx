@@ -75,6 +75,10 @@ const AppSettingsContainer = () => {
           appSettingName: AppSettingName.CHALLENGE_PROMO_MESSAGE,
           value: inputs.challengePromoMessage,
         },
+        {
+          appSettingName: AppSettingName.REPEAT_ENTRIES_LIMIT,
+          value: inputs.repeatEntries.toString(),
+        },
       ]);
 
       dispatch(fetchAppSettings({ refetch: true }));

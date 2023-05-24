@@ -9,6 +9,7 @@ export const UserLimitFormValidationSchema = z
   .object({
     min: z.coerce.number().min(1),
     max: z.coerce.number(),
+    repeatEntries: z.coerce.number(),
   })
   .refine((data) => data.max > data.min, {
     message: 'Maximum limit must be greater than minimum',
@@ -38,7 +39,7 @@ export const UserLimits = (props: UserLimitsProps) => {
           <Typography variant="h5" className="my-4">
             Update Global Limits
           </Typography>
-          <div className="my-2">
+          <div className="flex my-2 gap-2">
             <TextField
               {...register('min')}
               error={!!errors?.min}
@@ -53,6 +54,14 @@ export const UserLimits = (props: UserLimitsProps) => {
               type="number"
               label="Global Max"
             />
+
+            <TextField
+              {...register('repeatEntries')}
+              error={!!errors?.repeatEntries}
+              helperText={errors?.repeatEntries?.message}
+              type="number"
+              label="Repeat Entries"
+            />
           </div>
           <Button type="submit">Save</Button>
         </form>
@@ -65,5 +74,6 @@ UserLimits.defaultProps = {
   defaultValues: {
     min: DefaultAppSettings.MIN_BET_AMOUNT,
     max: DefaultAppSettings.MAX_BET_AMOUNT,
+    repeatEntries: DefaultAppSettings.REPEAT_ENTRIES,
   },
 };

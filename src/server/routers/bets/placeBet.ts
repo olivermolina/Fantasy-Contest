@@ -12,6 +12,7 @@ import {
   Market,
   Prisma,
   TransactionType,
+  UserStatus,
 } from '@prisma/client';
 import { prisma } from '~/server/prisma';
 import { calculateTeaserPayout } from '~/utils/caculateTeaserPayout';
@@ -114,6 +115,13 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
       });
     }
 
+    if (prismaUser.status === UserStatus.SUSPENDED) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: CustomErrorMessages.SUSPENDED_PLACE_BET,
+      });
+    }
+
     const minBetAmount = Number(
       appSettings.find((s) => s.name === AppSettingName.MIN_BET_AMOUNT)
         ?.value || DefaultAppSettings.MIN_BET_AMOUNT,
@@ -153,6 +161,11 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
       }
     }
 
+    const repeatEntriesLimit = Number(
+      appSettings.find((s) => s.name === AppSettingName.REPEAT_ENTRIES_LIMIT)
+        ?.value || DefaultAppSettings.REPEAT_ENTRIES,
+    );
+
     const legs: Prisma.BetLegCreateManyBetInput[] = await Promise.all(
       bet.legs.map(async (leg): Promise<Prisma.BetLegCreateManyBetInput> => {
         const market = await prisma.market.findFirstOrThrow({
@@ -181,6 +194,26 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: error.message,
+          });
+        }
+
+        // Get the number of repeat entries the user has made with the same offer
+        const repeatEntries = await prisma.bet.count({
+          where: {
+            userId: prismaUser.id,
+            legs: {
+              some: {
+                marketId: leg.marketId,
+              },
+            },
+          },
+        });
+
+        // If the user has already made a bet with the same offer, throw an error
+        if (repeatEntries > repeatEntriesLimit) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: `Sorry, you have reached the limit for repeating the same offers in an entry. Please choose different offers to continue.`,
           });
         }
 

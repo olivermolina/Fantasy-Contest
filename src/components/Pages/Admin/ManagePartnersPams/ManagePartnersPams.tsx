@@ -13,7 +13,7 @@ import { mapUserTypeLabel } from '~/utils/mapUserTypeLabel';
 
 export type ManagePartnersPamsRowModel = Pick<
   User,
-  'id' | 'username' | 'email' | 'status' | 'type'
+  'id' | 'username' | 'email' | 'status' | 'type' | 'timezone'
 > & { subAdminId: string; phone: string; password?: string };
 
 interface Props {

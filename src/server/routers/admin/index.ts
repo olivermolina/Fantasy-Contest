@@ -64,7 +64,11 @@ export const adminRouter = t.router({
         where: {
           userId,
           name: {
-            in: [AppSettingName.MAX_BET_AMOUNT, AppSettingName.MIN_BET_AMOUNT],
+            in: [
+              AppSettingName.MAX_BET_AMOUNT,
+              AppSettingName.MIN_BET_AMOUNT,
+              AppSettingName.REPEAT_ENTRIES_LIMIT,
+            ],
           },
         },
       });

@@ -137,6 +137,7 @@ const WeeklyBalanceContainer = () => {
         fullWidth
         sx={{ top: 65 }}
         onClose={handleClose}
+        className={'bg-secondary'}
       >
         <DialogTitle sx={{ m: 0, p: 2 }}>
           <Typography variant={'inherit'} sx={{ textAlign: 'center' }}>
@@ -165,19 +166,21 @@ const WeeklyBalanceContainer = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <PicksContainer
-          userId={userId}
-          defaultDateRange={
-            selectedTabStatus === PickStatus.SETTLED
-              ? dateRangeValue
-              : undefined
-          }
-          showBalanceSummary={false}
-          showDateFilters={false}
-          showTabTitle={showTabTitle}
-          selectedTabStatus={selectedTabStatus}
-          isAdminView
-        />
+        <div className={'bg-secondary'}>
+          <PicksContainer
+            userId={userId}
+            defaultDateRange={
+              selectedTabStatus === PickStatus.SETTLED
+                ? dateRangeValue
+                : undefined
+            }
+            showBalanceSummary={false}
+            showDateFilters={false}
+            showTabTitle={showTabTitle}
+            selectedTabStatus={selectedTabStatus}
+            isAdminView
+          />
+        </div>
       </Dialog>
     </div>
   );

@@ -16,32 +16,10 @@ import FormControl from '@mui/material/FormControl';
 import { ManagePartnersPamsRowModel } from './ManagePartnersPams';
 import { NEW_USER_ID } from '~/constants/NewUserId';
 import { mapUserTypeLabel } from '~/utils/mapUserTypeLabel';
+import { USATimeZone } from '~/constants/USATimeZone';
+import { EditFormValidationSchema } from '~/server/routers/admin/savePartnerPam';
 
-/**
- * Represents the validation schema for user form fields.
- */
-export const EditFormValidationSchema = z.object({
-  id: z.string().min(1, { message: 'ID is required' }),
-  status: z.boolean().optional(),
-  username: z.string().min(1, { message: 'Username is required' }),
-  email: z.string().email({
-    message: 'Invalid email. Please enter a valid email address',
-  }),
-  phone: z
-    .string()
-    .min(8, {
-      message: 'Please enter a valid phone number',
-    })
-    .max(14, {
-      message: 'Please enter a valid phone number',
-    })
-    .optional(),
-  type: z.nativeEnum(UserType, {
-    errorMap: () => ({ message: 'Please select user type' }),
-  }),
-  subAdminId: z.string().optional(),
-  password: z.string().min(6),
-});
+type USATimeZoneKey = keyof typeof USATimeZone;
 
 /**
  * Defines the form fields for user form.
@@ -250,6 +228,35 @@ export default function EditForm(props: Props) {
             </div>
           </div>
         )}
+
+        <div className={'grid grid-cols-3 lg:grid-cols-6 p-4 gap-2'}>
+          <span className={'font-semibold'}>Timezone</span>
+          <div className={'col-span-2 lg:col-span-5'}>
+            <Controller
+              name="timezone"
+              control={control}
+              defaultValue={user.timezone!}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors?.type} size={'small'}>
+                  <Select size={'small'} fullWidth {...field}>
+                    <MenuItem key={'empty-status'} value={undefined}>
+                      <span className={'italic text-gray-400'}>
+                        Select Timezone
+                      </span>
+                    </MenuItem>
+                    {(Object.keys(USATimeZone) as USATimeZoneKey[]).map(
+                      (key) => (
+                        <MenuItem key={key} value={key}>
+                          {USATimeZone[key]}
+                        </MenuItem>
+                      ),
+                    )}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </div>
+        </div>
         <div className={'flex flex-row justify-between p-4'}>
           <Button variant={'outlined'} onClick={closeForm}>
             Cancel

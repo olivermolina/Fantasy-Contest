@@ -25,6 +25,10 @@ const PicksContainer = (props: Props) => {
   const router = useRouter();
   const routerUserId = router.query?.userId;
 
+  const [selectedTabStatus, setSelectedTabStatus] = React.useState<PickStatus>(
+    props.selectedTabStatus || PickStatus.PENDING,
+  );
+
   const startDate = useMemo(
     () => dateRangeValue?.startDate || props.defaultDateRange?.startDate,
     [dateRangeValue, props.defaultDateRange],
@@ -36,14 +40,12 @@ const PicksContainer = (props: Props) => {
   );
 
   const { data, isLoading, refetch } = trpc.bets.list.useQuery({
-    startDate: startDate?.format('YYYY-MM-DD'),
-    endDate: endDate?.format('YYYY-MM-DD'),
+    startDate: startDate?.format('YYYY-MM-DD') || dayjs().format('YYYY-MM-DD'),
+    endDate: endDate?.format('YYYY-MM-DD') || dayjs().format('YYYY-MM-DD'),
     userId: (routerUserId as string) || props.userId,
+    betStatus: selectedTabStatus,
   });
 
-  const [selectedTabStatus, setSelectedTabStatus] = React.useState<PickStatus>(
-    props.selectedTabStatus || PickStatus.PENDING,
-  );
   const handleChangeTab = (newStatus: PickStatus) => {
     setSelectedTabStatus(newStatus);
     if (newStatus === PickStatus.PENDING) {

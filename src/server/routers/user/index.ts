@@ -21,6 +21,7 @@ import addRemoveWithdrawable from './addRemoveWithdrawable';
 import getWithdrawBonusCreditOfferChances from './getWithdrawBonusCreditOfferChances';
 import addWithdrawBonusCredit from './addWithdrawBonusCredit';
 import syncSendGridContacts from './syncSendGridContacts';
+import userSyncSignUpDate from './userSyncSignUpDate';
 
 export const userRouter = t.router({
   accountDeposit,
@@ -45,6 +46,7 @@ export const userRouter = t.router({
   getWithdrawBonusCreditOfferChances,
   addWithdrawBonusCredit,
   syncSendGridContacts,
+  userSyncSignUpDate,
 });
 
 export default userRouter;

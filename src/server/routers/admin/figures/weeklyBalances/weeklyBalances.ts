@@ -86,6 +86,7 @@ export const innerFn = async ({
       const weeklyBalances = await playerWeeklyBalance({
         player,
         dateRange,
+        timezone: ctx.user.timezone!,
       });
       return { ...player, ...weeklyBalances };
     }),

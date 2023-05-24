@@ -1,26 +1,85 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ManageUsers should render correctly 1`] = `
+exports[`ListOffersContainer it should render correctly 1`] = `
 <div>
   <div
-    class="flex flex-col gap-4 h-screen w-full pb-6"
+    aria-hidden="true"
+    class="MuiBackdrop-root css-kq809n-MuiBackdrop-root"
+    data-testid="backdrop-loading"
+    style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
   >
     <div
-      class="flex flex-row-reverse gap-2"
+      class="MuiBox-root css-rmz4vk"
     >
-      <button
-        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
-        tabindex="0"
-        type="button"
+      <span
+        class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorInherit css-62e83j-MuiCircularProgress-root"
+        role="progressbar"
+        style="width: 55px; height: 55px;"
       >
-        Add User
-        <span
-          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-        />
-      </button>
+        <svg
+          class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
+          viewBox="22 22 44 44"
+        >
+          <circle
+            class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate MuiCircularProgress-circleDisableShrink css-79nvmn-MuiCircularProgress-circle"
+            cx="44"
+            cy="44"
+            fill="none"
+            r="20.2"
+            stroke-width="3.6"
+          />
+        </svg>
+      </span>
+      <div
+        class="MuiBox-root css-1o8dslu"
+      >
+        <div
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-wn51m9-MuiAvatar-root"
+        >
+          <svg
+            height="36"
+            preserveAspectRatio="xMidYMid meet"
+            role="loading"
+            version="1.0"
+            viewBox="0 0 176.000000 192.000000"
+            width="28"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              fill="#fff"
+              id="top"
+            />
+            <g
+              fill="#2463eb"
+              stroke="#2463eb"
+              transform="translate(0.000000,192.000000) scale(0.100000,-0.100000)"
+            >
+              <path
+                d="M385 1891 c-40 -10 -66 -27 -90 -59 -18 -25 -20 -45 -23 -229 l-3 -203 60 0 61 0 0 173 c0 94 4 178 8 185 7 10 111 12 488 10 l479 -3 3 -187 2 -188 66 0 65 0 -3 204 c-3 224 -5 230 -72 280 -27 20 -39 21 -519 23 -271 1 -505 -2 -522 -6z"
+              />
+              <path
+                d="M153 1309 c-24 -12 -52 -37 -65 -57 l-23 -37 0 -536 0 -535 25 -37 c46 -68 81 -77 289 -77 l182 0 23 53 24 52 -102 5 c-74 4 -109 10 -132 24 -73 44 -86 129 -39 245 l28 71 143 0 143 0 -15 -35 c-22 -52 -19 -56 33 -53 l47 3 28 69 c15 38 28 75 28 83 0 10 -22 13 -97 13 -79 0 -104 4 -130 20 -87 52 -89 127 -12 315 62 150 121 235 193 280 47 29 56 30 185 35 l136 5 16 35 c9 19 20 45 23 58 l7 22 -448 0 c-434 0 -449 -1 -490 -21z"
+              />
+              <path
+                d="M1255 1275 c-14 -30 -25 -57 -25 -59 0 -3 49 -6 109 -8 105 -3 111 -4 140 -32 59 -57 63 -120 15 -241 l-26 -65 -140 0 -140 0 5 23 c3 12 9 32 12 45 7 21 4 22 -37 22 l-45 0 -29 -72 c-16 -40 -30 -76 -32 -80 -2 -5 36 -8 85 -8 119 -1 166 -21 195 -86 26 -60 22 -92 -31 -223 -60 -148 -87 -197 -139 -253 -75 -81 -105 -92 -258 -96 l-131 -4 -16 -46 c-10 -26 -17 -50 -17 -54 0 -5 184 -8 408 -8 403 0 408 0 452 23 24 12 53 35 64 50 21 28 21 41 24 563 3 597 5 578 -66 632 -34 26 -39 27 -194 30 l-158 3 -25 -56z"
+              />
+              <path
+                d="M843 948 c-8 -13 -63 -140 -63 -146 0 -2 23 -2 51 0 l51 3 29 75 c16 41 29 76 29 78 0 9 -90 -1 -97 -10z"
+              />
+              <path
+                d="M933 493 c-48 -110 -48 -103 1 -103 51 0 55 4 89 93 l25 67 -44 0 -45 0 -26 -57z"
+              />
+            </g>
+          </svg>
+        </div>
+      </div>
     </div>
+  </div>
+  <div
+    style="height: 500px; width: 100%;"
+  >
     <div
-      aria-colcount="12"
+      aria-colcount="8"
       aria-multiselectable="false"
       aria-rowcount="1"
       class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
@@ -28,123 +87,62 @@ exports[`ManageUsers should render correctly 1`] = `
     >
       <div>
         <div
-          class="MuiDataGrid-toolbarContainer css-128fb87-MuiDataGrid-toolbarContainer"
+          class="flex-grow p-2 border-b"
         >
-          <button
-            aria-label="Show filters"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
-            data-mui-internal-clone-element="true"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon"
-            >
-              <span
-                class="MuiBadge-root MuiBadge-root css-1c32n2y-MuiBadge-root"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                  data-testid="FilterListIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"
-                  />
-                </svg>
-                <span
-                  class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary MuiBadge-badge MuiBadge-invisible css-1pi4uwz-MuiBadge-badge"
-                >
-                  0
-                </span>
-              </span>
-            </span>
-            Filters
-            <span
-              class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            aria-haspopup="menu"
-            aria-label="Export"
-            aria-labelledby=":r4:"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
-            id=":r3:"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon"
-            >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                data-testid="SaveAltIcon"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"
-                />
-              </svg>
-            </span>
-            Export
-            <span
-              class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-            />
-          </button>
           <div
-            class="MuiBox-root css-1rr4qq7"
-          />
-          <div
-            aria-label="Search"
-            class="MuiFormControl-root MuiTextField-root css-3be3ve-MuiFormControl-root-MuiTextField-root-MuiDataGrid-toolbarQuickFilter"
+            class="MuiFormControl-root MuiTextField-root css-10qkx7n-MuiFormControl-root-MuiTextField-root"
           >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="true"
+              for="league"
+              id="league-label"
+            >
+              Select league
+            </label>
             <div
-              class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd css-v4u5dn-MuiInputBase-root-MuiInput-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-sizeSmall css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root"
             >
+              <div
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="league-label league"
+                class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-jedpe8-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+                id="league"
+                role="button"
+                tabindex="0"
+              >
+                NBA
+              </div>
+              <input
+                aria-hidden="true"
+                class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
+                tabindex="-1"
+                value="NBA"
+              />
               <svg
                 aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
-                data-testid="SearchIcon"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                data-testid="ArrowDropDownIcon"
                 focusable="false"
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                  d="M7 10l5 5 5-5z"
                 />
               </svg>
-              <input
-                aria-invalid="false"
-                class="MuiInputBase-input MuiInput-input MuiInputBase-inputTypeSearch MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-c63i49-MuiInputBase-input-MuiInput-input"
-                id=":r5:"
-                placeholder="Search…"
-                type="search"
-                value=""
-              />
-              <button
-                aria-label="Clear"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-fp9tcu-MuiButtonBase-root-MuiIconButton-root"
-                tabindex="0"
-                type="button"
+              <fieldset
+                aria-hidden="true"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
-                  data-testid="CloseIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
+                <legend
+                  class="css-14lo706"
                 >
-                  <path
-                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                  />
-                </svg>
-                <span
-                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-                />
-              </button>
+                  <span>
+                    Select league
+                  </span>
+                </legend>
+              </fieldset>
             </div>
           </div>
         </div>
@@ -225,12 +223,12 @@ exports[`ManageUsers should render correctly 1`] = `
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":r8:"
+                      aria-controls=":r3:"
                       aria-haspopup="true"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":r9:"
+                      id=":r4:"
                       tabindex="-1"
                       type="button"
                     >
@@ -270,10 +268,10 @@ exports[`ManageUsers should render correctly 1`] = `
               </div>
               <div
                 aria-colindex="2"
-                aria-label="Username"
+                aria-label="League"
                 aria-sort="none"
                 class="MuiDataGrid-columnHeader MuiDataGrid-columnHeader--sortable MuiDataGrid-withBorderColor"
-                data-field="username"
+                data-field="league"
                 role="columnheader"
                 style="height: 56px; width: 0px; min-width: 0; max-width: 0;"
                 tabindex="-1"
@@ -293,7 +291,7 @@ exports[`ManageUsers should render correctly 1`] = `
                         class="MuiDataGrid-columnHeaderTitle css-t89xny-MuiDataGrid-columnHeaderTitle"
                         data-mui-internal-clone-element="true"
                       >
-                        Username
+                        League
                       </div>
                     </div>
                     <div
@@ -327,12 +325,12 @@ exports[`ManageUsers should render correctly 1`] = `
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":rc:"
+                      aria-controls=":r7:"
                       aria-haspopup="true"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":rd:"
+                      id=":r8:"
                       tabindex="-1"
                       type="button"
                     >
@@ -372,10 +370,10 @@ exports[`ManageUsers should render correctly 1`] = `
               </div>
               <div
                 aria-colindex="3"
-                aria-label="Email"
+                aria-label="Player"
                 aria-sort="none"
                 class="MuiDataGrid-columnHeader MuiDataGrid-columnHeader--sortable MuiDataGrid-withBorderColor"
-                data-field="email"
+                data-field="playerName"
                 role="columnheader"
                 style="height: 56px; width: 0px; min-width: 0; max-width: 0;"
                 tabindex="-1"
@@ -395,7 +393,7 @@ exports[`ManageUsers should render correctly 1`] = `
                         class="MuiDataGrid-columnHeaderTitle css-t89xny-MuiDataGrid-columnHeaderTitle"
                         data-mui-internal-clone-element="true"
                       >
-                        Email
+                        Player
                       </div>
                     </div>
                     <div
@@ -429,12 +427,12 @@ exports[`ManageUsers should render correctly 1`] = `
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":rg:"
+                      aria-controls=":rb:"
                       aria-haspopup="true"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":rh:"
+                      id=":rc:"
                       tabindex="-1"
                       type="button"
                     >
@@ -537,7 +535,7 @@ exports[`ManageUsers should render correctly 1`] = `
             />
             <p
               class="MuiTablePagination-selectLabel css-pdct74-MuiTablePagination-selectLabel"
-              id=":r7:"
+              id=":r2:"
             >
               Rows per page:
             </p>
@@ -547,9 +545,9 @@ exports[`ManageUsers should render correctly 1`] = `
               <div
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-labelledby=":r7: :r6:"
+                aria-labelledby=":r2: :r1:"
                 class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-194a1fa-MuiSelect-select-MuiInputBase-input"
-                id=":r6:"
+                id=":r1:"
                 role="button"
                 tabindex="0"
               >

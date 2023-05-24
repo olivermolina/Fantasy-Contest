@@ -14,13 +14,7 @@ import { convertUserAddressToString } from '~/utils/convertUserAddressToString';
 
 export type ManageUserRowModel = Omit<
   User,
-  | 'isFirstDeposit'
-  | 'isAdmin'
-  | 'identityStatus'
-  | 'reasonCodes'
-  | 'type'
-  | 'agentId'
-  | 'phone'
+  'isAdmin' | 'identityStatus' | 'reasonCodes' | 'type' | 'agentId' | 'phone'
 > & { phone: string; password?: string };
 
 interface Props {
@@ -92,6 +86,24 @@ export default function ManageUsers(props: Props) {
       flex: 1,
       field: 'referral',
       headerName: 'Referral Code',
+    },
+    {
+      flex: 1,
+      field: 'deposited',
+      headerName: 'Deposited',
+      renderCell: (params) => {
+        const user = params.row as typeof rows[0];
+        return user.isFirstDeposit ? 'No' : 'Yes';
+      },
+    },
+    {
+      flex: 2,
+      field: 'created_at',
+      headerName: 'Sign-up Date',
+      renderCell: (params) => {
+        const user = params.row as typeof rows[0];
+        return dayjs(user.created_at).format('YYYY-MM-DD HH:mm A');
+      },
     },
     {
       flex: 1,

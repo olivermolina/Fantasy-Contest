@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import {
   Box,
-  FormControlLabel,
+  FormHelperText,
   IconButton,
-  Switch,
+  MenuItem,
+  Select,
   Tab,
   Tabs,
   TextField,
@@ -20,6 +21,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import FormControl from '@mui/material/FormControl';
+import { UserFormValidationSchema } from '~/server/routers/admin/saveUser';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,39 +52,6 @@ function a11yProps(index: number) {
     'aria-controls': `user-tabpanel-${index}`,
   };
 }
-
-/**
- * Represents the validation schema for user form fields.
- */
-export const UserFormValidationSchema = z.object({
-  id: z.string().min(1, { message: 'ID is required' }),
-  status: z.boolean().optional(),
-  username: z.string().min(1, { message: 'Username is required' }),
-  firstname: z.string().min(1, { message: 'First name is required' }),
-  lastname: z.string().min(1, { message: 'Last name is required' }),
-  address1: z.string().min(1, { message: 'Address 1 is required' }),
-  address2: z.string().optional(),
-  city: z.string().min(1, { message: 'City is required' }),
-  state: z.string().min(1, { message: 'State is required' }),
-  postalCode: z.string().optional(),
-  DOB: z.date({
-    required_error: 'DOB is required',
-    invalid_type_error: "That's not a DOB!",
-  }),
-  email: z.string().email({
-    message: 'Invalid email. Please enter a valid email address',
-  }),
-  phone: z
-    .string()
-    .min(8, {
-      message: 'Please enter a valid phone number',
-    })
-    .max(14, {
-      message: 'Please enter a valid phone number',
-    })
-    .optional(),
-  password: z.string().min(6),
-});
 
 /**
  * Defines the form fields for user form.
@@ -140,7 +110,7 @@ export default function UserForm(props: Props) {
       password: user.id === NEW_USER_ID ? '' : user.username || '',
       email: user.email,
       phone: user.phone?.toString(),
-      status: user.status === UserStatus.ACTIVE,
+      status: user.status,
       firstname: user.firstname || '',
       lastname: user.lastname || '',
       address1: user.address1 || '',
@@ -194,23 +164,37 @@ export default function UserForm(props: Props) {
           <div
             className={'grid grid-cols-3 items-center lg:grid-cols-6 p-4 gap-2'}
           >
-            <span className={'font-semibold'}>Active</span>
+            <span className={'font-semibold'}>Status</span>
             <div className={'col-span-2 lg:col-span-5'}>
               <Controller
                 name="status"
                 control={control}
-                defaultValue={false}
+                defaultValue={user.status}
                 render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        {...field}
-                        checked={field.value}
-                        color="primary"
-                      />
-                    }
-                    label=""
-                  />
+                  <FormControl
+                    fullWidth
+                    error={!!errors?.status}
+                    size={'small'}
+                  >
+                    <Select size={'small'} fullWidth {...field}>
+                      <MenuItem key={'empty-status'} value={undefined}>
+                        <span className={'italic text-gray-400'}>Status</span>
+                      </MenuItem>
+                      {[
+                        UserStatus.ACTIVE,
+                        UserStatus.INACTIVE,
+                        UserStatus.SUSPENDED,
+                      ].map((userStatus) => (
+                        <MenuItem key={userStatus} value={userStatus}>
+                          {userStatus}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+                    {errors?.status?.message ? (
+                      <FormHelperText>{errors?.status?.message}</FormHelperText>
+                    ) : null}
+                  </FormControl>
                 )}
               />
             </div>

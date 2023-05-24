@@ -1,7 +1,23 @@
 import { adminProcedure } from './middleware/isAdmin';
-import { UserPermissionFormValidationSchema } from '~/components/Pages/Admin/ManageUserPermissions/UserPermissionsForm';
 import prisma from '~/server/prisma';
 import { ModulePermission } from '~/server/routers/admin/getModulePermissions';
+import * as z from 'zod';
+
+export const UserPermissionFormValidationSchema = z.object({
+  userId: z.string().min(1),
+  userPermissions: z.array(
+    z.object({
+      category: z.string().min(1),
+      modulePermissions: z.array(
+        z.object({
+          moduleId: z.string().min(1),
+          label: z.string(),
+          checked: z.boolean(),
+        }),
+      ),
+    }),
+  ),
+});
 
 /**
  * Will save the user module permissions

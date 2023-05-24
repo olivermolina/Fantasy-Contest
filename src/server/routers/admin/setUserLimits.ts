@@ -16,6 +16,7 @@ export const setUserLimits = adminProcedure
         max: z.number(),
         userId: z.string().optional(),
         username: z.string().optional(),
+        repeatEntries: z.number(),
       })
       .refine((data) => data.max > data.min, {
         message: 'Maximum limit must be greater than minimum',
@@ -56,6 +57,7 @@ async function updateGlobalSettings(input: {
   userId?: string | undefined;
   min: number;
   max: number;
+  repeatEntries: number;
 }) {
   await prisma.$transaction([
     prisma.appSettings.upsert({
@@ -82,6 +84,18 @@ async function updateGlobalSettings(input: {
         value: input.max.toString(),
       },
     }),
+    prisma.appSettings.upsert({
+      where: {
+        name: AppSettingName.REPEAT_ENTRIES_LIMIT,
+      },
+      update: {
+        value: input.repeatEntries.toString(),
+      },
+      create: {
+        name: AppSettingName.REPEAT_ENTRIES_LIMIT,
+        value: input.repeatEntries.toString(),
+      },
+    }),
   ]);
 }
 
@@ -92,6 +106,7 @@ async function updateUserSettings(input: {
   userId: string;
   min: number;
   max: number;
+  repeatEntries: number;
 }) {
   await prisma.$transaction([
     prisma.userAppSettings.upsert({
@@ -124,6 +139,22 @@ async function updateUserSettings(input: {
         userId: input.userId,
         name: AppSettingName.MAX_BET_AMOUNT,
         value: input.max.toString(),
+      },
+    }),
+    prisma.userAppSettings.upsert({
+      where: {
+        userId_name: {
+          userId: input.userId,
+          name: AppSettingName.REPEAT_ENTRIES_LIMIT,
+        },
+      },
+      update: {
+        value: input.repeatEntries.toString(),
+      },
+      create: {
+        userId: input.userId,
+        name: AppSettingName.REPEAT_ENTRIES_LIMIT,
+        value: input.repeatEntries.toString(),
       },
     }),
   ]);

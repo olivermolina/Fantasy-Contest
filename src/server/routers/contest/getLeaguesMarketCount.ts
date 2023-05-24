@@ -13,7 +13,7 @@ export interface LeagueFantasyOffersCount {
 export const getLeagueFantasyOffersCount = t.procedure.query(async () => {
   return Promise.all(
     Object.values(League).map(async (league) => {
-      const leagueOffers = await getFantasyOffers(league);
+      const leagueOffers = await getFantasyOffers(league, true);
       return {
         league,
         count: leagueOffers.filter((offer) => offer.type === MarketType.PP)
