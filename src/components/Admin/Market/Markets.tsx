@@ -111,6 +111,7 @@ export default function Markets(props: PropsMarket) {
     updated_at: new Date(),
     team: null,
     freeSquareId: null,
+    marketOverrideId: null,
   };
   const [selectedMarket, setSelectedMarket] =
     useState<MarketWithPlayerTeam>(newMarket);
