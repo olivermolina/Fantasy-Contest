@@ -43,7 +43,7 @@ export default function ManagePartnersPams(props: Props) {
       headerName: 'Type',
 
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         return mapUserTypeLabel(user.type);
       },
     },
@@ -57,7 +57,7 @@ export default function ManagePartnersPams(props: Props) {
       field: 'action',
       headerName: 'Action',
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         const onClick = () => {
           props.openUserForm(user);
         };

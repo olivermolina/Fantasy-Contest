@@ -72,7 +72,7 @@ export default function FreePlayUserBonusCreditsTable(props: Props) {
       field: 'status',
       headerName: 'Status',
       renderCell: (params) => {
-        const currentRow = params.row as typeof rows[0];
+        const currentRow = params.row as (typeof rows)[0];
         return Object.keys(PaymentStatusCode)[
           Object.values(PaymentStatusCode).indexOf(currentRow.status as number)
         ];
@@ -83,7 +83,7 @@ export default function FreePlayUserBonusCreditsTable(props: Props) {
       field: 'action',
       headerName: 'Action',
       renderCell: (params) => {
-        const currentRow = params.row as typeof rows[0];
+        const currentRow = params.row as (typeof rows)[0];
         const onClick = () => {
           setSelectedRow(currentRow);
           setOpen(true);

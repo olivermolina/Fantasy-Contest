@@ -58,7 +58,7 @@ export const PendingBetsManagement = (props: Props) => {
       headerName: 'Legs',
       renderCell: (params) => {
         const onClick = () => {
-          const currentRow = params.row as typeof rows[0];
+          const currentRow = params.row as (typeof rows)[0];
           setSelectedRow(currentRow);
           setOpen(true);
           setIsViewOnly(true);
@@ -84,7 +84,7 @@ export const PendingBetsManagement = (props: Props) => {
       headerName: 'Actions',
       renderCell: (params) => {
         const onClick = (betStatus: BetStatus) => {
-          const currentRow = params.row as typeof rows[0];
+          const currentRow = params.row as (typeof rows)[0];
           setSelectedRow(currentRow);
           setOpen(true);
           setIsViewOnly(false);

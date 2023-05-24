@@ -91,7 +91,7 @@ export default function ManageUserPermissions(props: Props) {
       field: 'status',
       headerName: 'Status',
       renderCell: (params) => {
-        const currentRow = params.row as typeof rows[0];
+        const currentRow = params.row as (typeof rows)[0];
         //TODO onClick save user status to db
         return (
           <ControlledCheckbox
@@ -106,7 +106,7 @@ export default function ManageUserPermissions(props: Props) {
       headerName: 'Manage Rights',
 
       renderCell: (params) => {
-        const currentRow = params.row as typeof rows[0];
+        const currentRow = params.row as (typeof rows)[0];
         const onClick = () => {
           props.handleOpenManagePermission(currentRow);
         };

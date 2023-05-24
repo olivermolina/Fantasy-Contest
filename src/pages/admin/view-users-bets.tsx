@@ -103,7 +103,7 @@ export default function ViewUsersBetsPage() {
 
               renderCell: (params) => {
                 const onClick = () => {
-                  const currentRow = params.row as typeof rows[0];
+                  const currentRow = params.row as (typeof rows)[0];
                   setSelectedRow(currentRow);
                   setOpen(true);
                 };

@@ -5,7 +5,7 @@ import * as z from 'zod';
 import type { AdminModuleByCategoryType } from '~/server/routers/admin/getModulePermissions';
 import ModuleUserPermissions from './ModuleUserPermissions';
 import Button from '@mui/material/Button';
-import { UserPermissionFormValidationSchema } from '~/server/routers/admin/saveModulePermissions';
+import { UserPermissionFormValidationSchema } from '~/schemas/UserPermissionFormValidationSchema';
 
 export type UserPermissionFormInputs = z.infer<
   typeof UserPermissionFormValidationSchema

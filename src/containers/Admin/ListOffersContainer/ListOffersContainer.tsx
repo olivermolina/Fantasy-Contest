@@ -75,7 +75,7 @@ export default function ListOffersContainer() {
               flex: 1,
               headerName: 'ID',
               renderCell: (params) => {
-                const currentRow = params.row as typeof rows[0];
+                const currentRow = params.row as (typeof rows)[0];
                 return <TruncateCellContent value={currentRow?.id as string} />;
               },
             },

@@ -17,7 +17,7 @@ import { ManagePartnersPamsRowModel } from './ManagePartnersPams';
 import { NEW_USER_ID } from '~/constants/NewUserId';
 import { mapUserTypeLabel } from '~/utils/mapUserTypeLabel';
 import { USATimeZone } from '~/constants/USATimeZone';
-import { EditFormValidationSchema } from '~/server/routers/admin/savePartnerPam';
+import { EditFormValidationSchema } from '~/schemas/EditFormValidationSchema';
 
 type USATimeZoneKey = keyof typeof USATimeZone;
 

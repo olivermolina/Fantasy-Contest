@@ -22,7 +22,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import FormControl from '@mui/material/FormControl';
-import { UserFormValidationSchema } from '~/server/routers/admin/saveUser';
+import { UserFormValidationSchema } from '~/schemas/UserFormValidationSchema';
 
 interface TabPanelProps {
   children?: React.ReactNode;

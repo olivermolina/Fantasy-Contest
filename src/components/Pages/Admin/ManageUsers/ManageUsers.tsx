@@ -43,7 +43,7 @@ export default function ManageUsers(props: Props) {
       field: 'name',
       headerName: 'Name',
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         return `${user.firstname || ''} ${user.lastname || ''}`;
       },
     },
@@ -57,7 +57,7 @@ export default function ManageUsers(props: Props) {
       field: 'DOB',
       headerName: 'DOB',
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         return dayjs(user.DOB).format('YYYY-MM-DD');
       },
     },
@@ -67,7 +67,7 @@ export default function ManageUsers(props: Props) {
       headerName: 'Address',
       renderCell: (params) => {
         const { address1, address2, city, state, postalCode } =
-          params.row as typeof rows[0];
+          params.row as (typeof rows)[0];
         return convertUserAddressToString({
           address1,
           address2,
@@ -92,7 +92,7 @@ export default function ManageUsers(props: Props) {
       field: 'deposited',
       headerName: 'Deposited',
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         return user.isFirstDeposit ? 'No' : 'Yes';
       },
     },
@@ -101,7 +101,7 @@ export default function ManageUsers(props: Props) {
       field: 'created_at',
       headerName: 'Sign-up Date',
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         return dayjs(user.created_at).format('YYYY-MM-DD HH:mm A');
       },
     },
@@ -110,7 +110,7 @@ export default function ManageUsers(props: Props) {
       field: 'action',
       headerName: 'Action',
       renderCell: (params) => {
-        const user = params.row as typeof rows[0];
+        const user = params.row as (typeof rows)[0];
         const onClick = () => {
           props.openUserForm(user);
         };
