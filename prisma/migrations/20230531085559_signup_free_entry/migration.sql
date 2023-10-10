@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AppSettingName" ADD VALUE 'SIGNUP_FREE_ENTRY';

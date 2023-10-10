@@ -11,6 +11,8 @@ describe('TableFilter', () => {
       globalFilter: '',
       viewInactive: false,
       setViewInactive: jest.fn(),
+      includeEntryFee: false,
+      setIncludeEntryFeeOnClick: jest.fn(),
     };
 
     const { container } = render(<TableFilter {...props} />);

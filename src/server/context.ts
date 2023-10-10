@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as trpc from '@trpc/server';
 import * as trpcNext from '@trpc/server/adapters/next';
-import { supabase } from '~/utils/supabaseClient';
+import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 
 export type Context = trpc.inferAsyncReturnType<typeof createContext>;
 
@@ -10,12 +10,19 @@ export type Context = trpc.inferAsyncReturnType<typeof createContext>;
  * @link https://trpc.io/docs/context
  */
 export async function createContext(opts: trpcNext.CreateNextContextOptions) {
-  // for API-response caching see https://trpc.io/docs/caching
+  const supabaseServerClient = createPagesServerClient({
+    req: opts.req,
+    res: opts.res,
+  });
 
-  const session = await supabase.auth.api.getUserByCookie(opts.req, opts.res);
+  const {
+    data: { user },
+  } = await supabaseServerClient.auth.getUser();
 
   return {
     ...opts,
-    session,
+    session: {
+      user,
+    },
   };
 }

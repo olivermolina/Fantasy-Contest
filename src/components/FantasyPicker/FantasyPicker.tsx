@@ -49,7 +49,10 @@ export function FantasyPicker(props: Props) {
         }
       >
         {props.cards.map((card) => {
-          const betLeg = props.legs?.find((leg) => leg.marketId === card.id);
+          const betLeg = props.legs?.find(
+            (leg) =>
+              `${leg!.marketId} ${leg!.freeSquare?.id || ''}` === card!.id,
+          );
           const isSelected = !!betLeg;
           const isOver = betLeg?.team === 'over';
 

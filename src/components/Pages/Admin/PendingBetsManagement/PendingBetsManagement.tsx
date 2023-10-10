@@ -5,9 +5,21 @@ import PendingPickDialog from './PendingPickDialog';
 import { BetStatus } from '@prisma/client';
 
 type Props = {
-  onClickDeleteRow(currentRow: RowModel, betStatus: BetStatus): unknown;
+  settlePick(currentRow: RowModel, betStatus: BetStatus): unknown;
   data: readonly RowModel[];
+  updateBetLeg: (leg: LegRowModel, status: BetStatus) => void;
 };
+
+export interface LegRowModel {
+  id: string;
+  name: string;
+  type: string;
+  odds: number;
+  category: string;
+  total: number;
+  total_stat: number | null;
+  status: string;
+}
 
 export interface RowModel {
   ticket: string;
@@ -19,14 +31,7 @@ export interface RowModel {
   description: string;
   riskWin: string;
   type: string;
-  legs: {
-    id: string;
-    name: string;
-    type: string;
-    odds: number;
-    category: string;
-    total: number;
-  }[];
+  legs: LegRowModel[];
 }
 
 export const PendingBetsManagement = (props: Props) => {
@@ -34,7 +39,6 @@ export const PendingBetsManagement = (props: Props) => {
   const [selectedRow, setSelectedRow] = useState<RowModel | undefined>();
   const [betStatus, setBetStatus] = useState<BetStatus | undefined>();
   const [open, setOpen] = useState(false);
-  const [isViewOnly, setIsViewOnly] = useState(true);
 
   const columns: GridColDef[] = [
     { flex: 1, field: 'ticket', headerName: 'Ticket #' },
@@ -60,8 +64,8 @@ export const PendingBetsManagement = (props: Props) => {
         const onClick = () => {
           const currentRow = params.row as (typeof rows)[0];
           setSelectedRow(currentRow);
+          setBetStatus(currentRow.status as BetStatus);
           setOpen(true);
-          setIsViewOnly(true);
         };
 
         return (
@@ -87,7 +91,6 @@ export const PendingBetsManagement = (props: Props) => {
           const currentRow = params.row as (typeof rows)[0];
           setSelectedRow(currentRow);
           setOpen(true);
-          setIsViewOnly(false);
           setBetStatus(betStatus);
         };
 
@@ -129,20 +132,24 @@ export const PendingBetsManagement = (props: Props) => {
   };
   const handleClose = () => {
     setOpen(false);
-    setIsViewOnly(true);
+  };
+
+  const setSelectedBetStatus = (betStatus: BetStatus) => {
+    setBetStatus(betStatus);
   };
 
   return (
-    <div style={{ height: 300, width: '100%' }}>
+    <div className={'h-[75vh] lg:h-[80vh] w-full'}>
       <DataGrid getRowId={(row) => row.ticket} rows={rows} columns={columns} />
       <PendingPickDialog
-        onClickDeleteRow={props.onClickDeleteRow}
+        settlePick={props.settlePick}
         clearSelectedRow={clearSelectedRow}
         open={open}
         row={selectedRow}
         handleClose={handleClose}
-        isViewOnly={isViewOnly}
         betStatus={betStatus}
+        setSelectedBetStatus={setSelectedBetStatus}
+        updateBetLeg={props.updateBetLeg}
       />
     </div>
   );

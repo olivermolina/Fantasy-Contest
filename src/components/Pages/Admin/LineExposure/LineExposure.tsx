@@ -24,7 +24,7 @@ import { visuallyHidden } from '@mui/utils';
 import PickDatePickerRange, {
   DateRangeInterface,
 } from '~/components/Picks/PickDatePickerRange';
-import { MenuItem, Stack, TextField } from '@mui/material';
+import { MenuItem, TextField } from '@mui/material';
 import type { ILineExposure } from '~/server/routers/admin/getLineExposures';
 import { BetLegType, League } from '@prisma/client';
 import { showDollarPrefix } from '~/utils/showDollarPrefix';
@@ -36,7 +36,7 @@ import CopyClipboardButton from '~/components/CopyClipboardButton/CopyClipboardB
 
 export function TruncateCellContent(props: { value: string }) {
   return (
-    <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
+    <div className={'flex'}>
       <Box
         sx={{
           maxWidth: 50,
@@ -48,7 +48,7 @@ export function TruncateCellContent(props: { value: string }) {
         {props.value}
       </Box>
       <CopyClipboardButton text={props.value} />
-    </Stack>
+    </div>
   );
 }
 

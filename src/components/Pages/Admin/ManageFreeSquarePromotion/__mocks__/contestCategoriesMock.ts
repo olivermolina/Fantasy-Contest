@@ -1,4 +1,4 @@
-import { ContestCategory } from '@prisma/client';
+import { ContestCategory, Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
 export const contestCategoriesMock: ContestCategory[] = [
@@ -8,6 +8,10 @@ export const contestCategoriesMock: ContestCategory[] = [
     allInPayoutMultiplier: 3,
     primaryInsuredPayoutMultiplier: 2,
     secondaryInsuredPayoutMultiplier: 0.5,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: null,
   },
   {
     id: faker.datatype.uuid(),
@@ -15,6 +19,10 @@ export const contestCategoriesMock: ContestCategory[] = [
     allInPayoutMultiplier: 5,
     primaryInsuredPayoutMultiplier: 2.5,
     secondaryInsuredPayoutMultiplier: 1.25,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: null,
   },
   {
     id: faker.datatype.uuid(),
@@ -22,5 +30,9 @@ export const contestCategoriesMock: ContestCategory[] = [
     allInPayoutMultiplier: 10,
     primaryInsuredPayoutMultiplier: 5,
     secondaryInsuredPayoutMultiplier: 1.25,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: null,
   },
 ];

@@ -107,18 +107,23 @@ export interface FantasyCardProps {
    * Free square promotion
    */
   freeSquare: FantasyCardFreeSquareProps | null;
+  /**
+   * Event name for the card
+   */
+  eventName?: string;
 }
 
 export const FantasyCard = (props: FantasyCardProps) => {
   const Image = props.image;
 
-  {
-    /* Fantasy Card */
-  }
+  const onImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = '/assets/images/avatar.svg';
+  };
+
   return (
     <div
       className={classNames(
-        'flex flex-col justify-start w-full rounded-lg flex-col bg-primary',
+        'flex flex-col justify-start w-full rounded-lg bg-primary',
         {
           'bg-[#0b4893]': props.isSelected,
         },
@@ -152,6 +157,7 @@ export const FantasyCard = (props: FantasyCardProps) => {
               'w-64 h-auto': !props.imageSize, // default
               'w-80 h-auto': props.imageSize === 'large',
             })}
+            onError={onImageError}
             alt=""
           />
         ) : (
@@ -227,6 +233,13 @@ export const FantasyCard = (props: FantasyCardProps) => {
             <div className="font-bold text-md lg:text-lg text-white">
               {props.playerName}
             </div>
+
+            {/* Tournament Event Name */}
+            {props.eventName && (
+              <div className="font-semibold text-xs lg:text-md text-lightText">
+                {props.eventName}
+              </div>
+            )}
           </div>
           <div
             className={'flex flex-col items-end justify-start gap-1 lg:gap-2'}

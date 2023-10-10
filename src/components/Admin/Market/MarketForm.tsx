@@ -3,12 +3,14 @@ import {
   Button,
   CircularProgress,
   Grid,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   TextField,
 } from '@mui/material';
 import { MarketResult, MarketType, Player, Prisma, Team } from '@prisma/client';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { TeamWithInputValue } from '../Offer/OfferForm/TeamAutoComplete';
@@ -16,6 +18,7 @@ import { MarketWithPlayerTeam } from '~/components/Admin/Market/Markets';
 import PlayerAutoComplete, {
   PlayerWithInputValue,
 } from '~/components/Admin/Market/PlayerAutoComplete';
+import FormControl from '@mui/material/FormControl';
 
 const InputValidationSchema = Yup.object().shape({
   category: Yup.string().trim().required('Category is required'),
@@ -31,6 +34,11 @@ const InputValidationSchema = Yup.object().shape({
     .required('Total is required'),
 });
 
+export const MARKET_STATUS_ENUM = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+};
+
 interface Props {
   handleClose: () => void;
   handleSave: (market: Prisma.MarketCreateInput) => void;
@@ -39,7 +47,9 @@ interface Props {
   players: Player[];
   market: MarketWithPlayerTeam;
   handleAddTeam: (team: Team) => Promise<Team | undefined>;
+  handleDeleteTeam: (team: Team) => Promise<Team | undefined>;
   handleAddPlayer: (player: Player) => Promise<Player | undefined>;
+  handleDeletePlayer: (player: Player) => Promise<Player | undefined>;
   playerIsLoading: boolean;
   setPlayerFilterName: React.Dispatch<React.SetStateAction<string>>;
   teamIsLoading: boolean;
@@ -54,6 +64,7 @@ interface MarketInput {
   player: PlayerWithInputValue;
   total?: number;
   total_stat?: number | null;
+  status: string;
 }
 
 const MarketForm = (props: Props) => {
@@ -66,8 +77,10 @@ const MarketForm = (props: Props) => {
     teamIsLoading,
     setTeamFilterName,
     handleAddPlayer,
+    handleDeletePlayer,
     handleSave,
     handleAddTeam,
+    handleDeleteTeam,
   } = props;
 
   const defaultValues = {
@@ -76,6 +89,9 @@ const MarketForm = (props: Props) => {
     player: { ...market.player, inputValue: '' },
     total: market.total || 0,
     total_stat: market.total_stat,
+    status: market.active
+      ? MARKET_STATUS_ENUM.ACTIVE
+      : MARKET_STATUS_ENUM.SUSPENDED,
   };
 
   const {
@@ -85,6 +101,7 @@ const MarketForm = (props: Props) => {
     control,
     reset,
     register,
+    watch,
   } = useForm<MarketInput>({
     resolver: yupResolver(InputValidationSchema),
     defaultValues,
@@ -116,6 +133,7 @@ const MarketForm = (props: Props) => {
       total: data.total,
       total_stat:
         data.total_stat?.toString() === '' ? null : Number(data.total_stat),
+      active: data.status === MARKET_STATUS_ENUM.ACTIVE,
     });
   };
 
@@ -123,13 +141,23 @@ const MarketForm = (props: Props) => {
     return await handleAddTeam(team);
   };
 
+  const onDeleteTeam = async (team: TeamWithInputValue) => {
+    return await handleDeleteTeam(team);
+  };
+
   const onAddPlayer = async (player: PlayerWithInputValue) => {
     return await handleAddPlayer(player);
+  };
+
+  const onDeletePlayer = async (player: PlayerWithInputValue) => {
+    return await handleDeletePlayer(player);
   };
 
   const handleReset = () => {
     reset(defaultValues);
   };
+
+  const watchPlayer = watch('player');
 
   useEffect(() => {
     if (market) {
@@ -140,6 +168,9 @@ const MarketForm = (props: Props) => {
         player: { ...market.player, inputValue: '' },
         total: market.total || 0,
         total_stat: market.total_stat || null,
+        status: market.active
+          ? MARKET_STATUS_ENUM.ACTIVE
+          : MARKET_STATUS_ENUM.SUSPENDED,
       });
     }
   }, [market]);
@@ -162,14 +193,16 @@ const MarketForm = (props: Props) => {
               helperText={errors?.player?.message}
               setValue={setValue}
               onAddTeam={onAddTeam}
+              onDeleteTeam={onDeleteTeam}
               onAddPlayer={onAddPlayer}
+              onDeletePlayer={onDeletePlayer}
               isLoading={playerIsLoading}
               setPlayerFilterName={setPlayerFilterName}
               teamIsLoading={teamIsLoading}
               setTeamFilterName={setTeamFilterName}
+              player={watchPlayer as PlayerWithInputValue}
             />
           </Grid>
-
           <Grid item xs={6}>
             <TextField
               label="Category"
@@ -196,7 +229,6 @@ const MarketForm = (props: Props) => {
               }}
             />
           </Grid>
-
           <Grid item xs={6}>
             <TextField
               type={'number'}
@@ -212,7 +244,27 @@ const MarketForm = (props: Props) => {
               }}
             />
           </Grid>
-
+          <Grid item xs={6}>
+            <Controller
+              name="status"
+              control={control}
+              defaultValue={MARKET_STATUS_ENUM.ACTIVE}
+              render={({ field }) => (
+                <FormControl fullWidth size={'small'}>
+                  <Select size={'small'} fullWidth {...field}>
+                    <MenuItem key={'empty-status'} value={undefined} disabled>
+                      <em>Select status</em>
+                    </MenuItem>
+                    {Object.keys(MARKET_STATUS_ENUM).map((status) => (
+                      <MenuItem key={status} value={status}>
+                        {status}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
           <Grid item xs={12}>
             <Stack
               direction="row"
@@ -226,7 +278,7 @@ const MarketForm = (props: Props) => {
                 size={'large'}
                 disabled={props.isLoading || !isDirty}
               >
-                Save
+                Save & Close
                 {props.isLoading && (
                   <CircularProgress sx={{ ml: 1 }} size={20} />
                 )}

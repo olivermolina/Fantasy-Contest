@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   CircularProgress,
@@ -7,8 +7,7 @@ import {
   IconButton,
   TextField,
 } from '@mui/material';
-import dayjs, { Dayjs } from 'dayjs';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { UserDetailsInput } from '~/lib/tsevo-gidx/GIDX';
@@ -19,6 +18,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import CloseIcon from '@mui/icons-material/Close';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('America/New_York');
 
 const InputValidationSchema = Yup.object().shape({
   firstname: Yup.string().required('First name is required'),
@@ -46,17 +52,22 @@ const GetVerifiedDialog = (props: Props) => {
     register,
     formState: { errors },
     handleSubmit,
+    control,
+    reset,
   } = useForm<UserDetailsInput>({
     resolver: yupResolver(InputValidationSchema),
-    defaultValues: props.verifiedData,
+    defaultValues: {
+      ...props.verifiedData,
+      dob: dayjs.tz(props.verifiedData?.dob || new Date(), 'America/New_York'),
+    },
   });
-  const [value, setValue] = React.useState<Dayjs | null>(
-    dayjs(props.verifiedData?.dob || new Date()),
-  );
 
-  const handleChange = (newValue: Dayjs | null) => {
-    setValue(newValue);
-  };
+  useEffect(() => {
+    reset({
+      ...props.verifiedData,
+      dob: dayjs.tz(props.verifiedData?.dob || new Date(), 'America/New_York'),
+    });
+  }, [props.verifiedData]);
 
   return (
     <Dialog
@@ -144,24 +155,31 @@ const GetVerifiedDialog = (props: Props) => {
             />
           </Grid>
           <Grid item xs={12} md={4}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <MobileDatePicker
-                label="Date of Birth"
-                inputFormat="MM/DD/YYYY"
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    fullWidth
-                    {...register('dob')}
-                    error={!!errors?.dob}
-                    helperText={errors?.dob?.message}
+            <Controller
+              control={control}
+              name={'dob'}
+              rules={{ required: true }}
+              render={({ field, fieldState: { error } }) => (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <MobileDatePicker
+                    label="Date of Birth"
+                    slotProps={{
+                      textField: {
+                        value: field.value || dayjs(),
+                        variant: 'outlined',
+                        fullWidth: true,
+                        error: !!error,
+                        helperText: error?.message,
+                      },
+                    }}
+                    value={field.value || dayjs()}
+                    onChange={(newValue) => {
+                      field.onChange(newValue);
+                    }}
                   />
-                )}
-                value={value}
-                onChange={handleChange}
-              />
-            </LocalizationProvider>
+                </LocalizationProvider>
+              )}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField

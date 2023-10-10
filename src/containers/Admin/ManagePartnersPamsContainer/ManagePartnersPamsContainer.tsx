@@ -10,14 +10,21 @@ import EditForm, {
 import { toast } from 'react-toastify';
 import { TRPCClientError } from '@trpc/client';
 import { Dialog } from '@mui/material';
-import { UserStatus, UserType } from '@prisma/client';
+import { User, UserStatus, UserType } from '@prisma/client';
 import { NEW_USER_ID } from '~/constants/NewUserId';
 import { USATimeZone } from '~/constants/USATimeZone';
+import { useAppSelector } from '~/state/hooks';
+import _ from 'lodash';
 
 export const ManagePartnersPamsContainer = () => {
+  const userDetails = useAppSelector((state) => state.profile.userDetails);
   const [selectedUser, setSelectedUser] =
     useState<ManagePartnersPamsRowModel | null>(null);
   const { data, isLoading, refetch } = trpc.admin.getManageUserList.useQuery();
+
+  const { data: subAdminData } = trpc.user.users.useQuery({
+    userType: UserType.SUB_ADMIN,
+  });
 
   const mutation = trpc.admin.savePartnerPam.useMutation();
 
@@ -38,27 +45,33 @@ export const ManagePartnersPamsContainer = () => {
       phone: '',
       type: UserType.AGENT,
       status: UserStatus.ACTIVE,
-      subAdminId: '',
+      subAdminIds: [],
       timezone: USATimeZone['America/New_York'],
     });
   };
 
   const users = useMemo(
     () =>
-      data?.reduce((acc: ManagePartnersPamsRowModel[], user) => {
-        const { subAdmin, agents } = user;
-        const agentsWithSubAdminId = agents.map((agent) => ({
-          ...agent,
-          subAdminId: subAdmin?.id,
-        }));
+      data?.reduce(
+        (acc: ManagePartnersPamsRowModel[], user: (typeof data)[0]) => {
+          const { subAdmin, agents } = user;
+          const agentsWithSubAdminId =
+            agents?.map((agent: (typeof agents)[0]) => ({
+              ...agent,
+            })) || [];
 
-        return [
-          ...acc,
-          ...(subAdmin.id !== 'unassigned' ? [subAdmin] : []),
-          ...agentsWithSubAdminId,
-        ] as ManagePartnersPamsRowModel[];
-      }, []) || [],
-    [data],
+          return [
+            ...acc,
+            ...(subAdmin?.id !== 'unassigned' &&
+            userDetails?.type === UserType.ADMIN
+              ? [subAdmin]
+              : []),
+            ...agentsWithSubAdminId,
+          ] as ManagePartnersPamsRowModel[];
+        },
+        [],
+      ) || [],
+    [data, userDetails],
   );
 
   const onSubmit = async (formInputs: EditFormInputs) => {
@@ -75,16 +88,20 @@ export const ManagePartnersPamsContainer = () => {
     }
   };
 
+  const subAdminUsers = useMemo(
+    () => (subAdminData || []) as unknown as User[],
+    [subAdminData],
+  );
+
   return (
     <>
       <BackdropLoading open={isLoading || mutation.isLoading} />
-      <div className={'flex flex-col gap-2'}>
-        <ManagePartnersPams
-          users={users}
-          openUserForm={openUserForm}
-          addUser={addUser}
-        />
-      </div>
+      <ManagePartnersPams
+        users={_.uniqBy(users, 'id')}
+        openUserForm={openUserForm}
+        addUser={addUser}
+        subAdminUsers={subAdminUsers}
+      />
       {selectedUser && (
         <Dialog
           open={!!selectedUser}
@@ -95,9 +112,7 @@ export const ManagePartnersPamsContainer = () => {
           <EditForm
             user={selectedUser}
             onSubmit={onSubmit}
-            subAdminUsers={users.filter(
-              (user) => user.type === UserType.SUB_ADMIN,
-            )}
+            subAdminUsers={subAdminUsers}
             closeForm={closeForm}
           />
         </Dialog>

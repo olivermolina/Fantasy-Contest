@@ -122,6 +122,7 @@ const AdminMarketContainer = (props: Props) => {
     setFilterName: setPlayerFilterName,
     mutateIsLoading: playerMutateIsLoading,
     handleAddPlayer,
+    handleDeletePlayer,
   } = usePlayers();
 
   const {
@@ -130,6 +131,7 @@ const AdminMarketContainer = (props: Props) => {
     setFilterName: setTeamFilterName,
     mutateIsLoading: teamMutateIsLoading,
     handleAddTeam,
+    handleDeleteTeam,
   } = useTeams();
 
   //we must flatten the array of arrays from the useInfiniteQuery hook
@@ -190,9 +192,11 @@ const AdminMarketContainer = (props: Props) => {
         setPlayerFilterName={setPlayerFilterName}
         teams={teams}
         handleAddTeam={handleAddTeam}
+        handleDeleteTeam={handleDeleteTeam}
         teamIsLoading={teamIsLoading || teamMutateIsLoading}
         setTeamFilterName={setTeamFilterName}
         handleAddPlayer={handleAddPlayer}
+        handleDeletePlayer={handleDeletePlayer}
         handleSave={handleSave}
         handleDelete={handleDelete}
       />

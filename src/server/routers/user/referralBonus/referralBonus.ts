@@ -7,6 +7,19 @@ import {
 } from '@prisma/client';
 import { createTransaction } from '~/server/routers/bets/createTransaction';
 import { ActionType } from '~/constants/ActionType';
+import { getUserSettings } from '~/server/routers/appSettings/list';
+import { DefaultAppSettings } from '~/constants/AppSettings';
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+import en from 'dayjs/locale/en';
+import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
+import { DayOfWeek } from '~/constants/DayOfWeek';
+
+dayjs.extend(weekday);
+dayjs.locale({
+  ...en,
+  weekStart: 1,
+});
 
 /**
  * This function will add bonus to a referrer user
@@ -52,18 +65,62 @@ const addReferralBonus = async (referredUser: User) => {
   }
 
   if (user && user.type === UserType.PLAYER) {
-    const referralAppSetting = await prisma.appSettings.findFirst({
+    const { userAppSettings: appSettings } = await getUserSettings(user.id);
+    const referralMaxAmountEarnedLimit = Number(
+      appSettings.find(
+        (s) => s.name === AppSettingName.WEEKLY_REFERRAL_MAX_AMOUNT_EARNED,
+      )?.value || DefaultAppSettings.WEEKLY_REFERRAL_MAX_AMOUNT_EARNED,
+    );
+
+    const referralCreditAmount = Number(
+      appSettings.find((s) => s.name === AppSettingName.REFERRAL_CREDIT_AMOUNT)
+        ?.value || DefaultAppSettings.REFERRAL_CREDIT_AMOUNT,
+    );
+
+    const fromDateString = dayjs()
+      .weekday(DayOfWeek.MONDAY)
+      .format('YYYY-MM-DD');
+    const toDateString = dayjs().weekday(DayOfWeek.SUNDAY).format('YYYY-MM-DD');
+
+    const weeklyTotalReferralCreditAmount = await prisma.transaction.aggregate({
       where: {
-        name: AppSettingName.REFERRAL_CREDIT_AMOUNT,
+        userId: user.id,
+        actionType: ActionType.REFERRAL_FREE_CREDIT,
+        created_at: {
+          gte: new Date(fromDateString),
+          lte: new Date(toDateString),
+        },
+        TransactionStatuses: {
+          every: {
+            statusCode: PaymentStatusCode.COMPLETE,
+            transactionType: TransactionType.CREDIT,
+          },
+        },
+        NOT: {
+          TransactionStatuses: {
+            none: {},
+          },
+        },
+      },
+      _sum: {
+        amountBonus: true,
       },
     });
-    await createTransaction({
-      userId: user.id,
-      amountProcess: 0,
-      amountBonus: Number(referralAppSetting?.value) || 25,
-      actionType: ActionType.ADD_FREE_CREDIT,
-      transactionType: TransactionType.CREDIT,
-    });
+
+    // Check if the user has not reached the weekly referral max amount earned limit yet
+    // before adding the referral bonus to the user
+    if (
+      referralMaxAmountEarnedLimit >
+      Number(weeklyTotalReferralCreditAmount?._sum?.amountBonus)
+    ) {
+      await createTransaction({
+        userId: user.id,
+        amountProcess: 0,
+        amountBonus: Number(referralCreditAmount) || 0,
+        actionType: ActionType.REFERRAL_FREE_CREDIT,
+        transactionType: TransactionType.CREDIT,
+      });
+    }
   }
 };
 

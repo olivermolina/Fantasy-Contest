@@ -122,7 +122,7 @@ interface ManageFreeSquarePromotionProps {
   /**
    * Callback function to remove free square promotion discount
    */
-  handleDelete: (id: string) => void;
+  handleDelete: (id: string, league: League) => void;
 }
 
 export default function ManageFreeSquarePromotion(
@@ -412,6 +412,7 @@ export default function ManageFreeSquarePromotion(
         setOpen={setOpenDeleteConfirmation}
         freeSquareId={selectedRow?.freeSquare?.id}
         handleDelete={handleDelete}
+        league={selectedRow?.league as League}
       />
     </div>
   );

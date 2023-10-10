@@ -31,7 +31,7 @@ const ContentBanner = (props: Props) => {
       </Grid>
       <Grid item xs={8} md={8}>
         {props.isLoading ? (
-          <Skeleton variant="rectangular" />
+          <Skeleton variant="rectangular" className={'w-full'} />
         ) : (
           <Carousel
             showArrows={false}
@@ -41,13 +41,14 @@ const ContentBanner = (props: Props) => {
             selectedItem={selectedItem}
             autoPlay
             infiniteLoop
+            onChange={(index) => setSelectedItem(index)}
           >
             {props.banners.map((banner) => (
               <div
                 key={banner.id}
                 className={'flex justify-center items-center h-full w-full'}
               >
-                <p className="text-secondary text-[22px] font-bold tracking-normal leading-[28px] text-center">
+                <p className="text-secondary text-normal lg:text-[22px] font-bold tracking-normal lg:leading-[28px] text-center">
                   {banner.text}
                 </p>
               </div>
@@ -60,7 +61,11 @@ const ContentBanner = (props: Props) => {
         <IconButton
           aria-label="Next"
           size="large"
-          onClick={() => setSelectedItem(selectedItem ? 0 : 1)}
+          onClick={() =>
+            setSelectedItem(
+              selectedItem === props.banners.length - 1 ? 0 : selectedItem + 1,
+            )
+          }
         >
           <ArrowForwardIosIcon fontSize="inherit" color="primary" />
         </IconButton>

@@ -8,4 +8,8 @@ if (!supabaseUrl || !supabaseSecretServiceRoleKey) {
   throw new Error('Missing env variables when creating supabase');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseSecretServiceRoleKey);
+export const supabase = createClient(
+  supabaseUrl,
+  supabaseSecretServiceRoleKey,
+  { auth: { persistSession: typeof window !== 'undefined' } },
+);

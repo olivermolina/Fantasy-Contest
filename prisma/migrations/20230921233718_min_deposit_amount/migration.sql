@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AppSettingName" ADD VALUE 'MIN_DEPOSIT_AMOUNT';

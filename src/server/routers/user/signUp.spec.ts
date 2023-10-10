@@ -18,11 +18,11 @@ describe.skip('Test user signup', () => {
     referralCode: '',
   };
   afterEach(async () => {
-    const result = await supabase.auth.signIn({
+    const result = await supabase.auth.signInWithPassword({
       email: testEmail,
       password: testPassword,
     });
-    const userId = result.user?.id;
+    const userId = result.data.user?.id;
 
     if (userId) {
       const userContestEntry = await prisma.contestEntry.findFirst({
@@ -53,7 +53,7 @@ describe.skip('Test user signup', () => {
         },
       });
 
-      await supabase.auth.api.deleteUser(userId);
+      await supabase.auth.admin.deleteUser(userId);
     }
   }, 100000);
   it('should not throw an error if referral is empty', async () => {

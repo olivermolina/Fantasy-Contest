@@ -1,61 +1,65 @@
 import React, { useEffect } from 'react';
-import { Button, TextField } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { BetStakeType, ContestCategory } from '@prisma/client';
-import FormLabel from '@mui/material/FormLabel';
+import { Box, Button, FormHelperText, Switch, TextField } from '@mui/material';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { BetStakeType } from '@prisma/client';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  BonusCreditLimitInputs,
+  BonusCreditLimitValidationSchema,
+} from '~/schemas/BonusCreditLimitValidationSchema';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import Checkbox from '@mui/material/Checkbox';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Chip from '@mui/material/Chip';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
 
-const InputValidationSchema = Yup.object().shape({
-  numberOfPlayers: Yup.array().min(
-    1,
-    'Please provide number of players required.',
-  ),
-  bonusCreditFreeEntryEquivalent: Yup.number()
-    .typeError('Please provide an amount')
-    .min(10, 'Minimum is 10.'),
-  stakeType: Yup.array().min(1, 'Must have at least one stake type to apply'),
-});
-
-export interface BonusCreditLimitsInputs {
-  numberOfPlayers: string[];
-  bonusCreditFreeEntryEquivalent: number;
-  stakeType: string[];
-}
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+export const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 interface BonusCreditLimits {
   /**
    * Form data
    */
-  data: BonusCreditLimitsInputs;
+  data: BonusCreditLimitInputs;
   /**
    * Submit form function
    */
-  onSubmit: (inputs: BonusCreditLimitsInputs) => void;
+  onSubmit: (inputs: BonusCreditLimitInputs) => void;
   /**
-   * Available contest pick categories in the system
+   * Open add users free entry confirm dialog
    */
-  contestCategories: ContestCategory[];
+  openAddUsersFreeEntryConfirmDialog: () => void;
 }
 
 export default function BonusCreditLimits(props: BonusCreditLimits) {
-  const { onSubmit, data, contestCategories } = props;
+  const { onSubmit, data, openAddUsersFreeEntryConfirmDialog } = props;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
-    getValues,
+    watch,
     reset,
-  } = useForm<BonusCreditLimitsInputs>({
-    resolver: yupResolver(InputValidationSchema),
+  } = useForm<BonusCreditLimitInputs>({
+    resolver: zodResolver(BonusCreditLimitValidationSchema),
     defaultValues: data,
+  });
+
+  const { fields } = useFieldArray({
+    control,
+    name: 'bonusCreditLimits',
   });
 
   useEffect(() => {
@@ -63,125 +67,147 @@ export default function BonusCreditLimits(props: BonusCreditLimits) {
   }, [data]);
 
   return (
-    <div className={'flex flex-col pt-4'}>
+    <div className={'flex flex-col pt-4 w-full'}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className={`flex flex-col items-start gap-4`}>
-          <FormControl component="fieldset" error={!!errors?.stakeType}>
-            <FormLabel component="legend">Number of Players</FormLabel>
-            <FormGroup row>
-              <Controller
-                name="numberOfPlayers"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    {contestCategories.map((contestCategory) => (
-                      <FormControlLabel
-                        {...field}
-                        key={contestCategory.id}
-                        label={contestCategory.numberOfPicks}
-                        control={
-                          <Checkbox
-                            checked={getValues('numberOfPlayers').includes(
-                              contestCategory.numberOfPicks.toString(),
-                            )}
-                            onChange={() => {
-                              if (!field.value) {
-                                field.onChange([
-                                  contestCategory.numberOfPicks.toString(),
-                                ]);
-                                return;
-                              }
+        <div className={`flex flex-col items-start gap-4 w-full`}>
+          {fields.map((field, index) => (
+            <div
+              key={field.id}
+              className={'flex flex-row gap-2 items-center w-full'}
+            >
+              <FormControl sx={{ minWidth: 125 }}>
+                <Controller
+                  name={`bonusCreditLimits.${index}.enabled`}
+                  control={control}
+                  defaultValue={false}
+                  render={({ field: switchField }) => (
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          {...switchField}
+                          checked={switchField.value}
+                          color="primary"
+                        />
+                      }
+                      label={`${field.numberOfPicks} picks`}
+                    />
+                  )}
+                />
+              </FormControl>
+              <TextField
+                {...register(
+                  `bonusCreditLimits.${index}.bonusCreditFreeEntryEquivalent`,
+                )}
+                error={
+                  !!errors.bonusCreditLimits?.[index]
+                    ?.bonusCreditFreeEntryEquivalent
+                }
+                helperText={
+                  errors.bonusCreditLimits?.[index]
+                    ?.bonusCreditFreeEntryEquivalent?.message
+                }
+                type="number"
+                label="Bonus Credit Limit Free Entry Equivalent"
+                fullWidth
+                disabled={!watch(`bonusCreditLimits.${index}.enabled`)}
+                sx={{ maxWidth: 300 }}
+              />
 
-                              if (
-                                !field.value?.includes(
-                                  contestCategory.numberOfPicks.toString(),
-                                )
-                              ) {
-                                field.onChange([
-                                  ...field.value,
-                                  contestCategory.numberOfPicks.toString(),
-                                ]);
-                                return;
-                              }
-
-                              const items = field.value.filter(
-                                (item) =>
-                                  item !==
-                                  contestCategory.numberOfPicks.toString(),
-                              );
-                              field.onChange(items);
-                            }}
+              <FormControl
+                component="fieldset"
+                error={!!errors.bonusCreditLimits?.[index]?.stakeTypeOptions}
+                fullWidth
+              >
+                <InputLabel id="demo-simple-select-label">
+                  Select entry stake type to apply
+                </InputLabel>
+                <FormGroup row>
+                  <Controller
+                    name={`bonusCreditLimits.${index}.stakeTypeOptions`}
+                    control={control}
+                    defaultValue={[]}
+                    render={({ field }) => (
+                      <Select
+                        labelId="demo-multiple-chip-label"
+                        id="demo-multiple-chip"
+                        multiple
+                        input={
+                          <OutlinedInput
+                            id="select-multiple-chip"
+                            label="Select Entry Stake to Apply"
                           />
                         }
-                      />
-                    ))}
-                  </>
-                )}
-              />
-            </FormGroup>
-            <FormHelperText>{errors?.stakeType?.message}</FormHelperText>
-          </FormControl>
+                        onChange={field.onChange}
+                        sx={{ width: 300 }}
+                        value={field.value}
+                        renderValue={(selected) => (
+                          <Box
+                            sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
+                          >
+                            {selected.map((value) => (
+                              <Chip key={value} label={value} />
+                            ))}
+                          </Box>
+                        )}
+                        MenuProps={MenuProps}
+                        fullWidth
+                        disabled={!watch(`bonusCreditLimits.${index}.enabled`)}
+                      >
+                        {[
+                          BetStakeType.ALL_IN.toString(),
+                          BetStakeType.INSURED.toString(),
+                        ].map((stakeType) => (
+                          <MenuItem key={stakeType} value={stakeType}>
+                            {stakeType}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                </FormGroup>
+                <FormHelperText>
+                  {errors.bonusCreditLimits?.[index]?.stakeTypeOptions?.message}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          ))}
 
-          <TextField
-            id="outlined-basic"
-            label="Bonus Credit Free Entry Equivalent"
-            variant="outlined"
-            type={'number'}
-            {...register('bonusCreditFreeEntryEquivalent')}
-            error={!!errors?.bonusCreditFreeEntryEquivalent}
-            helperText={errors?.bonusCreditFreeEntryEquivalent?.message}
-            size={'small'}
-          />
+          <div className={'flex flex-row gap-2 items-center w-full'}>
+            <Controller
+              name="signupFreeEntry"
+              control={control}
+              defaultValue={false}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch {...field} checked={field.value} color="primary" />
+                  }
+                  label={`Automatic "Free Entry" bonus balance at first sign up`}
+                />
+              )}
+            />
 
-          <FormControl component="fieldset" error={!!errors?.stakeType}>
-            <FormLabel component="legend">
-              Select entry stake type to apply:
-            </FormLabel>
-            <FormGroup row>
-              <Controller
-                name="stakeType"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    {[
-                      BetStakeType.ALL_IN.toString(),
-                      BetStakeType.INSURED.toString(),
-                    ].map((stakeType) => (
-                      <FormControlLabel
-                        {...field}
-                        key={stakeType}
-                        label={stakeType}
-                        control={
-                          <Checkbox
-                            checked={getValues('stakeType').includes(stakeType)}
-                            onChange={() => {
-                              if (!field.value) {
-                                field.onChange([stakeType]);
-                                return;
-                              }
+            <TextField
+              label={'Bonus Credit Limit Free Entry Equivalent'}
+              variant="outlined"
+              type={'number'}
+              {...register('bonusCreditFreeEntryEquivalent')}
+              error={!!errors?.bonusCreditFreeEntryEquivalent}
+              helperText={errors?.bonusCreditFreeEntryEquivalent?.message}
+              fullWidth
+              sx={{ maxWidth: 290 }}
+            />
+          </div>
 
-                              if (!field.value?.includes(stakeType)) {
-                                field.onChange([...field.value, stakeType]);
-                                return;
-                              }
+          <Button
+            variant={'contained'}
+            onClick={openAddUsersFreeEntryConfirmDialog}
+            color={'warning'}
+          >
+            Apply &#39;Free Entry&#39; to existing users
+          </Button>
 
-                              const newCategories = field.value.filter(
-                                (item) => item !== stakeType,
-                              );
-                              field.onChange(newCategories);
-                            }}
-                          />
-                        }
-                      />
-                    ))}
-                  </>
-                )}
-              />
-            </FormGroup>
-            <FormHelperText>{errors?.stakeType?.message}</FormHelperText>
-          </FormControl>
-
-          <Button variant="contained" type="submit" name={'submit'}>
+          <Button variant="outlined" type="submit" name={'submit'}>
             Save
           </Button>
         </div>

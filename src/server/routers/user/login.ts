@@ -19,21 +19,21 @@ const login = t.procedure
     }),
   )
   .mutation(async ({ ctx, input }) => {
-    const result = await supabase.auth.signIn({
+    const { data } = await supabase.auth.signInWithPassword({
       email: input.email,
       password: input.password,
     });
 
-    if (!result.user) {
+    if (!data.user || !data.session) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'Invalid email or password!',
+        message: CustomErrorMessages.INVALID_EMAIL_PASSWORD,
       });
     }
 
     try {
       //Check user if exists in prisma
-      const userId = result.user.id;
+      const userId = data.user.id;
       const prismaUser = await prisma.user.findUnique({
         where: {
           id: userId,
@@ -48,12 +48,12 @@ const login = t.procedure
           },
           create: {
             id: userId,
-            email: result.user.email!,
-            ...result.user.user_metadata,
+            email: data.user.email!,
+            ...data.user.user_metadata,
           },
           update: {
-            email: result.user.email!,
-            ...result.user.user_metadata,
+            email: data.user.email!,
+            ...data.user.user_metadata,
           },
         });
       }
@@ -70,8 +70,8 @@ const login = t.procedure
 
       setAuthResponse(
         ctx,
-        result.session?.access_token,
-        result.session?.refresh_token,
+        data.session?.access_token,
+        data.session?.refresh_token,
       );
     } catch (e) {
       if (e instanceof TRPCError) throw e;

@@ -2,6 +2,7 @@ import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
 import * as yup from '~/utils/yup';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const leaders = t.procedure
   .input(
@@ -50,7 +51,7 @@ const leaders = t.procedure
     if (!userId) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 

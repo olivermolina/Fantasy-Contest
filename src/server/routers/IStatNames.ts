@@ -21,7 +21,8 @@ export enum NHL {
 }
 
 export enum MATCH {
-  GAME_LINE = 'Game Line',
+  GM = 'GM',
+  PP = 'PP',
 }
 
 export type all = NFL_AND_NCAAF | NBA_AND_NCAAB | MLB | NHL | MATCH;

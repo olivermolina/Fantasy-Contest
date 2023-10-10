@@ -192,6 +192,12 @@ const DepositMethod = (props: DepositMethodProps) => {
             })}
           </Grid>
         )}
+
+        {selectedPaymentMethod?.type === PaymentMethodType.ACH && (
+          <p className={'text-lg font-semibold mt-2'}>
+            NOTE: It may take up to 3-5 business days to process.
+          </p>
+        )}
       </div>
 
       <PaymentMethodForm

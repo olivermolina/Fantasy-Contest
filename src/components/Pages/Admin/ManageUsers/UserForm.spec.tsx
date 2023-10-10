@@ -8,6 +8,7 @@ describe('UserForm', () => {
       user: userMock,
       closeForm: jest.fn(),
       onSubmit: jest.fn(),
+      partners: [],
     };
 
     const { container } = render(<UserForm {...mockProps} />);

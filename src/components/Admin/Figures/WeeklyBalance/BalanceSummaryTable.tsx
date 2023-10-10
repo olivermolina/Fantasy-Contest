@@ -23,10 +23,12 @@ import AmountCellContent from '~/components/Admin/Figures/WeeklyBalance/AmountCe
 interface BalanceSummaryTableProps {
   data: IPlayerWeeklyBalance[];
   viewInactive: boolean;
+  inactiveCount: number;
+  activeCount: number;
 }
 
 export default function BalanceSummaryTable(props: BalanceSummaryTableProps) {
-  const { data, viewInactive } = props;
+  const { data, viewInactive, inactiveCount, activeCount } = props;
 
   const columns = useMemo<ColumnDef<IPlayerWeeklyBalance>[]>(
     () => [
@@ -332,12 +334,10 @@ export default function BalanceSummaryTable(props: BalanceSummaryTableProps) {
                   }}
                 >
                   <span className={'text-lg font-bold mr-5'}>
-                    Total Active Players:{' '}
-                    {data.filter((player) => player.isActive).length}
+                    Total Active Players: {activeCount}
                   </span>
                   <span className={'text-lg font-bold'}>
-                    Total Inactive Players:{' '}
-                    {data.filter((player) => !player.isActive).length}
+                    Total Inactive Players: {inactiveCount}
                   </span>
                 </TableCell>
               </TableRow>

@@ -13,6 +13,8 @@ interface PropsOfferDataTable {
   isFetching: boolean;
   fetchNextPage: any;
   handleEditOffer: (offer: OfferWithTeams) => void;
+  handleCopyOffer: (id: string) => void;
+  handleDeleteOffer: (id: string) => void;
 }
 
 function OfferDataTable(props: PropsOfferDataTable) {
@@ -55,14 +57,34 @@ function OfferDataTable(props: PropsOfferDataTable) {
       {
         header: 'Action',
         cell: (info) => (
-          <Button
-            variant={'outlined'}
-            onClick={() => {
-              props.handleEditOffer(info.row.original);
-            }}
-          >
-            Edit
-          </Button>
+          <div className={'flex flex-nowrap gap-2'}>
+            <Button
+              variant={'outlined'}
+              onClick={() => {
+                props.handleEditOffer(info.row.original);
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant={'contained'}
+              onClick={() => {
+                props.handleCopyOffer(info.row.original.gid);
+              }}
+              color={'primary'}
+            >
+              Copy
+            </Button>
+            <Button
+              variant={'contained'}
+              onClick={() => {
+                props.handleDeleteOffer(info.row.original.gid);
+              }}
+              color={'warning'}
+            >
+              Delete
+            </Button>
+          </div>
         ),
       },
     ],

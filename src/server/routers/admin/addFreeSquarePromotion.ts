@@ -1,18 +1,23 @@
-import * as yup from '~/utils/yup';
 import prisma from '~/server/prisma';
 import { adminProcedure } from '~/server/routers/admin/middleware/isAdmin';
-import { appNodeCache } from '~/lib/node-cache/AppNodeCache';
+import z from 'zod';
+import { League } from '@prisma/client';
+import { innerFn as updateLeagueMarketCount } from '~/server/routers/contest/updateLeaguesMarketCount';
+import { innerFn as updateListOffer } from '~/server/routers/contest/updateListOffers';
 
 const addFreeSquarePromotion = adminProcedure
   .input(
-    yup.object({
-      id: yup.string().nullable(),
-      marketId: yup.string().required(),
-      selId: yup.number().required(),
-      discount: yup.number().required(),
-      maxStake: yup.number().required(),
-      freeEntryEnabled: yup.boolean(),
-      pickCategories: yup.array().required(),
+    z.object({
+      id: z.string().nullable().optional(),
+      marketId: z.string(),
+      selId: z.number(),
+      discount: z.number(),
+      maxStake: z.number(),
+      freeEntryEnabled: z.boolean().optional(),
+      pickCategories: z.string().array().nonempty({
+        message: 'At least one pickCategory is required',
+      }),
+      league: z.nativeEnum(League),
     }),
   )
   .mutation(async ({ input }) => {
@@ -23,7 +28,7 @@ const addFreeSquarePromotion = adminProcedure
       create: {
         discount: input.discount,
         maxStake: input.maxStake,
-        freeEntryEnabled: input.freeEntryEnabled,
+        freeEntryEnabled: input.freeEntryEnabled ?? false,
         market: {
           connect: {
             id_sel_id: {
@@ -36,7 +41,7 @@ const addFreeSquarePromotion = adminProcedure
       update: {
         discount: input.discount,
         maxStake: input.maxStake,
-        freeEntryEnabled: input.freeEntryEnabled,
+        freeEntryEnabled: input.freeEntryEnabled ?? false,
         market: {
           connect: {
             id_sel_id: {
@@ -81,7 +86,11 @@ const addFreeSquarePromotion = adminProcedure
           }),
       ),
     );
-    appNodeCache.flushAll();
+
+    await Promise.all([
+      updateLeagueMarketCount(input.league),
+      updateListOffer(input.league),
+    ]);
 
     return input;
   });

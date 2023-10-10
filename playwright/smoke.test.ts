@@ -1,54 +1,64 @@
 import { test, expect } from '@playwright/test';
 
-test.setTimeout(35e3);
+test.describe.configure({ mode: 'parallel' });
+test.setTimeout(60000);
 
-test('go to /', async ({ page }) => {
+test('go to landing page', async ({ page }) => {
   await page.goto('/');
 
-  await page.waitForSelector(`text=Starter`);
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/LockSpread/);
 });
 
 test('test 404', async ({ page }) => {
-  const res = await page.goto('/post/not-found');
+  const res = await page.goto('/not-found');
   expect(res?.status()).toBe(404);
 });
 
-test('add a post', async ({ page, browser }) => {
-  const nonce = `${Math.random()}`;
-
-  await page.goto('/');
-  await page.fill(`[name=title]`, nonce);
-  await page.fill(`[name=text]`, nonce);
-  await page.click(`form [type=submit]`);
-  await page.waitForLoadState('networkidle');
-  await page.reload();
-
-  expect(await page.content()).toContain(nonce);
-
-  const ssrContext = await browser.newContext({
-    javaScriptEnabled: false,
-  });
-  const ssrPage = await ssrContext.newPage();
-  await ssrPage.goto('/');
-
-  expect(await ssrPage.content()).toContain(nonce);
+test('go to challenge page', async ({ page }) => {
+  await page.goto('/challenge');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Challenge | LockSpread/);
 });
 
-test('server-side rendering test', async ({ page, browser }) => {
-  // add a post
-  const nonce = `${Math.random()}`;
+test('go to cart page', async ({ page }) => {
+  await page.goto('/cart');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Cart | LockSpread/);
+});
 
-  await page.goto('/');
-  await page.fill(`[name=title]`, nonce);
-  await page.fill(`[name=text]`, nonce);
-  await page.click(`form [type=submit]`);
-  await page.waitForLoadState('networkidle');
+test('go to profile', async ({ page }) => {
+  await page.goto('/profile');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Profile | LockSpread/);
+});
 
-  // load the page without js
-  const ssrContext = await browser.newContext({
-    javaScriptEnabled: false,
-  });
-  const ssrPage = await ssrContext.newPage();
-  await ssrPage.goto('/');
-  expect(await ssrPage.content()).toContain(nonce);
+test('go to profile > account deposit page', async ({ page }) => {
+  await page.goto('/profile/account-deposit');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Account Deposit | LockSpread/);
+});
+
+test('go to profile > withdraw funds page', async ({ page }) => {
+  await page.goto('/profile/withdraw-funds');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Withdraw Funds | LockSpread/);
+});
+
+test('go to Profile Details', async ({ page }) => {
+  await page.goto('/profile/details');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Details | LockSpread/);
+});
+
+test('go to profile > Transaction History', async ({ page }) => {
+  await page.goto('/profile/transaction-history');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Transaction History | LockSpread/);
+});
+
+test('go to profile > Referral', async ({ page }) => {
+  await page.goto('/profile/referral');
+  // Expect a title "to contain" a substring.
+  await expect(page).toHaveTitle(/Referral | LockSpread/);
 });

@@ -10,15 +10,23 @@ import UserForm, {
 import { toast } from 'react-toastify';
 import { TRPCClientError } from '@trpc/client';
 import { Dialog } from '@mui/material';
-import { UserStatus } from '@prisma/client';
+import { Agent, User, UserStatus, UserType } from '@prisma/client';
 import { NEW_USER_ID } from '~/constants/NewUserId';
 import { USATimeZone } from '~/constants/USATimeZone';
+import { useAppSelector } from '~/state/hooks';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export const ManageUsersContainer = () => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
+
+  const userDetails = useAppSelector((state) => state.profile.userDetails);
   const [selectedUser, setSelectedUser] = useState<ManageUserRowModel | null>(
     null,
   );
   const { data, isLoading, refetch } = trpc.user.users.useQuery();
+  const { data: partnersData } = trpc.admin.getManageUserList.useQuery();
 
   const mutation = trpc.admin.saveUser.useMutation();
 
@@ -50,6 +58,9 @@ export const ManageUsersContainer = () => {
       isFirstDeposit: false,
       created_at: new Date(),
       timezone: USATimeZone['America/New_York'],
+      type: UserType.PLAYER,
+      exemptedReasonCodes: [],
+      agentId: null,
     });
   };
   const onSubmit = async (formInputs: UserFormInputs) => {
@@ -78,27 +89,40 @@ export const ManageUsersContainer = () => {
     [data],
   );
 
+  const partners = useMemo(
+    () =>
+      partnersData?.flatMap(
+        (row) =>
+          row.agents as unknown as (User & {
+            UserAsAgents: Agent[];
+          })[],
+      ) || [],
+    [partnersData],
+  );
+
   return (
     <>
       <BackdropLoading open={isLoading || mutation.isLoading} />
-      <div className={'flex flex-col gap-2'}>
-        <ManageUsers
-          users={users}
-          openUserForm={openUserForm}
-          addUser={addUser}
-        />
-      </div>
+      <ManageUsers
+        users={users}
+        openUserForm={openUserForm}
+        addUser={addUser}
+        partners={partners}
+      />
       {selectedUser && (
         <Dialog
           open={!!selectedUser}
-          onClose={closeForm}
+          fullScreen={!matches}
           fullWidth
-          maxWidth={'sm'}
+          maxWidth={'md'}
+          sx={{ top: 65 }}
         >
           <UserForm
             user={selectedUser}
+            partners={partners}
             onSubmit={onSubmit}
             closeForm={closeForm}
+            userType={userDetails?.type}
           />
         </Dialog>
       )}

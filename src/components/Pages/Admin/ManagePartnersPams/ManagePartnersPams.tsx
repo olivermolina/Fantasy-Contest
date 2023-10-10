@@ -4,7 +4,9 @@ import {
   DataGrid,
   GridColDef,
   GridRowsProp,
-  GridToolbar,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { User } from '@prisma/client';
@@ -14,12 +16,17 @@ import { mapUserTypeLabel } from '~/utils/mapUserTypeLabel';
 export type ManagePartnersPamsRowModel = Pick<
   User,
   'id' | 'username' | 'email' | 'status' | 'type' | 'timezone'
-> & { subAdminId: string; phone: string; password?: string };
+> & {
+  subAdminIds: string[];
+  phone: string;
+  password?: string;
+};
 
 interface Props {
   users: ManagePartnersPamsRowModel[];
   openUserForm: (user: ManagePartnersPamsRowModel) => void;
   addUser: () => void;
+  subAdminUsers: User[] | [];
 }
 
 export default function ManagePartnersPams(props: Props) {
@@ -52,6 +59,20 @@ export default function ManagePartnersPams(props: Props) {
       field: 'status',
       headerName: 'Status',
     },
+
+    {
+      flex: 1,
+      field: 'pams',
+      headerName: 'Assigned PAMs',
+      renderCell: (params) => {
+        const user = params.row as (typeof rows)[0];
+        const assignedPams = user.subAdminIds?.map(
+          (id) => props.subAdminUsers.find((pam) => pam.id === id)?.username,
+        );
+
+        return assignedPams?.join(', ');
+      },
+    },
     {
       flex: 1,
       field: 'action',
@@ -72,12 +93,7 @@ export default function ManagePartnersPams(props: Props) {
   ];
 
   return (
-    <div className={'flex flex-col gap-4 h-screen w-full pb-6'}>
-      <div className={'flex flex-row-reverse gap-2'}>
-        <Button variant={'contained'} onClick={props.addUser}>
-          Add User
-        </Button>
-      </div>
+    <div className={'w-full h-[75vh]'}>
       <DataGrid
         disableColumnSelector
         disableDensitySelector
@@ -92,7 +108,24 @@ export default function ManagePartnersPams(props: Props) {
         getRowId={(row) => row.id}
         rows={rows}
         columns={columns}
-        slots={{ toolbar: GridToolbar }}
+        slots={{
+          toolbar: () => {
+            return (
+              <>
+                <div className={'flex flex-row-reverse gap-2 m-2'}>
+                  <Button variant={'contained'} onClick={props.addUser}>
+                    Add User
+                  </Button>
+                </div>
+                <GridToolbarContainer>
+                  <GridToolbarExport />
+                  <span className={'grow'} />
+                  <GridToolbarQuickFilter />
+                </GridToolbarContainer>
+              </>
+            );
+          },
+        }}
         slotProps={{
           toolbar: {
             showQuickFilter: true,

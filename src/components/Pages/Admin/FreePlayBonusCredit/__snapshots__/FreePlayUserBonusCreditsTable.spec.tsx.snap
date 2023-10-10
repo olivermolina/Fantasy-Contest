@@ -17,10 +17,9 @@ exports[`FreePlayUserBonusCreditsTable should render correctly 1`] = `
         aria-colcount="6"
         aria-multiselectable="false"
         aria-rowcount="3"
-        class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
+        class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1lymaxv-MuiDataGrid-root"
         role="grid"
       >
-        <div />
         <div
           class="MuiDataGrid-main css-204u17-MuiDataGrid-main"
         >
@@ -97,8 +96,8 @@ exports[`FreePlayUserBonusCreditsTable should render correctly 1`] = `
                       class="MuiDataGrid-menuIcon"
                     >
                       <button
-                        aria-controls=":r1:"
-                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-haspopup="menu"
                         aria-label="Menu"
                         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                         data-mui-internal-clone-element="true"
@@ -199,12 +198,12 @@ exports[`FreePlayUserBonusCreditsTable should render correctly 1`] = `
                       class="MuiDataGrid-menuIcon"
                     >
                       <button
-                        aria-controls=":r5:"
-                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-haspopup="menu"
                         aria-label="Menu"
                         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                         data-mui-internal-clone-element="true"
-                        id=":r6:"
+                        id=":r8:"
                         tabindex="-1"
                         type="button"
                       >
@@ -301,12 +300,12 @@ exports[`FreePlayUserBonusCreditsTable should render correctly 1`] = `
                       class="MuiDataGrid-menuIcon"
                     >
                       <button
-                        aria-controls=":r9:"
-                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-haspopup="menu"
                         aria-label="Menu"
                         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                         data-mui-internal-clone-element="true"
-                        id=":ra:"
+                        id=":re:"
                         tabindex="-1"
                         type="button"
                       >
@@ -348,159 +347,141 @@ exports[`FreePlayUserBonusCreditsTable should render correctly 1`] = `
             </div>
           </div>
           <div
-            style="flex: 1 1 0px; overflow: auto;"
+            class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
+            style="overflow-x: hidden;"
           >
             <div
-              class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
-              style="overflow-x: hidden;"
+              class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
+              style="width: auto; height: 104px; min-height: auto;"
             >
               <div
-                class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-                style="width: auto; height: 104px; min-height: auto;"
+                class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
+                style="transform: translate3d(0px, 0px, 0px);"
               >
                 <div
-                  class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                  style="transform: translate3d(0px, 0px, 0px);"
+                  aria-rowindex="2"
+                  aria-selected="false"
+                  class="MuiDataGrid-row"
+                  data-id="1"
+                  data-rowindex="0"
+                  role="row"
+                  style="max-height: 52px; min-height: 52px;"
                 >
                   <div
-                    aria-rowindex="2"
-                    aria-selected="false"
-                    class="MuiDataGrid-row"
-                    data-id="1"
-                    data-rowindex="0"
-                    role="row"
-                    style="max-height: 52px; min-height: 52px;"
+                    aria-colindex="1"
+                    aria-colspan="1"
+                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                    data-colindex="0"
+                    data-field="id"
+                    role="cell"
+                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                    tabindex="-1"
                   >
                     <div
-                      aria-colindex="1"
-                      aria-colspan="1"
-                      class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                      data-colindex="0"
-                      data-field="id"
-                      role="cell"
-                      style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                      tabindex="-1"
+                      class="MuiDataGrid-cellContent"
+                      title="1"
                     >
-                      <div
-                        class="MuiDataGrid-cellContent"
-                        title="1"
-                      >
-                        1
-                      </div>
-                    </div>
-                    <div
-                      aria-colindex="2"
-                      aria-colspan="1"
-                      class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                      data-colindex="1"
-                      data-field="transactionDate"
-                      role="cell"
-                      style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                      tabindex="-1"
-                    >
-                      <div
-                        class="MuiDataGrid-cellContent"
-                        title="1/1/2021, 12:00:00 AM"
-                      >
-                        1/1/2021, 12:00:00 AM
-                      </div>
-                    </div>
-                    <div
-                      aria-colindex="3"
-                      aria-colspan="1"
-                      class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                      data-colindex="2"
-                      data-field="type"
-                      role="cell"
-                      style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                      tabindex="-1"
-                    >
-                      <div
-                        class="MuiDataGrid-cellContent"
-                        title="CREDIT"
-                      >
-                        CREDIT
-                      </div>
+                      1
                     </div>
                   </div>
                   <div
-                    aria-rowindex="3"
-                    aria-selected="false"
-                    class="MuiDataGrid-row MuiDataGrid-row--lastVisible"
-                    data-id="2"
-                    data-rowindex="1"
-                    role="row"
-                    style="max-height: 52px; min-height: 52px;"
+                    aria-colindex="2"
+                    aria-colspan="1"
+                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                    data-colindex="1"
+                    data-field="transactionDate"
+                    role="cell"
+                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                    tabindex="-1"
                   >
                     <div
-                      aria-colindex="1"
-                      aria-colspan="1"
-                      class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                      data-colindex="0"
-                      data-field="id"
-                      role="cell"
-                      style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                      tabindex="-1"
+                      class="MuiDataGrid-cellContent"
+                      title="1/1/2021, 12:00:00 AM"
                     >
-                      <div
-                        class="MuiDataGrid-cellContent"
-                        title="2"
-                      >
-                        2
-                      </div>
+                      1/1/2021, 12:00:00 AM
                     </div>
+                  </div>
+                  <div
+                    aria-colindex="3"
+                    aria-colspan="1"
+                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                    data-colindex="2"
+                    data-field="type"
+                    role="cell"
+                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                    tabindex="-1"
+                  >
                     <div
-                      aria-colindex="2"
-                      aria-colspan="1"
-                      class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                      data-colindex="1"
-                      data-field="transactionDate"
-                      role="cell"
-                      style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                      tabindex="-1"
+                      class="MuiDataGrid-cellContent"
+                      title="CREDIT"
                     >
-                      <div
-                        class="MuiDataGrid-cellContent"
-                        title="1/1/2021, 12:00:00 AM"
-                      >
-                        1/1/2021, 12:00:00 AM
-                      </div>
+                      CREDIT
                     </div>
+                  </div>
+                </div>
+                <div
+                  aria-rowindex="3"
+                  aria-selected="false"
+                  class="MuiDataGrid-row MuiDataGrid-row--lastVisible"
+                  data-id="2"
+                  data-rowindex="1"
+                  role="row"
+                  style="max-height: 52px; min-height: 52px;"
+                >
+                  <div
+                    aria-colindex="1"
+                    aria-colspan="1"
+                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                    data-colindex="0"
+                    data-field="id"
+                    role="cell"
+                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                    tabindex="-1"
+                  >
                     <div
-                      aria-colindex="3"
-                      aria-colspan="1"
-                      class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                      data-colindex="2"
-                      data-field="type"
-                      role="cell"
-                      style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                      tabindex="-1"
+                      class="MuiDataGrid-cellContent"
+                      title="2"
                     >
-                      <div
-                        class="MuiDataGrid-cellContent"
-                        title="DEBIT"
-                      >
-                        DEBIT
-                      </div>
+                      2
+                    </div>
+                  </div>
+                  <div
+                    aria-colindex="2"
+                    aria-colspan="1"
+                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                    data-colindex="1"
+                    data-field="transactionDate"
+                    role="cell"
+                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                    tabindex="-1"
+                  >
+                    <div
+                      class="MuiDataGrid-cellContent"
+                      title="1/1/2021, 12:00:00 AM"
+                    >
+                      1/1/2021, 12:00:00 AM
+                    </div>
+                  </div>
+                  <div
+                    aria-colindex="3"
+                    aria-colspan="1"
+                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                    data-colindex="2"
+                    data-field="type"
+                    role="cell"
+                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                    tabindex="-1"
+                  >
+                    <div
+                      class="MuiDataGrid-cellContent"
+                      title="DEBIT"
+                    >
+                      DEBIT
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            class="Mui-resizeTriggers"
-          >
-            <div
-              class="expand-trigger"
-            >
-              <div
-                style="width: 1px; height: 1px;"
-              />
-            </div>
-            <div
-              class="contract-trigger"
-            />
           </div>
         </div>
         <div

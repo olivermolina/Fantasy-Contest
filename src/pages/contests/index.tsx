@@ -1,11 +1,11 @@
 import { NextPageWithLayout } from '../_app';
-import { supabase } from '~/utils/supabaseClient';
 import { GetServerSideProps } from 'next';
 import LeaderboardContainer from '~/containers/LeaderboardContainer/LeaderboardContainer';
-import { UrlPaths } from '~/constants/UrlPaths';
 import LayoutContainer from '~/containers/LayoutContainer/LayoutContainer';
 import { TabPanel } from '~/components';
 import ContestsContainer from '~/containers/ContestsContainer/ContestsContainer';
+import { withAuth } from '~/hooks/withAuthServerSideProps';
+import requestIp from 'request-ip';
 
 const IndexPage: NextPageWithLayout = () => {
   return (
@@ -41,17 +41,12 @@ const IndexPage: NextPageWithLayout = () => {
 
 export default IndexPage;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const user = await supabase.auth.api.getUserByCookie(ctx.req, ctx.res);
-  if (!user.user) {
+export const getServerSideProps: GetServerSideProps = withAuth(
+  async (context) => {
+    const { req } = context;
+    const clientIp = requestIp.getClientIp(req);
     return {
-      redirect: {
-        permanent: false,
-        destination: UrlPaths.Login,
-      },
+      props: { clientIp },
     };
-  }
-  return {
-    props: {},
-  };
-};
+  },
+);

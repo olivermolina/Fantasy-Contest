@@ -3,17 +3,17 @@
 exports[`FreeSquare should render correctly 1`] = `
 <div>
   <div
-    class="flex justify-evenly p-1 rounded-t-lg bg-yellow-600 font-bold text-md lg:text-md text-white "
+    class="flex justify-evenly p-1 rounded-t-lg bg-yellow-600 font-bold text-white items-center text-xs sm:text-sm md:text-md lg:text-lg"
   >
     <span
       class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1staz2m-MuiSkeleton-root"
     />
-    <span
+    <p
       class="whitespace-nowrap text-black"
     >
       95
       % OFF
-    </span>
+    </p>
   </div>
 </div>
 `;

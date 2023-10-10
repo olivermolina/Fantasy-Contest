@@ -27,6 +27,7 @@ const calculateWithdrawableAmount = (
       ActionType.TOKEN_CONTEST_WIN,
       ActionType.CASH_CONTEST_WIN,
       ActionType.ADD_WITHDRAWABLE,
+      ActionType.WITHDRAWABLE_CASH_CONTEST_CANCELLED,
     ].includes(transaction.actionType as ActionType)
   ) {
     newTotalWithdrawableAmount =

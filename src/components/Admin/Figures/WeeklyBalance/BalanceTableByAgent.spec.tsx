@@ -19,6 +19,7 @@ describe('BalanceTableByAgent', () => {
       },
       setSelectedTabStatus: jest.fn(),
       setShowTabTitle: jest.fn(),
+      setSelectedPlayer: jest.fn(),
     };
 
     const { container } = render(<BalanceTableByAgent {...props} />);

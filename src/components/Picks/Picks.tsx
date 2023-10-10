@@ -73,7 +73,7 @@ function PickItems(props: { picks: PicksProps[]; isAdminView: boolean }) {
   return (
     <>
       {picks.map(({ data, type, status }) => (
-        <>
+        <div key={data.id}>
           {type === BetType.STRAIGHT && (
             <StraightCard key={data.id} {...data} isAdminView={isAdminView} />
           )}
@@ -85,7 +85,7 @@ function PickItems(props: { picks: PicksProps[]; isAdminView: boolean }) {
               isAdminView={isAdminView}
             />
           )}
-        </>
+        </div>
       ))}
     </>
   );

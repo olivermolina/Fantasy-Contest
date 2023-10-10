@@ -9,6 +9,8 @@ describe('ChallengeHeader', () => {
         challengePromoMessage={
           'Pick 2-4 players. Predict if they will get MORE or LESS than their projection.'
         }
+        isLoading={false}
+        handleOpenContactUs={jest.fn()}
       />,
     );
     expect(container).toMatchSnapshot();

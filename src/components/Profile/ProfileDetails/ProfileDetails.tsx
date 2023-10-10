@@ -28,15 +28,17 @@ interface ProfileDetailsProps {
    * Show follower/following users
    */
   showFollowers?: boolean;
+  /**
+   * Open delete account dialog
+   */
+  openDeleteAccount: () => void;
 }
 
 const ProfileDetails = (props: ProfileDetailsProps) => {
   const Image = props.image;
   return (
-    <div className={`w-full lg:p-4`}>
-      <div
-        className={`flex flex-row justify-between rounded-b-lg shadow-md p-4 bg-primary gap-2`}
-      >
+    <div className={`w-full lg:p-4 rounded-b-lg shadow-md p-4 bg-primary`}>
+      <div className={`flex flex-row justify-between gap-2`}>
         <div className="flex flex-col justify-around gap-2">
           {props.isLoading && !props.image && (
             <div className="rounded-full h-[50px] w-[50px] bg-gray-200" />
@@ -84,6 +86,22 @@ const ProfileDetails = (props: ProfileDetailsProps) => {
             </Button>
           )}
         </div>
+      </div>
+      <div className={'space-y-2 mt-4'}>
+        <p className="text-lg text-red-500 font-bold">Delete Account</p>
+        <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+        <p className="text-sm">
+          Once you delete your account, there is no going back. Please be
+          certain.
+        </p>
+        <button
+          className={
+            'bg-gray-200 text-red-500 hover:text-white text-sm hover:bg-red-500 p-2 rounded-md font-bold'
+          }
+          onClick={() => props.openDeleteAccount()}
+        >
+          Delete your account
+        </button>
       </div>
     </div>
   );

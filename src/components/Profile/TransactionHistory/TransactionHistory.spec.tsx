@@ -6,7 +6,7 @@ import { mockTransactions } from './__mocks__/mockTransactions';
 describe('TransactionHistory', () => {
   it('should render correctly', () => {
     const props = {
-      flatData: mockTransactions,
+      transactions: mockTransactions,
       isLoading: false,
     };
 

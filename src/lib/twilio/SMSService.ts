@@ -1,4 +1,5 @@
 import { smsClient } from './SMSClient';
+import logger from '~/utils/logger';
 
 interface ISendSMSRequest {
   /**
@@ -32,12 +33,15 @@ class SMSService {
     });
 
     if (result.status === 'failed') {
+      logger.error(
+        `SMS Failed to ${formattedNumber}. ${result.errorCode}: ${result.errorMessage}`,
+      );
       throw new Error(
         `Failed to send sms message. Error Code: ${result.errorCode} / Error Message: ${result.errorMessage}`,
       );
     }
 
-    console.log(`SMS sent to ${formattedNumber}. Message ID: ${result.sid}`);
+    logger.info(`SMS sent to ${formattedNumber}. Message ID: ${result.sid}`);
     return result.sid;
   }
 }

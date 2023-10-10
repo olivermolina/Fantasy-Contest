@@ -19,6 +19,8 @@ import specialRestrictions from '~/server/routers/contest/specialRestrictions';
  * @return void
  */
 export const monitorUser = async (bet: BetInputType, user: User) => {
+  if (process.env.NODE_ENV === 'development') return;
+
   const session = await prisma.session.create({
     data: {
       userId: user.id,
@@ -42,7 +44,7 @@ export const monitorUser = async (bet: BetInputType, user: User) => {
     });
   }
 
-  if (isBlocked(reasonCodes)) {
+  if (isBlocked(reasonCodes, user.exemptedReasonCodes)) {
     throw new TRPCError({
       code: 'FORBIDDEN',
       message: getErrorMessage(reasonCodes),

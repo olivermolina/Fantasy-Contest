@@ -8,12 +8,20 @@ import PickDatePickerRange from '~/components/Picks/PickDatePickerRange';
 import { DataGrid } from '@mui/x-data-grid';
 import AdminLayoutContainer from '~/containers/AdminLayoutContainer/AdminLayoutContainer';
 import PendingPickDialog from '~/components/Pages/Admin/PendingBetsManagement/PendingPickDialog';
-import { RowModel } from '~/components/Pages/Admin/PendingBetsManagement/PendingBetsManagement';
+import {
+  LegRowModel,
+  RowModel,
+} from '~/components/Pages/Admin/PendingBetsManagement/PendingBetsManagement';
 import { Button } from '@mui/material';
+import { TruncateCellContent } from '~/components/Pages/Admin/LineExposure/LineExposure';
+import { BetStatus } from '@prisma/client';
+import { toast } from 'react-toastify';
+import BackdropLoading from '~/components/BackdropLoading';
 
 export default function ViewUsersBetsPage() {
   const [open, setOpen] = React.useState(false);
   const [selectedRow, setSelectedRow] = useState<RowModel | undefined>();
+  const [betStatus, setBetStatus] = useState<BetStatus | undefined>();
   const router = useRouter();
   const from = router.query.from
     ? dayjs(router.query.from as string)
@@ -25,7 +33,7 @@ export default function ViewUsersBetsPage() {
         .startOf('D')
         .toDate()
     : dayjs().startOf('D').toDate();
-  const { data } = trpc.admin.usersBetLists.useQuery(
+  const { data, refetch, isLoading } = trpc.admin.usersBetLists.useQuery(
     {
       // These NEED to be startOf otherwise the query will infinitely loop due to react-query checking the equality of the input (which is a new object every time due to the new seconds value of the date)
       from,
@@ -33,21 +41,51 @@ export default function ViewUsersBetsPage() {
     },
     {
       retry: false,
-      refetchOnWindowFocus: false,
     },
   );
+
+  const mutation = trpc.admin.settlePendingBet.useMutation();
+  const settlePick = async (currentRow: RowModel, betStatus: BetStatus) => {
+    try {
+      await mutation.mutateAsync({ betId: currentRow.ticket, betStatus });
+      await refetch();
+      toast.success('Status updated successfully');
+    } catch (e) {
+      toast.error('Something went wrong. Please try again later.');
+    }
+  };
+
+  const updateBetLegMutation = trpc.admin.updateBetLeg.useMutation();
+  const updateBetLeg = async (leg: LegRowModel, status: BetStatus) => {
+    try {
+      await updateBetLegMutation.mutateAsync({ id: leg.id, status });
+      await refetch();
+      toast.success('Leg status updated successfully');
+    } catch (e) {
+      toast.error('Error updating bet status');
+    }
+  };
+
   const clearSelectedRow = () => {
     setSelectedRow(undefined);
     handleClose();
   };
   const handleClose = () => {
     setOpen(false);
+    setBetStatus(undefined);
+  };
+
+  const setSelectedBetStatus = (betStatus: BetStatus) => {
+    setBetStatus(betStatus);
   };
 
   const rows = useMemo(() => data || [], [data]);
   return (
     <AdminLayoutContainer>
-      <div style={{ height: 500, width: '100%' }}>
+      <BackdropLoading
+        open={isLoading || mutation.isLoading || updateBetLegMutation.isLoading}
+      />
+      <div className={'h-[75vh] lg:h-[80vh] w-full'}>
         <DataGrid
           slots={{
             toolbar: () => {
@@ -74,7 +112,20 @@ export default function ViewUsersBetsPage() {
           rows={rows}
           getRowId={(row) => row.ticket}
           columns={[
-            { field: 'ticket', flex: 1, headerName: 'Bet ID' },
+            {
+              field: 'ticket',
+              flex: 1,
+              headerName: 'Bet ID',
+              renderCell: (params) => {
+                const currentRow = params.row as (typeof rows)[0];
+                return <TruncateCellContent value={currentRow.ticket} />;
+              },
+            },
+            {
+              field: 'placed',
+              flex: 1,
+              headerName: 'Date Placed',
+            },
             {
               field: 'username',
               flex: 1,
@@ -97,6 +148,15 @@ export default function ViewUsersBetsPage() {
               headerName: 'Type',
             },
             {
+              field: 'picks',
+              flex: 1,
+              headerName: '# of Picks',
+              renderCell: (params) => {
+                const currentRow = params.row as (typeof rows)[0];
+                return currentRow.legs.length;
+              },
+            },
+            {
               field: 'view',
               flex: 1,
               headerName: 'Action',
@@ -105,6 +165,7 @@ export default function ViewUsersBetsPage() {
                 const onClick = () => {
                   const currentRow = params.row as (typeof rows)[0];
                   setSelectedRow(currentRow);
+                  setBetStatus(currentRow.status);
                   setOpen(true);
                 };
 
@@ -116,7 +177,7 @@ export default function ViewUsersBetsPage() {
                       onClick={onClick}
                       variant={'contained'}
                     >
-                      VIEW PICKS
+                      EDIT PICKS
                     </Button>
                   </div>
                 );
@@ -127,14 +188,14 @@ export default function ViewUsersBetsPage() {
       </div>
       {selectedRow && (
         <PendingPickDialog
-          onClickDeleteRow={() => {
-            // no action
-          }}
+          settlePick={settlePick}
           clearSelectedRow={clearSelectedRow}
           open={open}
           row={selectedRow}
           handleClose={handleClose}
-          isViewOnly={true}
+          setSelectedBetStatus={setSelectedBetStatus}
+          betStatus={betStatus}
+          updateBetLeg={updateBetLeg}
         />
       )}
     </AdminLayoutContainer>

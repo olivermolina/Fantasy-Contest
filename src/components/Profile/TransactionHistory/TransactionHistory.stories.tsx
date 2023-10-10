@@ -20,6 +20,6 @@ const Template: ComponentStory<typeof TransactionHistory> = (args) => (
 export const Default = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Default.args = {
-  flatData: mockTransactions,
+  transactions: mockTransactions,
   isLoading: false,
 };

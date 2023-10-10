@@ -40,6 +40,9 @@ Content.args = {
     },
   ],
   isLoading: false,
+  heading1: 'Play More or Less',
+  heading2: 'Win Cash Prizes!',
+  contentIsLoading: false,
 };
 
 // More on args: https://storybook.js.org/docs/react/writing-stories/args

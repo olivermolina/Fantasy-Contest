@@ -4,6 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { TextField } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ProfileManagementUser } from '~/components/Admin/Management/Management';
+import z from 'zod';
 
 interface UserAutocompleteProps {
   /**
@@ -26,10 +27,38 @@ interface UserAutocompleteProps {
    * Custom select label
    */
   label?: string;
+  /**
+   * Boolean to disable the select component
+   */
+  disabled?: boolean;
+  defaultValue?: {
+    id: string;
+    username: string;
+  };
 }
 
+export const UserSelectSchema = z.object({
+  user: z.object(
+    {
+      id: z.string().optional(),
+      username: z.string().optional(),
+    },
+    {
+      required_error: 'Please select a user',
+      invalid_type_error: 'Please select a user',
+    },
+  ),
+});
+
 const UserAutocomplete = (props: UserAutocompleteProps) => {
-  const { users, setSelectedUserId, isLoading, control } = props;
+  const {
+    users,
+    setSelectedUserId,
+    isLoading,
+    control,
+    disabled,
+    defaultValue,
+  } = props;
   return (
     <Controller
       render={({ field, fieldState }) => (
@@ -52,7 +81,7 @@ const UserAutocomplete = (props: UserAutocompleteProps) => {
             if (typeof option === 'string') {
               return option;
             }
-            return option.username || option.email;
+            return option.username || option.email || '';
           }}
           id={'userId'}
           options={users || []}
@@ -85,11 +114,12 @@ const UserAutocomplete = (props: UserAutocompleteProps) => {
             />
           )}
           fullWidth
+          disabled={disabled}
         />
       )}
       name={'user'}
       control={control}
-      defaultValue={''}
+      defaultValue={defaultValue || ''}
     />
   );
 };

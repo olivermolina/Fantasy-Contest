@@ -27,12 +27,29 @@ const useTeams = () => {
   const { mutateAsync, isLoading: mutateIsLoading } =
     trpc.admin.upsertTeam.useMutation();
 
+  const { mutateAsync: deleteMutateAsync, isLoading: deleteMutateIsLoading } =
+    trpc.admin.deleteTeam.useMutation();
+
   const handleAddTeam = async (team: Team) => {
     try {
       const newTeam: Team = await mutateAsync(team);
       setFilterName(newTeam.name);
-      toast.success(`${newTeam.name} team successfully added.`);
+      toast.success(`${newTeam.name} team successfully saved.`);
       return newTeam || team;
+    } catch (error) {
+      const e = error as TRPCClientError<any>;
+      toast.error(e?.message, {
+        toastId: 'error',
+      });
+    }
+  };
+
+  const handleDeleteTeam = async (team: Team) => {
+    try {
+      const deletedTeam: Team = await deleteMutateAsync(team);
+      setFilterName(deletedTeam.name);
+      toast.success(`${deletedTeam.name} team successfully deleted.`);
+      return deletedTeam || team;
     } catch (error) {
       const e = error as TRPCClientError<any>;
       toast.error(e?.message, {
@@ -82,7 +99,8 @@ const useTeams = () => {
     teams: teams,
     isLoading,
     handleAddTeam,
-    mutateIsLoading,
+    mutateIsLoading: mutateIsLoading || deleteMutateIsLoading,
+    handleDeleteTeam,
   };
 };
 

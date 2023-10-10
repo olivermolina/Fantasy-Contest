@@ -1,24 +1,33 @@
-import { t } from '~/server/trpc';
 import {
   Contest,
   ContestType,
+  ContestWagerType,
   League,
   MarketType,
   Status,
 } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
-import { getFiltersByLeague } from '~/server/routers/contest/getFiltersByLeague';
 import { FantasyOffer } from '~/types';
 import { getFantasyOffers } from '~/server/routers/contest/getFantasyOffers';
-import * as yup from '~/utils/yup';
 import { uniq } from 'lodash';
+import z from 'zod';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const listOffers = t.procedure
+const listOffers = isAuthenticated
   .input(
-    yup.object({
-      contestId: yup.string().nullable(),
-      league: yup.mixed<League>().default(League.NFL).required(),
+    z.object({
+      contestId: z.string().nullable().optional(),
+      league: z.nativeEnum(League).default(League.NFL),
+      includeInActive: z.boolean().optional(),
+      oddsRange: z
+        .object({
+          min: z.number().default(-200),
+          max: z.number().default(200),
+        })
+        .optional(),
+      prebuild: z.boolean().optional(),
     }),
   )
   .query(async ({ ctx, input }) => {
@@ -31,7 +40,9 @@ const listOffers = t.procedure
 
     const contest = await prisma.contest.findFirst({
       where: {
-        ...(input.contestId ? { id: input.contestId } : {}),
+        ...(input.contestId
+          ? { id: input.contestId }
+          : { wagerType: ContestWagerType.CASH }),
         ContestEntries: {
           some: {
             userId,
@@ -47,14 +58,17 @@ const listOffers = t.procedure
       },
     });
     if (!contest) {
-      return null;
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: CustomErrorMessages.CONTEST_NOT_FOUND,
+      });
     }
 
     const ContestEntry = contest.ContestEntries[0];
     if (!ContestEntry) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Missing contest entry for this user.',
+        message: CustomErrorMessages.CONTEST_ENTRY_MISSING,
       });
     }
     const contestProps: Pick<
@@ -156,24 +170,63 @@ const listOffers = t.procedure
         filters: ['straight', 'parlay', 'teaser'],
         offers: offers,
         type: ContestType.MATCH,
+        league: input.league?.toUpperCase() as League,
       };
     } else if (contest.type === ContestType.FANTASY) {
-      const defaultFilters = getFiltersByLeague(input.league);
-      const offers: FantasyOffer[] = await getFantasyOffers(input.league);
-      const availableFilters = offers
+      let offers: FantasyOffer[] = [];
+
+      if (input.prebuild) {
+        const prebuildListOffers = await prisma.listOffer.findFirst({
+          where: {
+            league: input.league?.toUpperCase() as League,
+          },
+        });
+        if (
+          prebuildListOffers?.jsonData &&
+          typeof prebuildListOffers?.jsonData === 'object' &&
+          Array.isArray(prebuildListOffers?.jsonData)
+        ) {
+          offers = prebuildListOffers.jsonData as unknown as FantasyOffer[];
+        }
+      }
+
+      if (offers.length === 0) {
+        offers = await getFantasyOffers(
+          input.league,
+          input.includeInActive,
+          input.oddsRange,
+        );
+      }
+
+      const filters = offers
         ?.filter((offer) => offer.type === MarketType.PP)
         .map((offer) => offer.statName);
+      const marketCategories = await prisma.marketCategory.findMany({
+        where: {
+          league: input.league?.toUpperCase() as League,
+          category: {
+            in: filters,
+          },
+        },
+        orderBy: {
+          order: 'asc',
+        },
+      });
 
       return {
         ...contestProps,
-        filters: uniq([...defaultFilters, ...availableFilters]),
+        filters: uniq([
+          ...marketCategories.map((cat) => cat.category),
+          ...filters,
+        ]),
         offers: offers,
         type: ContestType.FANTASY,
+        league: input.league?.toUpperCase() as League,
       };
     } else {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'Undefined contest type',
+        message: CustomErrorMessages.CONTEST_NOT_FOUND,
       });
     }
   });

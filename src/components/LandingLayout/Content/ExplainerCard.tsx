@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ReactComponent } from '~/components/Icons/Icons';
+import { motion, useAnimation } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 export interface ExplainerCardProps {
   /**
@@ -20,9 +22,25 @@ export interface ExplainerCardProps {
 }
 
 const ExplainerCard = (props: ExplainerCardProps) => {
+  const control = useAnimation();
+  const [ref, inView] = useInView();
   const Image = props.image;
+  useEffect(() => {
+    if (inView) {
+      control.start('visible');
+    }
+  }, [control, inView]);
   return (
-    <div className="flex flex-col justify-start items-center gap-2 border-white rounded-lg border-2 p-5 md:p-10 max-w-sm bg-[#1A395B] bg-opacity-40">
+    <motion.div
+      ref={ref}
+      variants={{
+        visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
+        hidden: { opacity: 0, scale: 0 },
+      }}
+      initial={'hidden'}
+      animate={control}
+      className="flex flex-col justify-start items-center gap-2 border-white rounded-lg border-2 p-5 md:p-10 w-full bg-[#1A395B] bg-opacity-40"
+    >
       {/* Explainer Image */}
 
       {typeof props.image === 'string' ? (
@@ -44,7 +62,7 @@ const ExplainerCard = (props: ExplainerCardProps) => {
       <p className="text-white text-[16px] leading-[19px] font-bold text-center tracking-normal p4">
         {props.description}
       </p>
-    </div>
+    </motion.div>
   );
 };
 

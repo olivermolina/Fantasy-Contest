@@ -23,7 +23,7 @@ export const EditFormValidationSchema = z.object({
   type: z.nativeEnum(UserType, {
     errorMap: () => ({ message: 'Please select user type' }),
   }),
-  subAdminId: z.string().optional(),
+  subAdminIds: z.string().array().optional(),
   password: z.string().min(6),
   timezone: z.string().optional(),
 });

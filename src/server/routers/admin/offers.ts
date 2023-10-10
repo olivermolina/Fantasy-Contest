@@ -1,21 +1,41 @@
-import * as yup from '~/utils/yup';
 import { prisma } from '~/server/prisma';
 import { adminProcedure } from './middleware/isAdmin';
+import z from 'zod';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('America/New_York');
 
 const offers = adminProcedure
   .input(
-    yup.object({
-      limit: yup.number().required(),
-      cursor: yup.string(),
+    z.object({
+      limit: z.number(),
+      cursor: z.string().optional(),
+      from: z.date(),
+      to: z.date(),
     }),
   )
   .query(async ({ input }) => {
     const limit = input.limit ?? 50;
-    const { cursor } = input;
+    const { cursor, from, to } = input;
+
+    const startDate = dayjs.tz(from, 'America/New_York').toDate();
+    const endDate = dayjs.tz(to, 'America/New_York').toDate();
+    endDate.setDate(endDate.getDate() + 1);
+
+    const dateRange = {
+      gte: startDate,
+      lte: endDate,
+    };
 
     const totalRowCount = await prisma.offer.count({
       where: {
         manualEntry: true,
+        tournamentEventId: null,
+        created_at: dateRange,
       },
     });
 
@@ -27,6 +47,8 @@ const offers = adminProcedure
       },
       where: {
         manualEntry: true,
+        tournamentEventId: null,
+        created_at: dateRange,
       },
       include: {
         home: true,

@@ -2,13 +2,21 @@ import CartContainer from '~/containers/CartContainer/CartContainer';
 import ContestPickerContainer from '~/containers/ContestContainer/ContestPickerContainer';
 import MatchPickerTableContainer from '~/containers/MatchPickerTableContainer/MatchPickerTableContainer';
 import LayoutContainer from '~/containers/LayoutContainer/LayoutContainer';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from 'next';
 import { withAuth } from '~/hooks/withAuthServerSideProps';
 import ContestPickerCategoryContainer from '~/containers/ContestPickerCategoryContainer/ContestPickerCategoryContainer';
-import { Grid } from '@mui/material';
 import React from 'react';
 import requestIp from 'request-ip';
 import ChallengeHeaderContainer from '~/containers/ChallengeHeaderContainer/ChallengeHeaderContainer';
+import { createServerSideHelpers } from '@trpc/react-query/server';
+import { appRouter } from '~/server/routers/_app';
+import { createContext } from '~/server/context';
+import { trpcTransformer } from '~/utils/trpc';
 
 interface Props {
   clientIp: string;
@@ -18,31 +26,17 @@ interface Props {
 const ChallengePage = (props: Props) => {
   return (
     <LayoutContainer query={props.query}>
-      <Grid
-        container
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-      >
-        <Grid
-          item
-          sx={{
-            zIndex: 10,
-            minWidth: '305px',
-            display: { md: 'block', xs: 'none' },
-          }}
-          md={4}
-          lg={3}
-        >
+      <div className={'flex flex-nowrap'}>
+        <div className={'min-w-md hidden lg:block'}>
           <CartContainer {...props} isChallengePage />
-        </Grid>
-        <Grid item xs={12} md={8} lg={9}>
+        </div>
+        <div className={'w-full'}>
           <ChallengeHeaderContainer />
           <ContestPickerContainer />
           <ContestPickerCategoryContainer />
           <MatchPickerTableContainer />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </LayoutContainer>
   );
 };
@@ -53,8 +47,24 @@ export const getServerSideProps: GetServerSideProps = withAuth(
   async (context) => {
     const { req } = context;
     const clientIp = requestIp.getClientIp(req);
+
+    const helpers = createServerSideHelpers({
+      router: appRouter,
+      ctx: await createContext({
+        req: context.req as NextApiRequest,
+        res: context.res as NextApiResponse,
+      }),
+      transformer: trpcTransformer,
+    });
+
+    await helpers.contest.getLeagueFantasyOffersCount.prefetch();
+
     return {
-      props: { clientIp, query: context.query },
+      props: {
+        dehydratedState: helpers.dehydrate(),
+        clientIp,
+        query: context.query,
+      },
     };
   },
 );

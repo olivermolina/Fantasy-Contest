@@ -23,4 +23,8 @@ export const Header = Template.bind({});
 Header.args = {
   challengePromoMessage:
     'Pick 2-4 players. Predict if they will get MORE or LESS than their projection.',
+  isLoading: false,
+  handleOpenContactUs: () => {
+    alert('Contact Us');
+  },
 };

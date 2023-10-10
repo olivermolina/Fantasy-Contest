@@ -18,7 +18,7 @@ const usePlayers = () => {
   const [filterName, setFilterName] = useState('');
 
   const debouncedFilterName = useDebounce<string>(filterName, 200);
-  const { data, isLoading } = trpc.admin.players.useQuery({
+  const { data, isLoading, refetch } = trpc.admin.players.useQuery({
     take: 1000,
     filterName: debouncedFilterName,
     skip: 0,
@@ -27,17 +27,35 @@ const usePlayers = () => {
   const { mutateAsync, isLoading: mutateIsLoading } =
     trpc.admin.upsertPlayer.useMutation();
 
+  const { mutateAsync: deleteMutateAsync, isLoading: deleteMutateIsLoading } =
+    trpc.admin.deletePlayer.useMutation();
+
   const handleAddPlayer = async (player: Player) => {
     try {
       const newPlayer: Player = await mutateAsync(player);
       setFilterName(newPlayer.name);
-      toast.success(`${newPlayer.name} player successfully added.`, {
+      await refetch();
+      toast.success(`${newPlayer.name} player successfully saved.`, {
         toastId: newPlayer.id,
       });
       return newPlayer || player;
     } catch (error) {
       const e = error as TRPCClientError<any>;
       toast.error(e?.message);
+    }
+  };
+
+  const handleDeletePlayer = async (player: Player) => {
+    try {
+      const deletedPlayer: Player = await deleteMutateAsync(player);
+      setFilterName(deletedPlayer.name);
+      toast.success(`${deletedPlayer.name} player successfully deleted.`);
+      return deletedPlayer || player;
+    } catch (error) {
+      const e = error as TRPCClientError<any>;
+      toast.error(e?.message, {
+        toastId: 'error',
+      });
     }
   };
 
@@ -84,7 +102,8 @@ const usePlayers = () => {
     players,
     isLoading,
     handleAddPlayer,
-    mutateIsLoading,
+    mutateIsLoading: mutateIsLoading || deleteMutateIsLoading,
+    handleDeletePlayer,
   };
 };
 

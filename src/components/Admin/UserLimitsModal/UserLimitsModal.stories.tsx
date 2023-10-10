@@ -22,6 +22,7 @@ Open.args = {
   },
   isOpen: true,
   isLoading: false,
+  users: [],
 };
 
 export const Loading = Template.bind({});

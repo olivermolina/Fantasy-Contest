@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import React from 'react';
 import { toast } from 'react-toastify';
 import ContestDetailModal from '~/components/ContestDetail/ContestDetailModal';
@@ -15,9 +14,14 @@ const ContestDetailContainer = () => {
   );
   const dispatch = useAppDispatch();
   const joinContest = trpc.contest.joinContest.useMutation();
-  const result = trpc.contest.getById.useQuery({
-    id: contestId || '',
-  });
+  const result = trpc.contest.getById.useQuery(
+    {
+      id: contestId || '',
+    },
+    {
+      enabled: contestId !== '' && contestId !== undefined,
+    },
+  );
 
   if (!contestId || result.isLoading) {
     return null;
@@ -31,7 +35,7 @@ const ContestDetailContainer = () => {
       <ContestDetailModal
         {...result.data}
         // TODO: Put the rules here
-        rules={{ content: faker.lorem.paragraphs() }}
+        rules={{ content: '' }}
         onClickJoinCompetition={async () => {
           try {
             await joinContest.mutateAsync({

@@ -1,0 +1,17 @@
+-- CreateEnum
+CREATE TYPE "SmsStatus" AS ENUM ('PENDING', 'FAILED', 'SUCCESS');
+
+-- CreateTable
+CREATE TABLE "SmsLog" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "status" "SmsStatus" NOT NULL DEFAULT 'PENDING',
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SmsLog_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "SmsLog" ADD CONSTRAINT "SmsLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

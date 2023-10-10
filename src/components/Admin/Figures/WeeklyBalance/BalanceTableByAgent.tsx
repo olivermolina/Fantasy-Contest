@@ -24,7 +24,7 @@ import {
 import { fuzzyFilter } from '~/components/CustomDataTable/CustomDataTable';
 import { TableFooter } from '@mui/material';
 import { DayOfWeek } from '~/constants/DayOfWeek';
-import { WeeklyBalanceDateRage } from '~/server/routers/admin/figures/weeklyBalances/playerWeeklyBalance';
+import { BalanceDateRage } from '~/server/routers/admin/figures/weeklyBalances/playerWeeklyBalance';
 import AmountCellContent from '~/components/Admin/Figures/WeeklyBalance/AmountCellContent';
 import { PickStatus } from '~/constants/PickStatus';
 
@@ -34,12 +34,14 @@ interface BalanceTableByAgentProps {
   globalFilter: string;
   setGlobalFilter: (value: ((prevState: string) => string) | string) => void;
   handleSetDateFilter: (
-    dateRange: WeeklyBalanceDateRage,
+    dateRange: BalanceDateRage,
     dayOfWeek?: DayOfWeek,
   ) => void;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setUserId: React.Dispatch<React.SetStateAction<string>>;
-  dateRange: WeeklyBalanceDateRage;
+  setSelectedPlayer: React.Dispatch<
+    React.SetStateAction<IPlayerWeeklyBalance | null>
+  >;
+  dateRange: BalanceDateRage;
   setSelectedTabStatus: React.Dispatch<React.SetStateAction<PickStatus>>;
   setShowTabTitle: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -52,7 +54,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
     setGlobalFilter,
     handleSetDateFilter,
     setOpen,
-    setUserId,
+    setSelectedPlayer,
     dateRange,
     setSelectedTabStatus,
     setShowTabTitle,
@@ -109,7 +111,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               handleSetDateFilter(dateRange, DayOfWeek.MONDAY);
               setSelectedTabStatus(PickStatus.SETTLED);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -135,7 +137,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               handleSetDateFilter(dateRange, DayOfWeek.TUESDAY);
               setSelectedTabStatus(PickStatus.SETTLED);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -161,7 +163,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.SETTLED);
               handleSetDateFilter(dateRange, DayOfWeek.WEDNESDAY);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -187,7 +189,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.SETTLED);
               handleSetDateFilter(dateRange, DayOfWeek.THURSDAY);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -213,7 +215,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.SETTLED);
               handleSetDateFilter(dateRange, DayOfWeek.FRIDAY);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -239,7 +241,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.SETTLED);
               handleSetDateFilter(dateRange, DayOfWeek.SATURDAY);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -265,7 +267,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.SETTLED);
               handleSetDateFilter(dateRange, DayOfWeek.SUNDAY);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -291,7 +293,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.SETTLED);
               handleSetDateFilter(dateRange);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),
@@ -345,7 +347,7 @@ export default function BalanceTableByAgent(props: BalanceTableByAgentProps) {
               setSelectedTabStatus(PickStatus.PENDING);
               handleSetDateFilter(dateRange);
               setOpen(true);
-              setUserId(info.row.original.id || '');
+              setSelectedPlayer(info.row.original);
             }}
           />
         ),

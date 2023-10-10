@@ -4,7 +4,7 @@ import {
   ContestCategory,
   ContestWagerType,
 } from '@prisma/client';
-import { InsuredPayout } from '~/utils/calculateInsuredPayout';
+import { InsuredPayout } from '~/utils/calculatePayout';
 
 type LegType = {
   id: string;

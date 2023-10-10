@@ -1,4 +1,3 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import * as yup from '~/utils/yup';
 import { prisma } from '~/server/prisma';
@@ -8,8 +7,10 @@ import { createTransaction } from '~/server/routers/bets/createTransaction';
 import { ActionType } from '~/constants/ActionType';
 import { getUserTotalBalance } from '~/server/routers/user/userTotalBalance';
 import applyDepositDistribution from '~/server/routers/user/applyDepositDistribution';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const joinContest = t.procedure
+const joinContest = isAuthenticated
   .input(
     yup.object({
       contestId: yup.string().required(),
@@ -26,7 +27,7 @@ const joinContest = t.procedure
       if (!user) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'You must be logged in to view contests.',
+          message: CustomErrorMessages.CONTEST_REQUIRE_LOGIN,
         });
       }
 
@@ -52,14 +53,14 @@ const joinContest = t.procedure
       if (!contest) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: `Contest not found.`,
+          message: CustomErrorMessages.CONTEST_NOT_FOUND,
         });
       }
 
       if (dayjs().isAfter(dayjs(contest?.startDate))) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: `It's too late to join this contest.`,
+          message: CustomErrorMessages.CONTEST_LATE_ENTRY,
         });
       }
       if (
@@ -69,7 +70,7 @@ const joinContest = t.procedure
       ) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: `Already registered for this contest.`,
+          message: CustomErrorMessages.CONTEST_DUPLICATE_ENTRY,
         });
       }
 
@@ -79,9 +80,10 @@ const joinContest = t.procedure
       // Get user total available balance
       const { totalAmount } = await getUserTotalBalance(user.id);
       if (entryFee > totalAmount) {
-        throw new Error(
-          'Insufficient funds. Please deposit funds in your account and try again.',
-        );
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: CustomErrorMessages.CONTEST_INSUFFICIENT_FUNDS,
+        });
       }
 
       const contestEntry = await prisma.contestEntry.create({

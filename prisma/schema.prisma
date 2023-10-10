@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  previewFeatures = []
 }
 
 datasource db {
@@ -19,6 +19,7 @@ enum UserStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
+  DELETED
 }
 
 model User {
@@ -47,25 +48,32 @@ model User {
   isAdmin         Boolean           @default(false)
   type            UserType          @default(PLAYER)
   agentId         String?
-  agent           Agent?            @relation(fields: [agentId], references: [id])
+  agent           Agent?            @relation(fields: [agentId], references: [id], onDelete: Cascade)
   // List of users referrals under the agent
   UserAsAgents    Agent[]           @relation("UserAsAgent")
   referralCodes   ReferralCode[]
   UserAppSettings UserAppSettings[]
   permissions     Permission[]      @relation("PermissionUser")
   status          UserStatus        @default(ACTIVE)
-  // List of agents assigned to the Sub-admin user
-  SubAdminAgents  Agent[]           @relation("SubAdminUser")
+  //  List of agents assigned to the Sub-admin user -
+  SubAdminAgents  Agent[]           @relation("SubAdminUser") // @deprecated - use AgentSubAdmins instead
   created_at      DateTime          @default(now()) @db.Timestamptz(6)
   timezone        String?           @default("America/New_York")
+  notes           String?
+  smsLogs         SmsLog[]
+  exemptedReasonCodes String[]
+  UserBonusCreditLimits UserBonusCreditLimit[]
+  UserAgents UserAgent[]
+  // List of PAMs assigned to manage the partner (agent)
+  AgentSubAdmins AgentSubAdmin[]    @relation("AgentSubAdmin")
 }
 
 model ContestEntry {
   id                   String                @id @default(uuid())
-  contest              Contest               @relation(fields: [contestsId], references: [id])
+  contest              Contest               @relation(fields: [contestsId], references: [id], onDelete: Cascade)
   bets                 Bet[]
   tokens               Decimal
-  User                 User                  @relation(fields: [userId], references: [id])
+  User                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String
   contestsId           String
   transactions         Transaction[]
@@ -108,7 +116,7 @@ model BetLeg {
   updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
   marketId     String
   marketSel_id Int
-  Bet          Bet?     @relation(fields: [betId], references: [id])
+  Bet          Bet?     @relation(fields: [betId], references: [id], onDelete: Cascade)
   betId        String?
 }
 
@@ -118,15 +126,15 @@ model Bet {
   cashStake            Decimal               @default(0) @db.Decimal(10, 2)
   bonusCreditStake     Decimal               @default(0) @db.Decimal(10, 2)
   status               BetStatus
-  owner                User                  @relation(fields: [userId], references: [id])
+  owner                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   payout               Decimal               @db.Decimal(10, 2)
   type                 BetType
   legs                 BetLeg[]
   odds                 Int
-  ContestEntries       ContestEntry          @relation(fields: [contestEntriesId], references: [id])
+  ContestEntries       ContestEntry          @relation(fields: [contestEntriesId], references: [id], onDelete: Cascade)
   contestEntriesId     String
   userId               String
-  ContestCategory      ContestCategory       @relation(fields: [contestCategoryId], references: [id])
+  ContestCategory      ContestCategory       @relation(fields: [contestCategoryId], references: [id], onDelete: Cascade)
   contestCategoryId    String
   stakeType            BetStakeType
   DepositDistributions DepositDistribution[]
@@ -179,6 +187,25 @@ enum League {
   GOLF
   SOCCER
   MMA
+  CSGO
+  NASCAR
+  F1
+  KBO
+  BOXING
+  DOTA2
+  LOL
+  COD
+  VALORANT
+  USFL
+  WNBA
+  CRICKET
+  NBA1H
+  NBA1Q
+  CFL
+  NFL1H
+  NFL1Q
+  NFL2H
+  BASKETBALL
 }
 
 enum Status {
@@ -217,15 +244,15 @@ model Player {
   teamid   String
   team     String
   Market   Market[]
-  Team     Team?    @relation(fields: [teamid], references: [id])
+  Team     Team?    @relation(fields: [teamid], references: [id], onDelete: Cascade)
   headshot String?
 }
 
 model Market {
   id               String
   // team id or player id
-  team             Team?        @relation(fields: [teamId], references: [id])
-  player           Player?      @relation(fields: [playerId], references: [id])
+  team             Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player           Player?      @relation(fields: [playerId], references: [id], onDelete: Cascade)
   sel_id           Int
   type             MarketType
   category         String
@@ -253,17 +280,18 @@ model Market {
   total_stat       Float?
   moneyline_result MarketResult
   moneyline_stat   Float?
-  offer            Offer?       @relation(fields: [offerId], references: [gid])
+  offer            Offer?       @relation(fields: [offerId], references: [gid], onDelete: Cascade)
   offerId          String?
   teamId           String?
   playerId         String?
   BetLeg           BetLeg[]
-  FreeSquare       FreeSquare?  @relation(fields: [freeSquareId], references: [id])
+  FreeSquare       FreeSquare?  @relation(fields: [freeSquareId], references: [id], onDelete: Cascade)
   freeSquareId     String?      @unique
   created_at       DateTime     @default(now()) @db.Timestamptz(6)
   updated_at       DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
-  MarketOverride   MarketOverride?  @relation(fields: [marketOverrideId], references: [id])
+  MarketOverride   MarketOverride?  @relation(fields: [marketOverrideId], references: [id], onDelete: Cascade)
   marketOverrideId String?      @unique
+  active           Boolean      @default(true)
 
   @@id([id, sel_id])
 }
@@ -279,8 +307,8 @@ model Offer {
   status    Status
   matchup   String
   gametime  String
-  home      Team     @relation("homeTeam", fields: [homeTeamId], references: [id])
-  away      Team     @relation("awayTeam", fields: [awayTeamId], references: [id])
+  home      Team     @relation("homeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  away      Team     @relation("awayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
   markets   Market[]
 
   created_at  DateTime @default(now()) @db.Timestamptz(6)
@@ -288,6 +316,8 @@ model Offer {
   homeTeamId  String
   awayTeamId  String
   manualEntry Boolean  @default(false)
+  TournamentEvent       TournamentEvent?   @relation(fields: [tournamentEventId], references: [id], onDelete: Cascade)
+  tournamentEventId     String?
 }
 
 enum ContestType {
@@ -297,16 +327,17 @@ enum ContestType {
 
 // For in-house purposes
 model AppSettings {
-  id    String         @id @default(uuid())
-  name  AppSettingName @unique
-  value String
+  id     String         @id @default(uuid())
+  name   AppSettingName @unique
+  value  String
+  banner Banner?
 }
 
 model UserAppSettings {
   id     String         @id @default(uuid())
   name   AppSettingName
   value  String
-  User   User           @relation(fields: [userId], references: [id])
+  User   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
   @@unique([userId, name])
@@ -349,16 +380,33 @@ enum AppSettingName {
   CHALLENGE_PROMO_MESSAGE
   // Limit for repeating the same offers in an entry
   REPEAT_ENTRIES_LIMIT
+  // Automatic signup free entry
+  SIGNUP_FREE_ENTRY
+  // Maximum daily total bet amount
+  MAX_DAILY_TOTAL_BET_AMOUNT
+  // Max Limit on Weekly Referral Bonus Credit Earned
+  WEEKLY_REFERRAL_MAX_AMOUNT_EARNED
+  // Home page heading 1
+  HOMEPAGE_HEADING_1
+  // Home page heading 2
+  HOMEPAGE_HEADING_2
+  // Automatic approve if the user has this many successful deposits
+  ACH_DEPOSIT_AUTO_APPROVE_COUNT
+  // Minimum deposit amount
+  MIN_DEPOSIT_AMOUNT
 }
 
-// TODO: [LOC-173] Wallets should go on contest entries?
 model Wallets {
-  id         String  @id @default(uuid())
-  User       User    @relation(fields: [userId], references: [id])
-  contest    Contest @relation(fields: [contestsId], references: [id])
-  balance    Decimal @db.Decimal(10, 2)
-  userId     String
-  contestsId String
+  id                        String  @id @default(uuid())
+  User                      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest                   Contest @relation(fields: [contestsId], references: [id], onDelete: Cascade)
+  balance                   Decimal @db.Decimal(10, 2)  @default(0)
+  cashBalance               Decimal @db.Decimal(10, 2)  @default(0)
+  bonusCredits              Decimal @db.Decimal(10, 2)  @default(0)
+  amountAvailableToWithdraw Decimal @db.Decimal(10, 2)  @default(0)
+  unPlayedAmount            Decimal @db.Decimal(10, 2)  @default(0)
+  userId                    String
+  contestsId                String
 
   created_by String
   updated_by String
@@ -371,7 +419,7 @@ model Wallets {
 model Session {
   id                        String            @id @default(uuid())
   serviceType               String
-  User                      User              @relation(fields: [userId], references: [id])
+  User                      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                    String
   deviceLocation            String
   sessionRequestRaw         String?
@@ -383,7 +431,7 @@ model Session {
 
 model SessionResponse {
   id                 String   @id @default(uuid())
-  Session            Session  @relation(fields: [sessionId], references: [id])
+  Session            Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId          String
   reasonCodes        String[]
   sessionResponseRaw String
@@ -408,25 +456,25 @@ enum PaymentMethodType {
 model Transaction {
   id                   String                @id
   actionType           String
-  Session              Session               @relation(fields: [sessionId], references: [id])
+  Session              Session               @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId            String
-  User                 User                  @relation(fields: [userId], references: [id])
+  User                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String
   amountProcess        Decimal
   amountBonus          Decimal
   transactionCurrency  String //USD or other ISO 4217 Currency Code
   created_at           DateTime              @default(now()) @db.Timestamptz(6)
   TransactionStatuses  TransactionStatus[]
-  ContestEntry         ContestEntry?         @relation(fields: [contestEntryId], references: [id])
+  ContestEntry         ContestEntry?         @relation(fields: [contestEntryId], references: [id], onDelete: Cascade)
   contestEntryId       String?
   DepositDistributions DepositDistribution[]
   betId                String?               @unique
-  Bet                  Bet?                  @relation(fields: [betId], references: [id])
+  Bet                  Bet?                  @relation(fields: [betId], references: [id], onDelete: Cascade)
 }
 
 model TransactionStatus {
   id                       String            @id @default(uuid())
-  Transaction              Transaction       @relation(fields: [transactionId], references: [id])
+  Transaction              Transaction       @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   transactionId            String
   statusCode               Int
   statusMessage            String?
@@ -452,16 +500,44 @@ model ContestCategory {
   secondaryInsuredPayoutMultiplier Float
   Bets                             Bet[]
   FreeSquareContestCategories      FreeSquareContestCategory[]
+  customStakeLimitEnabled          Boolean? @default(false)
+  minStakeAmount                   Decimal?
+  maxStakeAmount                   Decimal?
+  contestCategoryLeagueLimits      ContestCategoryLeagueLimit[]
+  bonusCreditLimit                 BonusCreditLimit? @relation(fields: [bonusCreditLimitId], references: [id], onDelete: Cascade)
+  bonusCreditLimitId               String? @unique
+}
+
+model BonusCreditLimit {
+  id                               String                 @id @default(uuid())
+  enabled                          Boolean?               @default(false)
+  contestCategory                  ContestCategory?
+  stakeTypeOptions                 BetStakeType[]
+  bonusCreditFreeEntryEquivalent   Decimal                @default(0)
+  UserBonusCreditLimits            UserBonusCreditLimit[]
+}
+
+model UserBonusCreditLimit {
+  id                               String           @id @default(uuid())
+  enabled                          Boolean?         @default(false)
+  bonusCreditLimit                 BonusCreditLimit @relation(fields: [bonusCreditLimitId], references: [id], onDelete: Cascade)
+  bonusCreditLimitId               String
+  User                             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                           String
+  stakeTypeOptions                 BetStakeType[]
+  bonusCreditFreeEntryEquivalent   Decimal          @default(0)
+
+  @@unique([userId, bonusCreditLimitId])
 }
 
 // To determine how much the user can withdraw without payout request approval
 model DepositDistribution {
   id             String        @id @default(uuid())
-  Transaction    Transaction   @relation(fields: [transactionId], references: [id])
+  Transaction    Transaction   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   transactionId  String
-  Bet            Bet?          @relation(fields: [betId], references: [id])
+  Bet            Bet?          @relation(fields: [betId], references: [id], onDelete: Cascade)
   betId          String?
-  ContestEntry   ContestEntry? @relation(fields: [contestEntryId], references: [id])
+  ContestEntry   ContestEntry? @relation(fields: [contestEntryId], references: [id], onDelete: Cascade)
   contestEntryId String?
   amount         Decimal
   created_at     DateTime      @default(now()) @db.Timestamptz(6)
@@ -479,11 +555,13 @@ model ContactUs {
 }
 
 model Banner {
-  id         String   @id @default(uuid())
-  text       String
-  priority   Int      @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  id            String        @id @default(uuid())
+  text          String
+  priority      Int           @default(autoincrement())
+  appSetting    AppSettings?  @relation(fields: [appSettingId], references: [id], onDelete: Cascade)
+  appSettingId  String?       @unique
+  created_at    DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
 }
 
 model SpecialRestriction {
@@ -500,16 +578,36 @@ model ReferralCode {
   id     String @id @default(uuid())
   code   String @unique
   userId String
-  User   User   @relation(fields: [userId], references: [id])
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Agent {
   id     String @id @default(uuid())
   userId String @unique
-  User   User   @relation(name: "UserAsAgent", fields: [userId], references: [id])
+  User   User   @relation(name: "UserAsAgent", fields: [userId], references: [id], onDelete: Cascade)
   users  User[]
-  subAdminId    String?
-  subAdminUser  User?   @relation(name: "SubAdminUser", fields: [subAdminId], references: [id])
+  subAdminId    String? // @deprecated - use AgentSubAdmin instead to support multiple sub-admins managing the same agent
+  subAdminUser  User?   @relation(name: "SubAdminUser", fields: [subAdminId], references: [id], onDelete: Cascade) // @deprecated - use AgentSubAdmin instead
+  UserAgents UserAgent[]
+  AgentSubAdmins AgentSubAdmin[]
+}
+
+model UserAgent {
+  id     String @id @default(uuid())
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentId String
+  Agent   Agent   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  @@unique([userId, agentId])
+}
+
+model AgentSubAdmin {
+  id     String @id @default(uuid())
+  agentId String
+  Agent   Agent   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  subAdminId    String
+  subAdminUser  User   @relation(name: "AgentSubAdmin", fields: [subAdminId], references: [id], onDelete: Cascade)
+  @@unique([agentId, subAdminId])
 }
 
 model FreeSquare {
@@ -528,8 +626,8 @@ model FreeSquare {
 
 model FreeSquareContestCategory {
   id                String     @id @default(uuid())
-  freeSquare        FreeSquare @relation(fields: [freeSquareId], references: [id])
-  contestCategory   ContestCategory @relation(fields: [contestCategoryId], references: [id])
+  freeSquare        FreeSquare @relation(fields: [freeSquareId], references: [id], onDelete: Cascade)
+  contestCategory   ContestCategory @relation(fields: [contestCategoryId], references: [id], onDelete: Cascade)
   freeSquareId      String
   contestCategoryId String
 
@@ -540,9 +638,9 @@ model Permission {
   id          String       @id @default(uuid())
   read        Boolean
   write       Boolean
-  module      Module       @relation("PermissionModule", fields: [moduleId], references: [id])
+  module      Module       @relation("PermissionModule", fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId    String
-  user        User         @relation("PermissionUser", fields: [userId], references: [id])
+  user        User         @relation("PermissionUser", fields: [userId], references: [id], onDelete: Cascade)
   userId      String
 
   @@unique([moduleId, userId])
@@ -552,8 +650,10 @@ enum ModuleName {
   MANAGEMENT_INSERT_BONUS_CREDIT
   MANAGEMENT_AMOUNT_AVAILABLE_TO_WITHDRAW
   MANAGEMENT_MANUALLY_ENTER_OFFER_LINES
+  MANAGEMENT_MANUALLY_ENTER_TOURNAMENT_OFFER_LINES
   MANAGEMENT_BALANCE_BY_USER_ID
   MANAGEMENT_UPDATE_USERS_LIMITS
+  MANAGEMENT_CONTENT
   MANAGEMENT_WITHDRAWAL_OFFER
   MANAGEMENT_ADD_REMOVE_FREE_SQUARE_PROMOTIONS
   MANAGEMENT_AGENT_REFERRAL_CODES
@@ -565,11 +665,22 @@ enum ModuleName {
   MANAGEMENT_PARTNERS_PAMS
   MANAGEMENT_LIST_OFFERS
   MANAGEMENT_VIEW_BETS
+  MANAGEMENT_MARKET_CATEGORIES
+  MANAGEMENT_MONTHLY_USER_CONVERSION
+  MANAGEMENT_LEAGUES
   FIGURES_WEEKLY_BALANCE
   FIGURES_LINE_EXPOSURES
   FIGURES_PLAYER_TOTALS_BY_RANGE
   FIGURES_VIEW_PICKS_BY_USER
+  FIGURES_TSEVO_BILLING
+  FIGURES_USER_PERFORMANCE_BY_SPORT
+  FIGURES_USER_PERFORMANCE_BY_PICKS
+  FIGURES_USER_PERFORMANCE_BY_SPORT_AND_CATEGORY
+  FIGURES_MONTHLY_USER_CONVERSION
+  FIGURES_MONTHLY_BALANCE
+  FIGURES_USERS_DEPOSITS_WITHDRAWALS
   ACTION_DELETE_PICKS
+  ACTION_VIEW_BETS
 }
 
 model Module {
@@ -582,11 +693,99 @@ model Module {
 }
 
 model MarketOverride {
-  id           String   @id @default(uuid())
-  market       Market?
-  total        Float?
-  over         Float?
-  under        Float?
-  created_at   DateTime @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  id            String   @id @default(uuid())
+  market        Market?
+  total         Float?
+  over          Float?
+  under         Float?
+  adjustedTotal Float?
+  adjustedOver  Float?
+  adjustedUnder Float?
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model LeagueLimit {
+  id          String          @id @default(uuid())
+  league      League          @unique
+  // Option to limit the league
+  enabled     Boolean         @default(false)
+  // Maximum league stake amount
+  maxStake    Decimal         @default(0)
+  // Minimum league stake amount
+  minStake    Decimal         @default(0)
+  // Limit to the number of selections per team on a single ticket/entry
+  teamSelectionLimit Decimal  @default(0)
+  contestCategoryLeagueLimits ContestCategoryLeagueLimit[]
+}
+
+model TournamentEvent {
+  id            String          @id @default(uuid())
+  name          String
+  Offers        Offer[]
+  league        League
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+
+model ContestCategoryLeagueLimit {
+  id                               String          @id @default(uuid())
+  enabled                          Boolean         @default(false)
+  ContestCategory                  ContestCategory @relation(fields: [contestCategoryId], references: [id], onDelete: Cascade)
+  contestCategoryId                String
+  LeagueLimit                      LeagueLimit     @relation(fields: [leagueLimitId], references: [id], onDelete: Cascade)
+  leagueLimitId                    String
+  allInPayoutMultiplier            Float
+  primaryInsuredPayoutMultiplier   Float
+  secondaryInsuredPayoutMultiplier Float
+
+  @@unique([contestCategoryId, leagueLimitId])
+}
+
+
+enum SmsStatus {
+  NEW
+  PENDING
+  FAILED
+  SUCCESS
+}
+
+model SmsLog {
+  id          String    @id @default(uuid())
+  userId      String
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message     String
+  reason      String?
+  status      SmsStatus @default(NEW)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model MarketCategory {
+  id        String  @id @default(uuid())
+  category  String
+  league    League
+  order     Int?
+}
+
+model LeagueCategory {
+  id        String  @id @default(uuid())
+  league    League  @unique
+  order     Int?
+}
+
+model LeaguesMarketCount {
+  id        String  @id @default(uuid())
+  league    League  @unique
+  count     Int?
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model ListOffer {
+  id        String  @id @default(uuid())
+  league    League  @unique
+  jsonData  Json?
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
 }

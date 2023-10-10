@@ -1,4 +1,3 @@
-import * as yup from '~/utils/yup';
 import {
   AppSettingName,
   BetLegType,
@@ -11,12 +10,11 @@ import {
   League,
   Market,
   Prisma,
+  Status,
   TransactionType,
   UserStatus,
 } from '@prisma/client';
 import { prisma } from '~/server/prisma';
-import { calculateTeaserPayout } from '~/utils/caculateTeaserPayout';
-import { calculateParlayPayout } from '~/utils/calculateParlayPayout';
 import { calculateTotalOdds } from '~/utils/calculateTotalBets';
 import { User } from '@supabase/supabase-js';
 import { createTransaction } from '~/server/routers/bets/createTransaction';
@@ -24,7 +22,6 @@ import { ActionType } from '~/constants/ActionType';
 import { IDeviceGPS } from '~/lib/tsevo-gidx/GIDX';
 import { TRPCError } from '@trpc/server';
 import { getUserTotalBalance } from '~/server/routers/user/userTotalBalance';
-import applyDepositDistribution from '~/server/routers/user/applyDepositDistribution';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 import { calculateBonusCreditStake } from '~/utils/calculateBonusCreditStake';
 import { monitorUser } from '~/server/routers/bets/monitorUser';
@@ -32,50 +29,11 @@ import { getUserSettings } from '../appSettings/list';
 import { DefaultAppSettings } from '~/constants/AppSettings';
 import { getMarketTotalProjection } from '~/utils/getMarketTotalProjection';
 import { verifyFreeSquarePickCategories } from '~/utils/verifyFreeSquarePickCategories';
-
-function placeBetSchema(isTeaser: boolean) {
-  return yup.object().shape({
-    /**
-     * This is how much the betting user wants to stake.
-     */
-    stake: yup
-      .number()
-      .moreThan(0, 'Parlay stake must be more than 0.')
-      .required('Stake is required when creating a parlay.'),
-    /**
-     * This is the id of the contest.
-     */
-    contest: yup.number(),
-    /**
-     * These are all the legs of the bet.
-     */
-    legs: yup.array().of(
-      yup.object().shape({
-        offerId: yup.string().required(),
-        type: yup
-          .mixed()
-          .oneOf(
-            isTeaser
-              ? [
-                  BetLegType.OVER_ODDS,
-                  BetLegType.UNDER_ODDS,
-                  BetLegType.SPREAD_AWAY_ODDS,
-                  BetLegType.SPREAD_HOME_ODDS,
-                ]
-              : [
-                  BetLegType.OVER_ODDS,
-                  BetLegType.UNDER_ODDS,
-                  BetLegType.SPREAD_AWAY_ODDS,
-                  BetLegType.SPREAD_HOME_ODDS,
-                  BetLegType.MONEYLINE_AWAY_ODDS,
-                  BetLegType.MONEYLINE_HOME_ODDS,
-                ],
-          )
-          .required(),
-      }),
-    ),
-  });
-}
+import { isMarketAvailable } from '~/server/routers/contest/getFantasyOffers';
+import dayjs from 'dayjs';
+import { getEntryFeeLimits } from '~/utils/getEntryFeeLimits';
+import { calculateFreeEntryStake } from '~/utils/calculateFreeEntryStake';
+import { calculatePayout } from '~/utils/calculatePayout';
 
 export type LegCreateInput = {
   total: number;
@@ -83,6 +41,10 @@ export type LegCreateInput = {
   marketSelId: Market['sel_id'];
   type: BetLegType;
   league: League;
+  isFreeSquare: boolean;
+  freeSquare?: {
+    maxStake: number;
+  };
 };
 export type BetInputType = {
   stake: number;
@@ -106,12 +68,17 @@ export type BetInputType = {
  */
 export async function placeBet(bet: BetInputType, user: User): Promise<void> {
   try {
-    const { user: prismaUser, userAppSettings: appSettings } =
-      await getUserSettings(user.id);
+    const {
+      user: prismaUser,
+      allAppSettings,
+      userAppSettings,
+      leagueLimits,
+      bonusCreditLimits,
+    } = await getUserSettings(user.id);
     if (!prismaUser) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'You must be logged in to place entry.',
+        message: CustomErrorMessages.LOGIN_REQUIRED,
       });
     }
 
@@ -123,24 +90,19 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
     }
 
     const minBetAmount = Number(
-      appSettings.find((s) => s.name === AppSettingName.MIN_BET_AMOUNT)
+      userAppSettings.find((s) => s.name === AppSettingName.MIN_BET_AMOUNT)
         ?.value || DefaultAppSettings.MIN_BET_AMOUNT,
     );
     const maxBetAmount = Number(
-      appSettings.find((s) => s.name === AppSettingName.MAX_BET_AMOUNT)
+      userAppSettings.find((s) => s.name === AppSettingName.MAX_BET_AMOUNT)
         ?.value || DefaultAppSettings.MAX_BET_AMOUNT,
     );
-    if (bet.stake < minBetAmount || bet.stake > maxBetAmount) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: `Bet amount is not allowed. Please bet more than ${minBetAmount} and less than ${maxBetAmount}. Stake: ${bet.stake}.`,
-      });
-    }
 
-    await monitorUser(bet, prismaUser);
-
-    const isTeaser = bet.type === BetType.TEASER;
-    const validPayload = placeBetSchema(isTeaser).validateSync(bet);
+    const maxDailyTotalBetAmount = Number(
+      userAppSettings.find(
+        (s) => s.name === AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT,
+      )?.value || DefaultAppSettings.MAX_DAILY_TOTAL_BET_AMOUNT,
+    );
 
     const contest = await prisma.contest.findFirstOrThrow({
       where: {
@@ -148,23 +110,148 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
       },
     });
 
+    // Get user total available balance
+    const { totalAmount, creditAmount } = await getUserTotalBalance(user.id);
     let bonusCreditStake = 0;
+    let betStake = bet.stake;
     if (contest.wagerType === ContestWagerType.CASH) {
-      // Get user total available balance
-      const { totalAmount, creditAmount } = await getUserTotalBalance(user.id);
-      bonusCreditStake = calculateBonusCreditStake(bet.stake, creditAmount);
-      if (bet.stake > totalAmount) {
+      bonusCreditStake = calculateBonusCreditStake(betStake, creditAmount);
+      // If the user has bonus credit, we need to make sure that the bet stake is not more than the credit amount available
+      betStake =
+        bonusCreditStake > 0 && betStake > bonusCreditStake
+          ? bonusCreditStake
+          : betStake;
+      if (betStake > totalAmount) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: CustomErrorMessages.INSUFFICIENT_FUNDS_ERROR,
         });
       }
     }
+    const contestCategory = await prisma.contestCategory.findFirstOrThrow({
+      where: {
+        id: bet.contestCategoryId,
+      },
+    });
+
+    const entryBonusCreditLimit = bonusCreditLimits.find(
+      (bonusCreditLimit) => bonusCreditLimit.numberOfPicks === bet.legs.length,
+    );
+
+    if (bonusCreditStake > 0 && !entryBonusCreditLimit?.enabled) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: CustomErrorMessages.FREE_ENTRY_NOT_ALLOWED,
+      });
+    }
+
+    const bonusCreditFreeEntryEquivalent =
+      entryBonusCreditLimit?.bonusCreditFreeEntryEquivalent ||
+      DefaultAppSettings.BONUS_CREDIT_FREE_ENTRY_EQUIVALENT;
+
+    const freeEntryStake = calculateFreeEntryStake(
+      creditAmount || 0,
+      Number(bonusCreditFreeEntryEquivalent),
+    );
+
+    const entryFee = getEntryFeeLimits({
+      bets: [
+        {
+          legs: bet.legs.map((leg) => ({
+            freeSquare: leg.freeSquare
+              ? {
+                  maxStake: leg.freeSquare?.maxStake,
+                }
+              : undefined,
+            league: leg.league,
+          })),
+        },
+      ],
+      freeEntryStake,
+      contestCategory,
+      allAppSettings,
+      userAppSettings,
+      leagueLimits,
+      defaultMinMax: {
+        min: minBetAmount,
+        max: maxBetAmount,
+      },
+    });
+
+    if (betStake < entryFee.min || betStake > entryFee.max) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `${CustomErrorMessages.BET_STAKE_NOT_ALLOWED}. Please stake more than ${entryFee.min} and less than ${entryFee.max}. Stake: ${betStake}.`,
+      });
+    }
+
+    // Check if the user has reached the daily limit of total bet amount allowed
+    if (maxDailyTotalBetAmount > 0) {
+      const betsDailyTotalAmount = await prisma.bet.aggregate({
+        where: {
+          userId: prismaUser.id,
+          created_at: {
+            gte: dayjs
+              .tz(new Date().setHours(0, 0, 0, 0), 'America/New_York')
+              .toDate(),
+            lte: dayjs
+              .tz(new Date().setHours(23, 59, 59, 999), 'America/New_York')
+              .toDate(),
+          },
+        },
+        _sum: {
+          stake: true,
+        },
+      });
+
+      const totalBetAmountConsidered =
+        betStake + Number(betsDailyTotalAmount?._sum?.stake);
+
+      if (totalBetAmountConsidered > maxDailyTotalBetAmount) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `${CustomErrorMessages.BET_ENTRY_AMOUNT_ALLOWED}. You have reached the daily limit of $${maxDailyTotalBetAmount}.`,
+        });
+      }
+    }
+
+    await monitorUser(bet, prismaUser);
+
+    const isTeaser = bet.type === BetType.TEASER;
 
     const repeatEntriesLimit = Number(
-      appSettings.find((s) => s.name === AppSettingName.REPEAT_ENTRIES_LIMIT)
-        ?.value || DefaultAppSettings.REPEAT_ENTRIES,
+      userAppSettings.find(
+        (s) => s.name === AppSettingName.REPEAT_ENTRIES_LIMIT,
+      )?.value || DefaultAppSettings.REPEAT_ENTRIES,
     );
+
+    // Get the number of repeat entries the user has made with the same offers
+    const repeatBets = await prisma.bet.findMany({
+      where: {
+        userId: prismaUser.id,
+        legs: {
+          every: {
+            marketId: {
+              in: bet.legs.map((l) => l.marketId),
+            },
+          },
+        },
+      },
+      include: {
+        legs: true,
+      },
+    });
+
+    // if the user has reached the limit for repeating entry with the same picks, throw an error
+    if (
+      repeatBets.length > repeatEntriesLimit &&
+      repeatBets.some((b) => b.legs.length === bet.legs.length)
+    ) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: CustomErrorMessages.BET_REPEAT_ENTRY_LIMIT,
+      });
+    }
 
     const legs: Prisma.BetLegCreateManyBetInput[] = await Promise.all(
       bet.legs.map(async (leg): Promise<Prisma.BetLegCreateManyBetInput> => {
@@ -183,38 +270,67 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
                 },
               },
             },
+            offer: true,
           },
         });
 
-        try {
-          // Will throw an error if the leg length is not enabled in the free square,
-          verifyFreeSquarePickCategories(bet.legs.length, market.FreeSquare);
-        } catch (e) {
-          const error = e as Error;
+        // If the market is not available, throw an error
+        if (
+          market.offer?.status !== Status.Scheduled ||
+          !isMarketAvailable(market)
+        ) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: error.message,
+            message: CustomErrorMessages.BET_PICK_NOT_AVAILABLE,
           });
         }
 
-        // Get the number of repeat entries the user has made with the same offer
-        const repeatEntries = await prisma.bet.count({
-          where: {
-            userId: prismaUser.id,
-            legs: {
-              some: {
-                marketId: leg.marketId,
+        if (leg.isFreeSquare && market.FreeSquare) {
+          const repeatEntryFreeSquare = await prisma.bet.count({
+            where: {
+              userId: prismaUser.id,
+              legs: {
+                some: {
+                  marketId: leg.marketId,
+                  total: getMarketTotalProjection(leg.total, market.FreeSquare),
+                },
               },
             },
-          },
-        });
+          });
+          // If the user has already made a bet with the free square offer, throw an error
+          if (repeatEntryFreeSquare > 0) {
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: CustomErrorMessages.BET_PICK_FREE_SQUARE_LIMIT,
+            });
+          }
+        }
 
-        // If the user has already made a bet with the same offer, throw an error
-        if (repeatEntries > repeatEntriesLimit) {
+        // if the market is a free square, make sure the user is allowed to select it in a free entry
+        if (
+          leg.isFreeSquare &&
+          market.FreeSquare &&
+          !market.FreeSquare.freeEntryEnabled &&
+          creditAmount > 0
+        ) {
           throw new TRPCError({
             code: 'FORBIDDEN',
-            message: `Sorry, you have reached the limit for repeating the same offers in an entry. Please choose different offers to continue.`,
+            message: CustomErrorMessages.BET_FREE_SQUARE_FREE_ENTRY_ERROR,
           });
+        }
+
+        // Check if the free square pick is allowed for the contest category
+        if (leg.isFreeSquare) {
+          try {
+            // Will throw an error if the leg length is not enabled in the free square,
+            verifyFreeSquarePickCategories(bet.legs.length, market.FreeSquare);
+          } catch (e) {
+            const error = e as Error;
+            throw new TRPCError({
+              code: 'FORBIDDEN',
+              message: error.message,
+            });
+          }
         }
 
         return {
@@ -222,16 +338,13 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
           odds: getOdds(leg, market),
           marketId: leg.marketId,
           marketSel_id: leg.marketSelId,
-          total: getMarketTotalProjection(leg.total, market.FreeSquare),
+          total: getMarketTotalProjection(
+            leg.total,
+            leg.isFreeSquare ? market.FreeSquare : null,
+          ),
         };
       }),
     );
-
-    const contestCategory = await prisma.contestCategory.findFirstOrThrow({
-      where: {
-        id: bet.contestCategoryId,
-      },
-    });
 
     const contestEntry = await prisma.contestEntry.findFirstOrThrow({
       where: {
@@ -240,20 +353,22 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
       },
     });
 
-    const payout = isTeaser
-      ? calculateTeaserPayout(validPayload.stake, contestCategory)
-      : calculateParlayPayout(
-          legs.map((leg) => leg.odds) as number[],
-          validPayload.stake,
-          contestCategory,
-        );
+    const calculatedPayout = calculatePayout(
+      {
+        stake: Number(bet.stake),
+        legs: bet.legs,
+        contestCategory,
+      },
+      leagueLimits,
+    );
+    const payout = calculatedPayout.allInPayout;
     const odds = isTeaser
       ? -110
       : calculateTotalOdds(legs.map((l) => l.odds) as number[], 'american');
 
-    const newBet = await prisma.bet.create({
+    await prisma.bet.create({
       data: {
-        stake: bet.stake,
+        stake: betStake,
         cashStake: 0,
         bonusCreditStake,
         status: BetStatus.PENDING,
@@ -283,13 +398,12 @@ export async function placeBet(bet: BetInputType, user: User): Promise<void> {
         stakeType: bet.stakeType,
       },
     });
-    await applyDepositDistribution(user.id, bet.stake, newBet.id);
 
     if (contest.wagerType === ContestWagerType.CASH) {
       await createTransaction({
         userId: user.id,
-        amountProcess: bet.stake,
-        amountBonus: 0,
+        amountProcess: betStake,
+        amountBonus: bonusCreditStake,
         contestEntryId: contestEntry.id,
         transactionType: TransactionType.DEBIT,
         actionType: ActionType.PLACE_BET,

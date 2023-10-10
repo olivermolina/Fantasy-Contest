@@ -5,6 +5,7 @@ import { BetStatus } from '@prisma/client';
 import { UserTotalBalanceInterface } from '../user/userTotalBalance/getUserTotalBalance';
 import { getUserTotalBalanceBatch } from '../user/userTotalBalance/getUserTotalBalanceBatch/getUserTotalBalanceBatch';
 import { setPlayerWhereFilter } from '~/server/routers/user/users';
+import { ActionType } from '~/constants/ActionType';
 
 // @ts-expect-error Big int was not supported fix here https://github.com/prisma/studio/issues/614#issuecomment-795213237
 BigInt.prototype.toJSON = function () {
@@ -73,6 +74,18 @@ export const getPlayerStats = async ({
               ],
             },
           },
+          Transactions: {
+            where: {
+              TransactionStatuses: {
+                every: {
+                  statusCode: 1,
+                },
+              },
+              actionType: {
+                in: [ActionType.PAY, ActionType.PAYOUT],
+              },
+            },
+          },
         },
       });
 
@@ -104,7 +117,22 @@ export const getPlayerStats = async ({
           const number = bet.payout;
           return acc + (number.toNumber() - bet.bonusCreditStake.toNumber());
         }, 0);
+
+        const deposits = player.Transactions.filter(
+          (transaction) => transaction.actionType === ActionType.PAY,
+        ).reduce(
+          (acc, transaction) => acc + transaction.amountProcess.toNumber(),
+          0,
+        );
+        const withdrawals = player.Transactions.filter(
+          (transaction) => transaction.actionType === ActionType.PAYOUT,
+        ).reduce(
+          (acc, transaction) => acc + transaction.amountProcess.toNumber(),
+          0,
+        );
+
         return {
+          name: `${player.firstname || ''} ${player.lastname || ''}`,
           player: player.username!,
           lastWager: player.Bets[0]!.created_at.toISOString(),
           openBets: player.Bets.filter(
@@ -121,6 +149,10 @@ export const getPlayerStats = async ({
           net: win - loss,
           currency: 'USD',
           currentBalance: currentBalanceMap[player.id]?.totalCashAmount || 0,
+          amountAvailableToWithdraw:
+            currentBalanceMap[player.id]?.withdrawableAmount || 0,
+          deposits,
+          withdrawals,
         } as z.infer<typeof playerStatSchema>;
       });
     },
@@ -132,6 +164,7 @@ export const getPlayerStats = async ({
 };
 
 const playerStatSchema = z.object({
+  name: z.string(),
   player: z.string(),
   lastWager: z.string(),
   openBets: z.number(),
@@ -141,6 +174,9 @@ const playerStatSchema = z.object({
   net: z.number(),
   currency: z.string(),
   currentBalance: z.number(),
+  amountAvailableToWithdraw: z.number(),
+  deposits: z.number(),
+  withdrawals: z.number(),
 });
 
 const outputSchema = z.array(playerStatSchema);

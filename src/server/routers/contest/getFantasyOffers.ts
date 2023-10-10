@@ -1,17 +1,36 @@
-import { League, Status } from '@prisma/client';
+import { League, Offer, Status } from '@prisma/client';
 import { FantasyOffer } from '~/types';
 import prisma from '~/server/prisma';
-import { mapData, MarketMapData } from '~/server/routers/contest/mapData';
+import { mapData } from '~/server/routers/contest/mapData';
 import { filter } from 'lodash';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { getMarketOddsRange } from '~/server/routers/contest/getMarketOddsRange';
-import { appNodeCache } from '~/lib/node-cache/AppNodeCache';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault('America/New_York');
+
+/**
+ * This function checks if the market is available for the user to play
+ * @param market the market object
+ * @returns true if the market is available, false otherwise
+ */
+export function isMarketAvailable(market: { offer: Offer | null }) {
+  if (market.offer!.gamedate === '' || market.offer!.gametime === '') {
+    return false;
+  }
+
+  const currentDateTimeET = dayjs().tz('America/New_York');
+  const matchTimeET = dayjs.tz(
+    `${market.offer!.gamedate} ${market.offer!.gametime}`,
+    'America/New_York',
+  );
+
+  const timeRemainingInHours = matchTimeET.diff(currentDateTimeET, 'h', true);
+  // If the match is in the past, return false
+  return timeRemainingInHours > 0;
+}
 
 /**
  * This function gets all the fantasy offers currently available for a given league
@@ -20,70 +39,65 @@ dayjs.tz.setDefault('America/New_York');
  * statline that will be 50/50 odds either way with a push for the exact value.
  *
  * @param league one of the supported league enums in the application
- * @param cache whether or not to use the cache for this request
+ * @param includeInactive whether or not to include inactive offers
+ * @param oddsRange the range of odds to filter by
  */
 export async function getFantasyOffers(
   league: League,
-  cache?: boolean,
+  includeInactive?: boolean,
+  oddsRange?: { min: number; max: number },
 ): Promise<FantasyOffer[]> {
-  const marketOddsRange = await getMarketOddsRange();
-
-  let markets = cache ? (appNodeCache.get(league) as MarketMapData[]) : [];
-  if (!markets || markets.length === 0) {
-    markets = await prisma.market.findMany({
-      where: {
-        offer: {
-          league,
-          status: Status.Scheduled,
-        },
-        over: {
-          gte: marketOddsRange.MIN,
-          lte: marketOddsRange.MAX,
-        },
-        under: {
-          gte: marketOddsRange.MIN,
-          lte: marketOddsRange.MAX,
+  const markets = await prisma.market.findMany({
+    where: {
+      offer: {
+        league,
+        status: Status.Scheduled,
+      },
+      ...(includeInactive ? {} : { active: true }),
+      ...(oddsRange
+        ? {
+            over: { gte: oddsRange.min, lte: oddsRange.max },
+            under: { gte: oddsRange.min, lte: oddsRange.max },
+          }
+        : {}),
+    },
+    include: {
+      offer: {
+        include: {
+          TournamentEvent: true,
+          home: true,
+          away: true,
         },
       },
-      include: {
-        offer: true,
-        player: true,
-        FreeSquare: {
-          include: {
-            FreeSquareContestCategory: {
-              include: {
-                contestCategory: true,
-              },
+      player: true,
+      FreeSquare: {
+        include: {
+          FreeSquareContestCategory: {
+            include: {
+              contestCategory: true,
             },
           },
         },
-        MarketOverride: true,
       },
-    });
-    appNodeCache.set(league, markets, 300);
-  }
+      MarketOverride: true,
+    },
+  });
 
-  return filter(markets.map(mapData), (offer) => {
-    // https://dcg.atlassian.net/browse/LOC-443
-    // Filter out over and under odds that is not fall between -150 to +150
-    if (
-      offer.overOdds > marketOddsRange.MAX ||
-      offer.underOdds < marketOddsRange.MIN ||
-      offer.underOdds > marketOddsRange.MAX ||
-      offer.underOdds < marketOddsRange.MIN
-    ) {
+  const filteredMarkets = filter(markets, (market) => {
+    if (!includeInactive && !market.active) {
       return false;
     }
 
-    const currentDateTimeEST = dayjs().tz('America/New_York');
-    const matchTimeEst = dayjs(`${offer.matchTime} EST`).tz('America/New_York');
-
-    const timeRemainingInHours = matchTimeEst.diff(
-      currentDateTimeEST,
-      'h',
-      true,
-    );
-    // return offer where time remaining is more than 0
-    return timeRemainingInHours > 0;
+    return isMarketAvailable(market);
   });
+
+  const freeSquareMarkets = filteredMarkets.filter(
+    (markets) =>
+      markets.FreeSquare !== null && markets.FreeSquare !== undefined,
+  );
+
+  return [
+    ...freeSquareMarkets.map((market) => mapData(market, true)),
+    ...filteredMarkets.map((market) => mapData(market)),
+  ];
 }

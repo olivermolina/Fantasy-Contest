@@ -17,10 +17,17 @@ describe('DepositAmount', () => {
     expect(screen.queryAllByText('Reload Bonus')).toHaveLength(0);
   });
 
-  it('should render first deposit match INSTANT Bonus', () => {
-    render(<DepositAmount {...mockDepositAmountProps} isFirstDeposit={true} />);
+  it('should render first deposit match INSTANT Bonus and no Reload Bonus', () => {
+    render(
+      <DepositAmount
+        {...mockDepositAmountProps}
+        isFirstDeposit={true}
+        reloadBonusAmount={50}
+      />,
+    );
 
     expect(screen.queryAllByText('INSTANT Bonus')).toHaveLength(6);
+    expect(screen.queryAllByText('Reload Bonus')).toHaveLength(0);
   });
 
   it('should render Reload Bonus text when AppSetting.RELOAD_BONUS_AMOUNT is greater than 0', () => {

@@ -23,10 +23,12 @@ export const userSyncSignUpDate = t.procedure
       });
     }
     try {
-      const { data: users } = await supabase.auth.api.listUsers();
-      if (users) {
+      const { data } = await supabase.auth.admin.listUsers({
+        perPage: 1000,
+      });
+      if (data?.users?.length > 0) {
         return await prisma.$transaction(
-          users.map((user) =>
+          data?.users.map((user) =>
             prisma.user.upsert({
               where: {
                 id: user.id,
@@ -35,6 +37,7 @@ export const userSyncSignUpDate = t.procedure
                 ...user.user_metadata,
                 id: user.id,
                 email: user.email!,
+                username: null,
               },
               update: {
                 created_at: new Date(user.created_at),

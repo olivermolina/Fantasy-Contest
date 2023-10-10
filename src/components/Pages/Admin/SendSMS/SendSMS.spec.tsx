@@ -5,7 +5,7 @@ import SendSMS from './SendSMS';
 describe('SendSMS', () => {
   it('should render', () => {
     const { container } = render(
-      <SendSMS onSubmit={() => console.log('submit')} />,
+      <SendSMS onSubmit={() => console.log('submit')} users={[]} />,
     );
     expect(container).toMatchSnapshot();
   });

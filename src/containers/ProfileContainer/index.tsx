@@ -8,6 +8,7 @@ import { ProfileLayout } from '~/components/Profile/ProfileLayout/ProfileLayout'
 import { useAppDispatch } from '~/state/hooks';
 import { setAppSettings, setUserDetails } from '~/state/profile';
 import { UserType } from '@prisma/client';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 interface Props {
   children?: JSX.Element;
@@ -47,12 +48,12 @@ const MENUS = [
 ];
 const LEGAL_MENUS = [
   {
-    key: UrlPaths.ResponsibleGaming,
+    key: UrlPaths.ProfileResponsibleGaming,
     label: 'Responsible Gaming',
     icon: <Icons.FileContract className={'h-6 ml-1'} />,
   },
   {
-    key: UrlPaths.RefundPolicy,
+    key: UrlPaths.ProfileRefundPolicy,
     label: 'Refund Policy',
     icon: <Icons.FileContract className={'h-6 ml-1'} />,
   },
@@ -64,10 +65,11 @@ const LEGAL_MENUS = [
 ];
 
 const ProfileContainer = (props: Props) => {
+  const supabaseClient = useSupabaseClient();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [activeMenu, setActiveMenu] = useState<SettingsItemMenuProps | null>();
-  const { data: appSettingsData, isLoading: appSettingsIsLoading } =
+  const { data: appSettings, isLoading: appSettingsIsLoading } =
     trpc.appSettings.list.useQuery();
 
   const { data, isLoading } = trpc.user.userDetails.useQuery();
@@ -103,6 +105,7 @@ const ProfileContainer = (props: Props) => {
   ) => {
     if (newActiveMenu?.key === 'logout') {
       await logoutMutation.mutateAsync();
+      await supabaseClient.auth.signOut();
       await router.push('/');
       return;
     }
@@ -114,11 +117,15 @@ const ProfileContainer = (props: Props) => {
 
   useEffect(() => {
     dispatch(setUserDetails(user));
-    if (appSettingsData) dispatch(setAppSettings(appSettingsData));
-  }, [user, appSettingsData]);
+    if (appSettings) {
+      dispatch(setAppSettings(appSettings.userAppSettings));
+    }
+  }, [user, appSettings]);
 
   useEffect(() => {
-    const currentMenu = MENUS.find((menu) => menu.key === pathname);
+    const currentMenu = [...MENUS, ...LEGAL_MENUS].find(
+      (menu) => menu.key === pathname,
+    );
     if (currentMenu) setActiveMenu(currentMenu);
   }, [pathname]);
 

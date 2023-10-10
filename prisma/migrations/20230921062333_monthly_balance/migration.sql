@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ModuleName" ADD VALUE 'FIGURES_MONTHLY_BALANCE';

@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ModuleName" ADD VALUE 'ACTION_VIEW_BETS';

@@ -7,10 +7,11 @@ import { TOKEN } from '~/constants/TOKEN';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const logger = defaultLogger.child({});
-  logger.info(`Received GIDX callback status`);
   const caller = appRouter.createCaller({} as any);
   try {
-    await caller.user.syncSendGridContacts({ token: TOKEN });
+    logger.info(`Running Sendgrid import contacts`);
+    caller.user.syncSendGridContacts({ token: TOKEN });
+    logger.info(`Sendgrid import contacts done!`);
 
     res.status(200).send({
       code: 'Success!',

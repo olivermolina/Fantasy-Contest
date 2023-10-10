@@ -48,6 +48,10 @@ export enum ActionType {
    */
   ADD_FREE_CREDIT = 'ADD_FREE_CREDIT',
   /*
+   *  Referral free credits to a user
+   */
+  REFERRAL_FREE_CREDIT = 'REFERRAL_FREE_CREDIT',
+  /*
    *  GIDX customer registration API query
    */
   CUSTOMER_REGISTRATION = 'CUSTOMER_REGISTRATION',
@@ -55,6 +59,10 @@ export enum ActionType {
    *  Refund bet/entry for no action picks
    */
   CASH_CONTEST_CANCELLED = 'CASH_CONTEST_CANCELLED',
+  /*
+   *  Refund bet/entry for no action picks using withdrawable cash
+   */
+  WITHDRAWABLE_CASH_CONTEST_CANCELLED = 'WITHDRAWABLE_CASH_CONTEST_CANCELLED',
   /*
    * Increment user's amount available to withdraw
    */

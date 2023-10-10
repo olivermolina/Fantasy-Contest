@@ -1,16 +1,22 @@
-import { Agent, User, UserType } from '@prisma/client';
+import { Agent, AgentSubAdmin, User, UserType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { Context } from '~/server/context';
 import { t } from '~/server/trpc';
 import { BaseMiddlewareFunctionType } from '../../middleware/BaseMiddlewareFunctionType';
 import { getUser } from './getUser';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 export type AgentUsersType = Agent & { users: User[] };
 
 export type UpdatedContext = Context & {
   user: User & {
-    SubAdminAgents: AgentUsersType[];
     UserAsAgents: AgentUsersType[];
+    AgentSubAdmins: (AgentSubAdmin & {
+      Agent: Agent & {
+        User: User;
+        users: User[];
+      };
+    })[];
   };
 };
 
@@ -31,7 +37,7 @@ export const middlewareFn: BaseMiddlewareFunctionType<
   if (!user || user.type === UserType.PLAYER) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
-      message: 'User does not have role permissions for this function.',
+      message: CustomErrorMessages.UNAUTHORIZED_ROLE,
     });
   }
 

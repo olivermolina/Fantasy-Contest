@@ -13,25 +13,21 @@ jest.mock('~/utils/trpc', () => ({
             {
               id: 'user-id',
               username: 'jdoe',
-              email: 'jdoe@example.com',
-              referral: 'jdoe',
+              Wallets: [
+                {
+                  balance: 100,
+                  cashBalance: 100,
+                  bonusCredits: 0,
+                  amountAvailableToWithdraw: 100,
+                },
+              ],
             },
           ],
         }),
       },
-      userTotalBalance: {
-        useQuery: jest.fn().mockReturnValue({
-          isLoading: false,
-          data: {
-            totalAmount: 100,
-            totalCashAmount: 10,
-            creditAmount: 1,
-            unPlayedAmount: 0,
-            withdrawableAmount: 0,
-          },
-        }),
-      },
-      addRemoveWithdrawable: {
+    },
+    admin: {
+      saveUserWallet: {
         useMutation: jest.fn().mockReturnValue({
           isLoading: false,
           mutate: jest.fn(),

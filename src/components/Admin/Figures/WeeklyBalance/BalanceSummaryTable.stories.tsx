@@ -24,4 +24,7 @@ export const BalanceSummaryTable = Template.bind({});
 
 BalanceSummaryTable.args = {
   data: weeklyBalanceMockData,
+  viewInactive: false,
+  activeCount: 0,
+  inactiveCount: 0,
 };

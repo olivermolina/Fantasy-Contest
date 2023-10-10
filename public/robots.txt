@@ -1,0 +1,16 @@
+# Block all crawlers for /challenges
+User-agent: *
+Disallow: /challenges
+Disallow: /admin
+Disallow: /profile
+Disallow: /api
+Disallow: /cart
+Disallow: /partners
+Disallow: /rewards
+Disallow: /picks
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+Sitemap: https://www.lockspread.com/sitemap.xml

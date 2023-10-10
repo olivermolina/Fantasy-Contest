@@ -86,6 +86,7 @@ interface Props {
   mutationError?: any;
   offer?: OfferWithTeams | null;
   handleAddTeam: (team: Team) => Promise<Team | undefined>;
+  handleDeleteTeam: (team: Team) => Promise<Team | undefined>;
   homeTeams: Team[];
   awayTeams: Team[];
   homeTeamSetFilterName: React.Dispatch<React.SetStateAction<string>>;
@@ -104,7 +105,7 @@ interface OfferInput {
   awayTeam: TeamWithInputValue | null;
 }
 
-const mapGameStatusLabel = (status: Status) => {
+export const mapGameStatusLabel = (status: Status) => {
   switch (status) {
     case Status.Scheduled:
       return 'Scheduled';
@@ -146,6 +147,7 @@ const OfferForm = (props: Props) => {
     handleSubmit,
     control,
     reset,
+    getValues,
   } = useForm<OfferInput>({
     resolver: yupResolver(InputValidationSchema),
     defaultValues,
@@ -183,6 +185,10 @@ const OfferForm = (props: Props) => {
 
   const onAddTeam = async (team: TeamWithInputValue) => {
     return await props.handleAddTeam(team);
+  };
+
+  const onDeleteTeam = async (team: TeamWithInputValue) => {
+    return await props.handleDeleteTeam(team);
   };
 
   const handleReset = () => {
@@ -287,18 +293,15 @@ const OfferForm = (props: Props) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileDatePicker
                     label="Game Date"
-                    inputFormat="YYYY-MM-DD"
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                        size={'small'}
-                        value={field.value}
-                      />
-                    )}
+                    slotProps={{
+                      textField: {
+                        value: field.value,
+                        helperText: error?.message,
+                        size: 'small',
+                        error: !!error,
+                        fullWidth: true,
+                      },
+                    }}
                     value={field.value}
                     onChange={(newValue) => {
                       field.onChange(newValue);
@@ -318,21 +321,18 @@ const OfferForm = (props: Props) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
                     label="Game Time"
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                        size={'small'}
-                        value={field.value}
-                        inputProps={{
+                    slotProps={{
+                      textField: {
+                        error: !!error,
+                        helperText: error?.message,
+                        fullWidth: true,
+                        size: 'small',
+                        value: field.value,
+                        inputProps: {
                           'data-testid': 'gametime',
-                          ...params.inputProps,
-                        }}
-                      />
-                    )}
+                        },
+                      },
+                    }}
                     value={field.value}
                     onChange={(newValue) => {
                       field.onChange(newValue);
@@ -353,8 +353,10 @@ const OfferForm = (props: Props) => {
               helperText={errors?.homeTeam?.message}
               setValue={setValue}
               onAddTeam={onAddTeam}
+              onDeleteTeam={onDeleteTeam}
               setTeamFilterName={homeTeamSetFilterName}
               isLoading={homeTeamIsLoading}
+              team={getValues('homeTeam')!}
             />
           </Grid>
           <Grid item xs={6}>
@@ -367,8 +369,10 @@ const OfferForm = (props: Props) => {
               helperText={errors?.awayTeam?.message}
               setValue={setValue}
               onAddTeam={onAddTeam}
+              onDeleteTeam={onDeleteTeam}
               setTeamFilterName={awayTeamSetFilterName}
               isLoading={awayTeamIsLoading}
+              team={getValues('awayTeam')!}
             />
           </Grid>
 

@@ -37,6 +37,7 @@ const ParlayBetPicks: React.FC<ParlayBetPicksProps> = (props) => {
           category,
           team,
           league,
+          eventName,
         }) => (
           <div key={id} className="flex">
             <div className="flex flex-col items-center mr-2">
@@ -68,6 +69,7 @@ const ParlayBetPicks: React.FC<ParlayBetPicksProps> = (props) => {
                     <CardTag>{description}</CardTag>
                     <CardTag>{team}</CardTag>
                     <CardTag>{league}</CardTag>
+                    {eventName && <CardTag>{eventName}</CardTag>}
                   </div>
                 </div>
                 <div className={'p-1 lg:p-4 text-right'}>

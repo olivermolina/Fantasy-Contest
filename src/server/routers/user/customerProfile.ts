@@ -7,6 +7,14 @@ import { ActionType } from '~/constants/ActionType';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
 import { isVerified } from '~/utils/isVerified';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('America/New_York');
 
 export const customerProfile = async (input: {
   user: User;
@@ -30,7 +38,7 @@ export const customerProfile = async (input: {
   if (!primaryName || !primaryAddress || !primaryDob) {
     throw new TRPCError({
       code: 'BAD_REQUEST',
-      message: `Could not get the account details.`,
+      message: CustomErrorMessages.USER_ACCOUNT_DETAILS_NOT_FOUND,
     });
   }
 
@@ -53,7 +61,7 @@ export const customerProfile = async (input: {
       ...userDetails,
       identityStatus: isVerified(customerProfile.ReasonCodes),
       reasonCodes: customerProfile.ReasonCodes,
-      DOB: new Date(primaryDob.DateOfBirth),
+      DOB: dayjs.tz(primaryDob.DateOfBirth, 'America/New_York').toDate(),
     },
   });
 

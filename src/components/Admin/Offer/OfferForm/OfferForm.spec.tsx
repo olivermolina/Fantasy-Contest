@@ -30,6 +30,7 @@ describe('OfferForm', () => {
         updated_at: new Date(),
         homeTeamId: 'homeId',
         awayTeamId: 'awayId',
+        tournamentEventId: null,
       },
       homeTeamIsLoading: false,
       awayTeamIsLoading: false,
@@ -37,6 +38,7 @@ describe('OfferForm', () => {
       awayTeams: [],
       homeTeamSetFilterName: jest.fn(),
       awayTeamSetFilterName: jest.fn(),
+      handleDeleteTeam: jest.fn(),
     };
     render(<OfferForm {...props} />);
 

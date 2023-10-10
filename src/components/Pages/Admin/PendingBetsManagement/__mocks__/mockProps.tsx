@@ -1,5 +1,11 @@
+import { BetStatus } from '@prisma/client';
+import {
+  LegRowModel,
+  RowModel,
+} from '~/components/Pages/Admin/PendingBetsManagement/PendingBetsManagement';
+
 export const mockProps = {
-  onClickDeleteRow: () => {
+  settlePick: (currentRow: RowModel, betStatus: BetStatus) => {
     console.log('click');
   },
   data: [
@@ -18,6 +24,8 @@ export const mockProps = {
           odds: 100,
           category: 'Assist',
           total: 5,
+          total_stat: 5,
+          status: BetStatus.WIN,
         },
       ],
       name: 'John Doe',
@@ -39,6 +47,8 @@ export const mockProps = {
           odds: 100,
           category: 'Assist',
           total: 5,
+          total_stat: 5,
+          status: BetStatus.REFUNDED,
         },
       ],
       name: 'John Doe',
@@ -60,6 +70,8 @@ export const mockProps = {
           odds: 100,
           category: 'Assist',
           total: 5,
+          total_stat: 5,
+          status: BetStatus.CANCELLED,
         },
       ],
       name: 'John Doe',
@@ -67,4 +79,7 @@ export const mockProps = {
       type: 'Parlay',
     },
   ],
+  updateBetLeg: (leg: LegRowModel, status: BetStatus) => {
+    console.log('click');
+  },
 };

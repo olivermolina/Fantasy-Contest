@@ -6,6 +6,7 @@ import { canJoinContest } from '~/server/routers/contest/canJoinContest';
 import * as yup from '~/utils/yup';
 import { InferType } from '~/utils/yup';
 import { findLeadersByContest } from '~/server/routers/contest/findLeadersByContest';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const baseMatch = {
   id: yup.string().uuid().required(),
@@ -88,7 +89,7 @@ const contests = t.procedure
     if (!userId) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 

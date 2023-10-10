@@ -16,3 +16,7 @@ export enum ReasonCodes {
   DFP_HR_CONN = 'DFP-HR-CONN',
   LL_BLOCK = 'LL-BLOCK',
 }
+
+export const BlockedReasonCodesArray = Object.values(ReasonCodes).filter(
+  (reasonCode) => reasonCode !== ReasonCodes.ID_VERIFIED,
+);

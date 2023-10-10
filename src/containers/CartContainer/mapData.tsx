@@ -9,14 +9,12 @@ import {
   updateBetStakeType,
 } from '../../state/bets';
 import { formatLegType } from '../../utils/formatLegType';
-import { calculateParlayPayout } from '../../utils/calculateParlayPayout';
-import { calculateTeaserPayout } from '../../utils/caculateTeaserPayout';
 import shiftLine from '../../utils/shiftBet';
-import { calculateStraightPayout } from '../../utils/calculateStraightPayout';
 import { CartProps } from '~/components';
 import { useAppDispatch } from '~/state/hooks';
 import { BetStakeType } from '@prisma/client';
-import { calculateInsuredPayout } from '~/utils/calculateInsuredPayout';
+import { calculatePayout } from '~/utils/calculatePayout';
+import { LeagueLimitType } from '~/schemas/LeagueLimitFormValidationSchema';
 
 export type CartItemType = Omit<
   CartProps['cartItems'][0],
@@ -42,6 +40,11 @@ export function mapStraightToCartItem(
   bet: BetModel,
   dispatch: ReturnType<typeof useAppDispatch>,
 ): CartItemType {
+  const calculatedPayout = calculatePayout({
+    legs: [{ league: bet.league }],
+    stake: bet.stake,
+    contestCategory: bet.contestCategory,
+  });
   return {
     id: bet.betId.toString(),
     legs: [
@@ -66,10 +69,17 @@ export function mapStraightToCartItem(
     ],
     onUpdateCartItem: onUpdateCartItem(dispatch),
     stake: bet.stake.toString(),
-    payout: calculateStraightPayout(bet),
-    insuredPayout: calculateInsuredPayout(bet.stake, bet.contestCategory),
+    payout: calculatedPayout.allInPayout.toFixed(2),
+    insuredPayout: calculatedPayout,
     wagerType: bet.contestWagerType,
-    contestCategory: bet.contestCategory,
+    contestCategory: {
+      ...bet.contestCategory,
+      allInPayoutMultiplier: calculatedPayout.allInPayoutMultiplier,
+      primaryInsuredPayoutMultiplier:
+        calculatedPayout.primaryInsuredPayoutMultiplier,
+      secondaryInsuredPayoutMultiplier:
+        calculatedPayout.secondaryInsuredPayoutMultiplier,
+    },
     stakeType: bet.stakeType,
     onUpdateBetStakeType: (stakeType: BetStakeType) => {
       dispatch(
@@ -85,11 +95,14 @@ export function mapStraightToCartItem(
 export function mapParlayToCartItem(
   bet: ParlayModel,
   dispatch: ReturnType<typeof useAppDispatch>,
+  leagueLimits: LeagueLimitType[] | undefined,
 ): CartItemType {
+  const calculatedPayout = calculatePayout(bet, leagueLimits);
+
   return {
     id: bet.betId.toString(),
     legs: bet.legs.map((leg) => ({
-      id: bet.betId,
+      id: leg.gameId,
       league: leg.league,
       matchTime: leg.matchTime,
       onClickDeleteCartItem: () => {
@@ -103,7 +116,12 @@ export function mapParlayToCartItem(
       betName: leg.name,
       statName: leg.statName,
       betOdds: leg.odds,
-      betType: leg.line,
+      betType: leg.freeSquare
+        ? (
+            Number(leg.line) -
+            Number(leg.line) * (leg.freeSquare.discount / 100)
+          ).toFixed(2)
+        : leg.line,
       betOption: leg.team,
       awayTeamName: leg.entity2,
       homeTeamName: leg.entity1,
@@ -112,15 +130,18 @@ export function mapParlayToCartItem(
       },
     })),
     stake: bet.stake.toString(),
-    payout: calculateParlayPayout(
-      bet.legs.map((bet) => bet.odds),
-      bet.stake,
-      bet.contestCategory,
-    ).toString(),
-    insuredPayout: calculateInsuredPayout(bet.stake, bet.contestCategory),
+    payout: calculatedPayout.allInPayout.toFixed(2),
+    insuredPayout: calculatedPayout,
     onUpdateCartItem: onUpdateCartItem(dispatch),
     wagerType: bet.contestWagerType,
-    contestCategory: bet.contestCategory,
+    contestCategory: {
+      ...bet.contestCategory,
+      allInPayoutMultiplier: calculatedPayout.allInPayoutMultiplier,
+      primaryInsuredPayoutMultiplier:
+        calculatedPayout.primaryInsuredPayoutMultiplier,
+      secondaryInsuredPayoutMultiplier:
+        calculatedPayout.secondaryInsuredPayoutMultiplier,
+    },
     stakeType: bet.stakeType,
     onUpdateBetStakeType: (stakeType: BetStakeType) => {
       dispatch(
@@ -137,6 +158,7 @@ export function mapTeaserToCartItem(
   bet: TeaserModel,
   dispatch: ReturnType<typeof useAppDispatch>,
 ): CartItemType {
+  const calculatedPayout = calculatePayout(bet);
   return {
     id: bet.betId.toString(),
     legs: bet.legs.map((leg) => {
@@ -169,11 +191,18 @@ export function mapTeaserToCartItem(
       };
     }),
     stake: bet.stake.toString(),
-    payout: calculateTeaserPayout(bet.stake, bet.contestCategory).toString(),
-    insuredPayout: calculateInsuredPayout(bet.stake, bet.contestCategory),
+    payout: calculatedPayout.allInPayout.toFixed(2),
+    insuredPayout: calculatedPayout,
     onUpdateCartItem: onUpdateCartItem(dispatch),
     wagerType: bet.contestWagerType,
-    contestCategory: bet.contestCategory,
+    contestCategory: {
+      ...bet.contestCategory,
+      allInPayoutMultiplier: calculatedPayout.allInPayoutMultiplier,
+      primaryInsuredPayoutMultiplier:
+        calculatedPayout.primaryInsuredPayoutMultiplier,
+      secondaryInsuredPayoutMultiplier:
+        calculatedPayout.secondaryInsuredPayoutMultiplier,
+    },
     stakeType: bet.stakeType,
     onUpdateBetStakeType: (stakeType: BetStakeType) => {
       dispatch(

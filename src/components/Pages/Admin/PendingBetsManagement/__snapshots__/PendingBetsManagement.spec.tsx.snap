@@ -3,16 +3,15 @@
 exports[`PendingBetsManagement should render 1`] = `
 <div>
   <div
-    style="height: 300px; width: 100%;"
+    class="h-[75vh] lg:h-[80vh] w-full"
   >
     <div
       aria-colcount="8"
       aria-multiselectable="false"
       aria-rowcount="4"
-      class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
+      class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1lymaxv-MuiDataGrid-root"
       role="grid"
     >
-      <div />
       <div
         class="MuiDataGrid-main css-204u17-MuiDataGrid-main"
       >
@@ -89,8 +88,8 @@ exports[`PendingBetsManagement should render 1`] = `
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":r3:"
-                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
@@ -191,12 +190,12 @@ exports[`PendingBetsManagement should render 1`] = `
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":r7:"
-                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":r8:"
+                      id=":ra:"
                       tabindex="-1"
                       type="button"
                     >
@@ -293,12 +292,12 @@ exports[`PendingBetsManagement should render 1`] = `
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":rb:"
-                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":rc:"
+                      id=":rg:"
                       tabindex="-1"
                       type="button"
                     >
@@ -340,220 +339,202 @@ exports[`PendingBetsManagement should render 1`] = `
           </div>
         </div>
         <div
-          style="flex: 1 1 0px; overflow: auto;"
+          class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
+          style="overflow-x: hidden;"
         >
           <div
-            class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
-            style="overflow-x: hidden;"
+            class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
+            style="width: auto; height: 156px; min-height: auto;"
           >
             <div
-              class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-              style="width: auto; height: 156px; min-height: auto;"
+              class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
+              style="transform: translate3d(0px, 0px, 0px);"
             >
               <div
-                class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                style="transform: translate3d(0px, 0px, 0px);"
+                aria-rowindex="2"
+                aria-selected="false"
+                class="MuiDataGrid-row"
+                data-id="1"
+                data-rowindex="0"
+                role="row"
+                style="max-height: 52px; min-height: 52px;"
               >
                 <div
-                  aria-rowindex="2"
-                  aria-selected="false"
-                  class="MuiDataGrid-row"
-                  data-id="1"
-                  data-rowindex="0"
-                  role="row"
-                  style="max-height: 52px; min-height: 52px;"
+                  aria-colindex="1"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="0"
+                  data-field="ticket"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
                 >
                   <div
-                    aria-colindex="1"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="0"
-                    data-field="ticket"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
+                    class="MuiDataGrid-cellContent"
+                    title="1"
                   >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="1"
-                    >
-                      1
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="2"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="1"
-                    data-field="placed"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="1/1/1970, 1:00:00 AM"
-                    >
-                      1/1/1970, 1:00:00 AM
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="3"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="2"
-                    data-field="userPhone"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="1"
-                    >
-                      1
-                    </div>
+                    1
                   </div>
                 </div>
                 <div
-                  aria-rowindex="3"
-                  aria-selected="false"
-                  class="MuiDataGrid-row"
-                  data-id="2"
-                  data-rowindex="1"
-                  role="row"
-                  style="max-height: 52px; min-height: 52px;"
+                  aria-colindex="2"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="1"
+                  data-field="placed"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
                 >
                   <div
-                    aria-colindex="1"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="0"
-                    data-field="ticket"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
+                    class="MuiDataGrid-cellContent"
+                    title="1/1/1970, 1:00:00 AM"
                   >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="2"
-                    >
-                      2
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="2"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="1"
-                    data-field="placed"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="1/1/1970, 1:00:00 AM"
-                    >
-                      1/1/1970, 1:00:00 AM
-                    </div>
-                  </div>
-                  <div
-                    aria-colindex="3"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="2"
-                    data-field="userPhone"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
-                  >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="2"
-                    >
-                      2
-                    </div>
+                    1/1/1970, 1:00:00 AM
                   </div>
                 </div>
                 <div
-                  aria-rowindex="4"
-                  aria-selected="false"
-                  class="MuiDataGrid-row MuiDataGrid-row--lastVisible"
-                  data-id="3"
-                  data-rowindex="2"
-                  role="row"
-                  style="max-height: 52px; min-height: 52px;"
+                  aria-colindex="3"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="2"
+                  data-field="userPhone"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
                 >
                   <div
-                    aria-colindex="1"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="0"
-                    data-field="ticket"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
+                    class="MuiDataGrid-cellContent"
+                    title="1"
                   >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="3"
-                    >
-                      3
-                    </div>
+                    1
                   </div>
+                </div>
+              </div>
+              <div
+                aria-rowindex="3"
+                aria-selected="false"
+                class="MuiDataGrid-row"
+                data-id="2"
+                data-rowindex="1"
+                role="row"
+                style="max-height: 52px; min-height: 52px;"
+              >
+                <div
+                  aria-colindex="1"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="0"
+                  data-field="ticket"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
+                >
                   <div
-                    aria-colindex="2"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="1"
-                    data-field="placed"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
+                    class="MuiDataGrid-cellContent"
+                    title="2"
                   >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="1/1/1970, 1:00:00 AM"
-                    >
-                      1/1/1970, 1:00:00 AM
-                    </div>
+                    2
                   </div>
+                </div>
+                <div
+                  aria-colindex="2"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="1"
+                  data-field="placed"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
+                >
                   <div
-                    aria-colindex="3"
-                    aria-colspan="1"
-                    class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                    data-colindex="2"
-                    data-field="userPhone"
-                    role="cell"
-                    style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                    tabindex="-1"
+                    class="MuiDataGrid-cellContent"
+                    title="1/1/1970, 1:00:00 AM"
                   >
-                    <div
-                      class="MuiDataGrid-cellContent"
-                      title="3"
-                    >
-                      3
-                    </div>
+                    1/1/1970, 1:00:00 AM
+                  </div>
+                </div>
+                <div
+                  aria-colindex="3"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="2"
+                  data-field="userPhone"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="MuiDataGrid-cellContent"
+                    title="2"
+                  >
+                    2
+                  </div>
+                </div>
+              </div>
+              <div
+                aria-rowindex="4"
+                aria-selected="false"
+                class="MuiDataGrid-row MuiDataGrid-row--lastVisible"
+                data-id="3"
+                data-rowindex="2"
+                role="row"
+                style="max-height: 52px; min-height: 52px;"
+              >
+                <div
+                  aria-colindex="1"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="0"
+                  data-field="ticket"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="MuiDataGrid-cellContent"
+                    title="3"
+                  >
+                    3
+                  </div>
+                </div>
+                <div
+                  aria-colindex="2"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="1"
+                  data-field="placed"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="MuiDataGrid-cellContent"
+                    title="1/1/1970, 1:00:00 AM"
+                  >
+                    1/1/1970, 1:00:00 AM
+                  </div>
+                </div>
+                <div
+                  aria-colindex="3"
+                  aria-colspan="1"
+                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                  data-colindex="2"
+                  data-field="userPhone"
+                  role="cell"
+                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="MuiDataGrid-cellContent"
+                    title="3"
+                  >
+                    3
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="Mui-resizeTriggers"
-        >
-          <div
-            class="expand-trigger"
-          >
-            <div
-              style="width: 1px; height: 1px;"
-            />
-          </div>
-          <div
-            class="contract-trigger"
-          />
         </div>
       </div>
       <div
@@ -591,6 +572,7 @@ exports[`PendingBetsManagement should render 1`] = `
               </div>
               <input
                 aria-hidden="true"
+                aria-invalid="false"
                 class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                 tabindex="-1"
                 value="100"

@@ -1,9 +1,9 @@
 import { adminProcedure } from './middleware/isAdmin';
-import { z } from 'zod';
 import prisma from '~/server/prisma';
-import { AppSettingName } from '@prisma/client';
-import logger from '~/utils/logger';
+import { AppSettingName, BetStakeType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { UserLimitInputs } from '~/schemas/UserLimitValidationSchema';
+import z from 'zod';
 
 /**
  * Sets the min and max bet amount for users globally across the app.
@@ -12,11 +12,27 @@ export const setUserLimits = adminProcedure
   .input(
     z
       .object({
-        min: z.number().min(1),
-        max: z.number(),
         userId: z.string().optional(),
         username: z.string().optional(),
-        repeatEntries: z.number(),
+        min: z.coerce.number().min(1),
+        max: z.coerce.number(),
+        repeatEntries: z.coerce.number(),
+        maxDailyTotalBetAmount: z.coerce.number(),
+        notes: z.string().optional(),
+        bonusCreditLimits: z
+          .array(
+            z.object({
+              contestCategoryId: z.string(),
+              numberOfPicks: z.coerce.number(),
+              id: z.string(),
+              enabled: z.boolean(),
+              bonusCreditFreeEntryEquivalent: z.coerce
+                .number()
+                .min(0, 'Bonus Credit Free Entry is required'),
+              stakeTypeOptions: z.array(z.nativeEnum(BetStakeType)),
+            }),
+          )
+          .optional(),
       })
       .refine((data) => data.max > data.min, {
         message: 'Maximum limit must be greater than minimum',
@@ -25,25 +41,39 @@ export const setUserLimits = adminProcedure
   )
   .mutation(async ({ input }) => {
     try {
-      let { userId } = input;
-      if (input.username && !userId) {
-        userId = (
-          await prisma.user.findFirst({
-            where: {
-              username: input.username,
-            },
-          })
-        )?.id;
+      let user;
+
+      if (input.userId) {
+        user = await prisma.user.findUnique({
+          where: {
+            id: input.userId,
+          },
+        });
+      }
+
+      if (input.username && !input.userId) {
+        user = await prisma.user.findFirst({
+          where: {
+            username: input.username,
+          },
+        });
       }
       // If the userId is defined, then we are updating users settings.
-      if (userId !== undefined) {
-        await updateUserSettings({ ...input, userId });
+      if (user) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            notes: input.notes,
+          },
+        });
+        await updateUserSettings(input as UserLimitInputs);
       } else {
         // If the userId is undefined, then we are updating the global settings.
         await updateGlobalSettings(input);
       }
     } catch (error) {
-      logger.error('There was an error updating user limits', error);
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
       });
@@ -58,6 +88,7 @@ async function updateGlobalSettings(input: {
   min: number;
   max: number;
   repeatEntries: number;
+  maxDailyTotalBetAmount: number;
 }) {
   await prisma.$transaction([
     prisma.appSettings.upsert({
@@ -96,18 +127,25 @@ async function updateGlobalSettings(input: {
         value: input.repeatEntries.toString(),
       },
     }),
+    prisma.appSettings.upsert({
+      where: {
+        name: AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT,
+      },
+      update: {
+        value: input.maxDailyTotalBetAmount.toString(),
+      },
+      create: {
+        name: AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT,
+        value: input.maxDailyTotalBetAmount.toString(),
+      },
+    }),
   ]);
 }
 
 /**
  * This function is used to update the min and max bet amount for a specific user.
  */
-async function updateUserSettings(input: {
-  userId: string;
-  min: number;
-  max: number;
-  repeatEntries: number;
-}) {
+async function updateUserSettings(input: UserLimitInputs) {
   await prisma.$transaction([
     prisma.userAppSettings.upsert({
       where: {
@@ -157,5 +195,44 @@ async function updateUserSettings(input: {
         value: input.repeatEntries.toString(),
       },
     }),
+    prisma.userAppSettings.upsert({
+      where: {
+        userId_name: {
+          userId: input.userId,
+          name: AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT,
+        },
+      },
+      update: {
+        value: input.maxDailyTotalBetAmount.toString(),
+      },
+      create: {
+        userId: input.userId,
+        name: AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT,
+        value: input.maxDailyTotalBetAmount.toString(),
+      },
+    }),
+    ...(Array.isArray(input.bonusCreditLimits)
+      ? input.bonusCreditLimits?.map((bonusCreditLimit) =>
+          prisma.userBonusCreditLimit.upsert({
+            where: {
+              id: bonusCreditLimit.id,
+            },
+            update: {
+              enabled: bonusCreditLimit.enabled,
+              bonusCreditFreeEntryEquivalent:
+                bonusCreditLimit.bonusCreditFreeEntryEquivalent,
+              stakeTypeOptions: bonusCreditLimit.stakeTypeOptions,
+            },
+            create: {
+              userId: input.userId,
+              enabled: bonusCreditLimit.enabled,
+              bonusCreditFreeEntryEquivalent:
+                bonusCreditLimit.bonusCreditFreeEntryEquivalent,
+              stakeTypeOptions: bonusCreditLimit.stakeTypeOptions,
+              bonusCreditLimitId: bonusCreditLimit.id,
+            },
+          }),
+        )
+      : []),
   ]);
 }

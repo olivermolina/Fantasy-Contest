@@ -10,8 +10,23 @@ import BackdropLoading from '~/components/BackdropLoading';
 import AdminMarketContainer from '~/containers/AdminMarketContainer';
 import useTeams from '~/hooks/useTeams';
 import { OfferWithTeams } from '~/components/Admin/Offer/OfferForm/OfferForm';
+import PickDatePickerRange from '~/components/Picks/PickDatePickerRange';
+import dayjs from 'dayjs';
+import { useRouter } from 'next/router';
 
 const AdminOfferContainer = () => {
+  const router = useRouter();
+  const from = router.query.from
+    ? dayjs(router.query.from as string)
+        .startOf('D')
+        .toDate()
+    : dayjs().subtract(1, 'month').startOf('D').toDate();
+  const to = router.query.to
+    ? dayjs(router.query.to as string)
+        .startOf('D')
+        .toDate()
+    : dayjs().startOf('D').toDate();
+
   const [open, setOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<
     OfferWithTeams | undefined
@@ -22,6 +37,7 @@ const AdminOfferContainer = () => {
     setFilterName: homeTeamSetFilterName,
     mutateIsLoading: homeTeamMutateIsLoading,
     handleAddTeam,
+    handleDeleteTeam,
   } = useTeams();
 
   const {
@@ -44,6 +60,8 @@ const AdminOfferContainer = () => {
   } = trpc.admin.offers.useInfiniteQuery(
     {
       limit: 10,
+      to,
+      from,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -63,6 +81,16 @@ const AdminOfferContainer = () => {
 
   const { mutateAsync: mutateAsyncOffer, isLoading: mutateOfferIsLoading } =
     trpc.admin.upsertOffer.useMutation();
+
+  const {
+    mutateAsync: mutateAsyncCopyOffer,
+    isLoading: mutateOfferCopyIsLoading,
+  } = trpc.admin.copyOffer.useMutation();
+
+  const {
+    mutateAsync: mutateAsyncDeleteOffer,
+    isLoading: mutateOfferDeleteIsLoading,
+  } = trpc.admin.deleteOffer.useMutation();
 
   const handleSave = async (offer: Prisma.OfferCreateInput) => {
     try {
@@ -90,22 +118,68 @@ const AdminOfferContainer = () => {
     setOpen(true);
   };
 
+  const handleCopyOffer = async (id: string) => {
+    try {
+      await mutateAsyncCopyOffer({ id });
+      await refetchOffers();
+      toast.success('Offer successfully copied.');
+    } catch (error) {
+      const e = error as TRPCClientError<any>;
+      toast.error(e?.message);
+    }
+  };
+
+  const handleDeleteOffer = async (id: string) => {
+    try {
+      await mutateAsyncDeleteOffer({ id });
+      await refetchOffers();
+      toast.success('Offer successfully deleted.');
+    } catch (error) {
+      const e = error as TRPCClientError<any>;
+      toast.error(e?.message);
+    }
+  };
+
   return (
     <>
       <h2 className={'text-xl font-bold'}>Offers</h2>
       <BackdropLoading
-        open={homeTeamMutateIsLoading || awayTeamMutateIsLoading}
+        open={
+          homeTeamMutateIsLoading ||
+          awayTeamMutateIsLoading ||
+          mutateOfferCopyIsLoading ||
+          mutateOfferDeleteIsLoading
+        }
       />
-      <OfferDataTable
-        flatData={flatData}
-        isLoading={isLoading}
-        totalDBRowCount={totalDBRowCount}
-        totalFetched={totalFetched}
-        isFetching={isFetching}
-        fetchNextPage={fetchNextPage}
-        handleEditOffer={handleEditOffer}
-        handleNew={handleAddNewOffer}
-      />
+      <div className={'flex flex-col gap-2 w-full'}>
+        <PickDatePickerRange
+          setDateRangeValue={({ startDate, endDate }) => {
+            router.push({
+              query: {
+                from: startDate.startOf('D').toISOString(),
+                to: endDate.startOf('D').toISOString(),
+              },
+            });
+          }}
+          dateRangeValue={{
+            startDate: dayjs(from),
+            endDate: dayjs(to),
+          }}
+        />
+        <OfferDataTable
+          flatData={flatData}
+          isLoading={isLoading}
+          totalDBRowCount={totalDBRowCount}
+          totalFetched={totalFetched}
+          isFetching={isFetching}
+          fetchNextPage={fetchNextPage}
+          handleEditOffer={handleEditOffer}
+          handleNew={handleAddNewOffer}
+          handleCopyOffer={handleCopyOffer}
+          handleDeleteOffer={handleDeleteOffer}
+        />
+      </div>
+
       <Dialog open={open} maxWidth={'md'} fullWidth fullScreen>
         <div
           className={
@@ -136,6 +210,7 @@ const AdminOfferContainer = () => {
             isLoading={mutateOfferIsLoading}
             mutationError=""
             handleAddTeam={handleAddTeam}
+            handleDeleteTeam={handleDeleteTeam}
             offer={selectedOffer}
             homeTeamIsLoading={homeTeamIsLoading}
             awayTeamIsLoading={awayTeamIsLoading}

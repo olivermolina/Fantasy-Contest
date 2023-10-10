@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { UrlPaths } from '~/constants/UrlPaths';
 import { useAppSelector } from '~/state/hooks';
 import { selectAllBets } from '~/state/bets';
-import { ContestWagerType, League } from '@prisma/client';
+import { ContestWagerType } from '@prisma/client';
 import ContestDetailContainer from '../ContestDetailContainer/ContestDetailContainer';
 import ChangeRouteLoadingContainer from '~/containers/ChangeRouteLoadingContainer/ChangeRouteLoadingContainer';
 import { Header } from '~/components';
@@ -45,7 +45,6 @@ const LayoutContainer: React.FC<Props> = (props) => {
   const { data, isLoading } = trpc.contest.getLeagueFantasyOffersCount.useQuery(
     undefined,
     {
-      retry: false,
       trpc: {
         context: {
           skipBatch: true,
@@ -54,26 +53,12 @@ const LayoutContainer: React.FC<Props> = (props) => {
     },
   );
 
-  const result = trpc.contest.listOffers.useQuery(
-    {
-      contestId: params.contestId,
-      league: params.league as League,
-    },
-    {
-      retry: false,
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
-      },
-    },
-  );
   const userDetails = useAppSelector((state) => state.profile.userDetails);
 
   const { data: userTotalBalance, refetch } =
     trpc.user.userTotalBalance.useQuery({ userId: userDetails?.id });
 
-  const tokenCount = result.data?.tokenCount;
+  const tokenCount = 0;
 
   const handleSetCategoryBgColor = (bgColor: string) => {
     dispatch(setCategoryBgColor(bgColor));

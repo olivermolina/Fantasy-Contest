@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Wallets" ADD COLUMN     "amountAvailableToWithdraw" DECIMAL(10,2) NOT NULL DEFAULT 0,
+ADD COLUMN     "bonusCredits" DECIMAL(10,2) NOT NULL DEFAULT 0,
+ADD COLUMN     "cashBalance" DECIMAL(10,2) NOT NULL DEFAULT 0,
+ALTER COLUMN "balance" SET DEFAULT 0;

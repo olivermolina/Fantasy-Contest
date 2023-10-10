@@ -19,15 +19,16 @@ const Template: ComponentStory<typeof UserFormComponent> = (args) => (
   <UserFormComponent {...args} />
 );
 
-export const EditUserForm = Template.bind({});
+export const ManageEditUserForm = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 
-EditUserForm.args = {
+ManageEditUserForm.args = {
   user: userMock,
 };
 
-export const AddUserForm = Template.bind({});
+export const ManageAddUserForm = Template.bind({});
 
-AddUserForm.args = {
+ManageAddUserForm.args = {
   user: userMock,
+  partners: [],
 };

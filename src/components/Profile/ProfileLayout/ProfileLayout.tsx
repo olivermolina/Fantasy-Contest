@@ -51,7 +51,7 @@ export const ProfileLayout = (props: Props) => {
           }
         >
           <p className="font-bold text-lg">
-            {props.activeMenu?.label || `@${props.user?.username}`}
+            {props.activeMenu?.label ?? `@${props.user?.username}`}
           </p>
           {isBaseProfileUrl && (
             <>

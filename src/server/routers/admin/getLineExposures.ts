@@ -12,7 +12,12 @@ import {
   User,
 } from '@prisma/client';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { getDateStringRangeList } from '~/utils/getDateStringRangeList';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface BetLegLineExposure {
   id: string;
@@ -87,7 +92,9 @@ const mapLineExposures = (market: MarketExposureType) => {
         lastName: leg.Bet?.owner.lastname || '',
         username: leg.Bet?.owner.username || '',
       },
-      entryDate: dayjs(leg.Bet?.created_at).format('YYYY-MM-DD'),
+      entryDate: dayjs(leg.Bet?.created_at)
+        .tz('America/New_York')
+        .format('YYYY-MM-DD'),
       stake: Number(leg.Bet?.stake),
       payout: Number(leg.Bet?.payout),
       status: leg.status,

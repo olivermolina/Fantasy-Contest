@@ -1,66 +1,49 @@
-import React, { useState } from 'react';
-import { SubmitHandler } from 'react-hook-form';
-import { TransactionType, User } from '@prisma/client';
-import { toast } from 'react-toastify';
-import { TRPCClientError } from '@trpc/client';
+import React, { useMemo } from 'react';
 import BackdropLoading from '~/components/BackdropLoading';
-import { ManagementInputs } from '~/components/Admin/Management/Management';
-import ManageAmountAvailableToWithdraw from '~/components/Pages/Admin/ManageAmountAvailableToWithdraw/ManageAmountAvailableToWithdraw';
+import ManageAmountAvailableToWithdraw, {
+  UserWalletRow,
+} from '~/components/Pages/Admin/ManageAmountAvailableToWithdraw/ManageAmountAvailableToWithdraw';
 import { trpc } from '~/utils/trpc';
+import { toast } from 'react-toastify';
 
 export default function ManageAmountAvailableToWithdrawContainer() {
-  const { data, isLoading: userIsLoading } = trpc.user.users.useQuery();
+  const { data, isLoading, refetch } = trpc.user.users.useQuery();
+  const mutation = trpc.admin.saveUserWallet.useMutation();
 
-  const [selectedUserId, setSelectedUserId] = useState<string | undefined>(
-    undefined,
-  );
-  const { isLoading: mutationIsLoading, mutateAsync } =
-    trpc.user.addRemoveWithdrawable.useMutation();
-  const {
-    data: userTotalBalance,
-    refetch,
-    isLoading,
-  } = trpc.user.userTotalBalance.useQuery({ userId: selectedUserId });
-
-  const onSubmit: SubmitHandler<ManagementInputs> = async (inputs) => {
+  const saveUserWallet = async (userWallet: UserWalletRow) => {
     try {
-      const { amount, transactionType } = inputs;
-      if (
-        transactionType === TransactionType.DEBIT &&
-        amount > Number(userTotalBalance?.withdrawableAmount)
-      ) {
-        toast.error(
-          `Oops! You can't remove balance more than the current amount available to withdraw.`,
-        );
-        return;
-      }
-
-      const user = inputs.user as User;
-      await mutateAsync({ amount, userId: user.id, transactionType });
-      const action =
-        transactionType === TransactionType.CREDIT ? 'added' : 'removed';
-      await refetch();
-      toast.success(
-        `You successfully ${action} balance from the amount available to withdraw to ${
-          user?.username || user?.email
-        }.`,
-      );
-    } catch (error) {
-      const e = error as TRPCClientError<any>;
-      toast.error(e?.message || `Oops! Something went wrong.`);
-    }
+      await mutation.mutateAsync(userWallet);
+      refetch();
+      toast.success(`${userWallet.username} balances updated successfully`);
+    } catch (e) {}
   };
+
+  const usersTableData = useMemo(() => {
+    if (!data) return [];
+
+    return data.map(
+      (user) =>
+        ({
+          id: user.id,
+          username: user.username || '',
+          balance: Number(user.Wallets?.[0]?.balance),
+          cashBalance: Number(user.Wallets?.[0]?.cashBalance),
+          bonusCredits: Number(user.Wallets?.[0]?.bonusCredits),
+          amountAvailableToWithdraw: Number(
+            user.Wallets?.[0]?.amountAvailableToWithdraw,
+          ),
+        } as UserWalletRow),
+    );
+  }, [data]);
 
   return (
     <>
-      <BackdropLoading open={mutationIsLoading} />
+      <BackdropLoading open={false} />
 
       <ManageAmountAvailableToWithdraw
-        users={data || []}
-        onSubmit={onSubmit}
-        isLoading={userIsLoading || isLoading}
-        setSelectedUserId={setSelectedUserId}
-        userTotalBalance={userTotalBalance}
+        users={usersTableData}
+        isLoading={isLoading || mutation.isLoading}
+        saveUserWallet={saveUserWallet}
       />
     </>
   );

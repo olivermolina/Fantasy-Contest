@@ -1,11 +1,20 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ContestCategory, ContestWagerType } from '@prisma/client';
+import {
+  ContestCategory,
+  BonusCreditLimit,
+  ContestWagerType,
+} from '@prisma/client';
 import { trpcClient } from '~/utils/trpcClient/trpcClient';
+import { RootState } from '~/state/store';
 
 interface ContestUI {
   id: string;
   wagerType: ContestWagerType;
 }
+
+export type ContestCategoryWithBonusCreditLimit = ContestCategory & {
+  bonusCreditLimit: BonusCreditLimit | null;
+};
 
 interface UIModel {
   loading: boolean;
@@ -14,9 +23,10 @@ interface UIModel {
    */
   activeContestDetailModal?: string;
   selectedContest?: ContestUI;
-  selectedContestCategory?: ContestCategory;
-  contestCategories?: ContestCategory[];
+  selectedContestCategory?: ContestCategoryWithBonusCreditLimit;
+  contestCategories?: ContestCategoryWithBonusCreditLimit[];
   categoryBgColor: string;
+  cartMessage?: string;
 }
 
 const initialUI: UIModel = {
@@ -24,8 +34,8 @@ const initialUI: UIModel = {
   activeContestDetailModal: undefined,
   selectedContest: undefined,
   selectedContestCategory: undefined,
-  contestCategories: [],
   categoryBgColor: 'white',
+  cartMessage: undefined,
 };
 
 /**
@@ -34,9 +44,21 @@ const initialUI: UIModel = {
 export const fetchContestCategory = createAsyncThunk(
   'uiContestCategory/fetch',
   async (input, thunkAPI) => {
-    const { dispatch } = thunkAPI;
+    const { dispatch, getState } = thunkAPI;
     const result = await trpcClient().contest.contestCategoryList.query();
     dispatch(setContestCategories(result));
+
+    const state = getState() as RootState;
+    if (state.ui.selectedContestCategory) {
+      const newContestCategory = result.find(
+        (contestCategory) =>
+          contestCategory.id === state.ui.selectedContestCategory?.id,
+      );
+      if (newContestCategory) {
+        dispatch(setSelectedContestCategory(newContestCategory));
+      }
+    }
+
     return result;
   },
 );
@@ -57,16 +79,26 @@ const uiSlice = createSlice({
       state.selectedContest = payload.payload;
       return state;
     },
-    setSelectedContestCategory(state, payload: PayloadAction<ContestCategory>) {
+    setSelectedContestCategory(
+      state,
+      payload: PayloadAction<ContestCategoryWithBonusCreditLimit>,
+    ) {
       state.selectedContestCategory = payload.payload;
       return state;
     },
-    setContestCategories(state, payload: PayloadAction<ContestCategory[]>) {
+    setContestCategories(
+      state,
+      payload: PayloadAction<ContestCategoryWithBonusCreditLimit[]>,
+    ) {
       state.contestCategories = payload.payload;
       return state;
     },
     setCategoryBgColor(state, payload: PayloadAction<string>) {
       state.categoryBgColor = payload.payload;
+      return state;
+    },
+    setCartMessage(state, payload: PayloadAction<string | undefined>) {
+      state.cartMessage = payload.payload;
       return state;
     },
   },
@@ -80,6 +112,7 @@ export const {
   setSelectedContestCategory,
   setContestCategories,
   setCategoryBgColor,
+  setCartMessage,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

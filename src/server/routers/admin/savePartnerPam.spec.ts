@@ -5,7 +5,9 @@ import { NEW_USER_ID } from '~/constants/NewUserId';
 jest.mock('~/utils/supabaseClient', () => ({
   supabase: {
     auth: {
-      signUp: jest.fn().mockResolvedValue({ user: { id: 'new_user_id' } }),
+      signUp: jest
+        .fn()
+        .mockResolvedValue({ data: { user: { id: 'new_user_id' } } }),
     },
   },
 }));
@@ -27,7 +29,12 @@ jest.mock('~/server/prisma', () => {
       }),
     },
     agent: {
-      upsert: jest.fn(),
+      upsert: jest.fn().mockResolvedValue({
+        id: 'existing_user_id',
+      }),
+    },
+    agentSubAdmin: {
+      deleteMany: jest.fn(),
     },
   };
 });

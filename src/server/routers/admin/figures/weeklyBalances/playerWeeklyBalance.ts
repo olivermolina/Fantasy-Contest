@@ -1,8 +1,7 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import en from 'dayjs/locale/en';
-import { IPlayerWithAgent } from '~/server/routers/admin/figures/weeklyBalances/weeklyBalances';
-import prisma from '~/server/prisma';
+import { IPlayerWithBetsAndTransactions } from './weeklyBalances';
 import { Bet, BetStatus } from '@prisma/client';
 import { ActionType } from '~/constants/ActionType';
 import { DayOfWeek } from '~/constants/DayOfWeek';
@@ -19,15 +18,17 @@ dayjs.locale({
   ...en,
   weekStart: 1,
 });
+dayjs.tz.setDefault('America/New_York');
 
-export interface WeeklyBalanceDateRage {
+export interface BalanceDateRage {
   from: string;
   to: string;
 }
 
 interface IPlayerWeeklyBalancesInput {
-  player: IPlayerWithAgent;
-  dateRange: WeeklyBalanceDateRage;
+  player: IPlayerWithBetsAndTransactions;
+  dateRange: BalanceDateRage;
+  includeEntryFee?: boolean;
   timezone?: string;
 }
 
@@ -36,12 +37,17 @@ interface IPlayerWeeklyBalancesInput {
  *
  * @param weeklyPicks {Bet[]} - Player bet list
  * @param entryDate - The entry date
+ * @param includeEntryFee - Include entry fee from winnings calculations
  * @returns {number} - return the picks total balance
  *
  */
-function getPickBalanceByDate(weeklyPicks: Bet[], entryDate: Date): number {
+function getPickBalanceByDate(
+  weeklyPicks: Bet[],
+  entryDate: Dayjs,
+  includeEntryFee: boolean,
+): number {
   const entryDatePicks = weeklyPicks.filter((pick) =>
-    dayjs(entryDate).isSame(pick.updated_at, 'day'),
+    entryDate.isSame(pick.updated_at, 'day'),
   );
   return entryDatePicks.reduce(
     (acc, curr) =>
@@ -49,7 +55,13 @@ function getPickBalanceByDate(weeklyPicks: Bet[], entryDate: Date): number {
       (curr.status === BetStatus.LOSS
         ? // Don't include play free bonus credit stake as losses
           (Number(curr.stake) - Number(curr.bonusCreditStake)) * -1
-        : Number(curr.status === BetStatus.WIN ? curr.payout : curr.stake)),
+        : Number(
+            curr.status === BetStatus.WIN
+              ? includeEntryFee
+                ? curr.payout
+                : Number(curr.payout) - Number(curr.stake)
+              : curr.stake,
+          )),
     0,
   );
 }
@@ -57,8 +69,9 @@ function getPickBalanceByDate(weeklyPicks: Bet[], entryDate: Date): number {
 /**
  * Will get the player weekly balances
  *
- * @param player - User object representing as a player type.
+ * @param player - IPlayerWithBetsAndTransactions.
  * @param dateRange - The entry date range object
+ * @param includeEntryFee - Include entry fee from winnings calculations
  * @param timezone - The timezone string
  * @returns {Object} - Returns an IPlayerWeeklyBalance object
  *
@@ -66,60 +79,19 @@ function getPickBalanceByDate(weeklyPicks: Bet[], entryDate: Date): number {
 export const playerWeeklyBalance = async ({
   player,
   dateRange,
+  includeEntryFee = false,
   timezone = USATimeZone['America/New_York'],
 }: IPlayerWeeklyBalancesInput) => {
-  // Weekly settled/pending picks
-  const weeklyPicks = await prisma.bet.findMany({
-    where: {
-      userId: player.id,
-      updated_at: {
-        gte: dayjs(`${dateRange.from} 00:00:00`).tz(timezone).toDate(),
-        lte: dayjs(`${dateRange.to} 23:59:59`).tz(timezone).toDate(),
-      },
-      NOT: {
-        status: BetStatus.PENDING,
-      },
-    },
-  });
-  const pendingPicks = await prisma.bet.findMany({
-    where: {
-      userId: player.id,
-      status: BetStatus.PENDING,
-    },
-  });
+  const pendingPicks = player.Bets.filter(
+    (pick) => pick.status === BetStatus.PENDING,
+  );
 
-  const settledPicks = weeklyPicks.filter(
+  const settledPicks = player.Bets.filter(
     (pick) => pick.status !== BetStatus.PENDING,
   );
 
   // Deposit/Payout transactions
-  const transactions = await prisma.transaction.findMany({
-    where: {
-      userId: player.id,
-      actionType: {
-        in: [ActionType.PAY, ActionType.PAYOUT],
-      },
-      created_at: {
-        gte: dayjs(`${dateRange.from} 00:00:00`).tz(timezone).toDate(),
-        lte: dayjs(`${dateRange.to} 23:59:59`).tz(timezone).toDate(),
-      },
-      TransactionStatuses: {
-        every: {
-          statusCode: {
-            in: [PaymentStatusCode.PENDING, PaymentStatusCode.COMPLETE],
-          },
-        },
-      },
-      NOT: {
-        TransactionStatuses: {
-          none: {},
-        },
-      },
-    },
-    include: {
-      TransactionStatuses: true,
-    },
-  });
+  const transactions = player.Transactions;
 
   const userTotalBalance = await getUserTotalBalance(player.id);
 
@@ -131,38 +103,51 @@ export const playerWeeklyBalance = async ({
   return {
     mondayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.MONDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.MONDAY),
+      includeEntryFee,
     ),
     tuesdayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.TUESDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.TUESDAY),
+      includeEntryFee,
     ),
     wednesdayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.WEDNESDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.WEDNESDAY),
+      includeEntryFee,
     ),
     thursdayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.THURSDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.THURSDAY),
+      includeEntryFee,
     ),
     fridayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.FRIDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.FRIDAY),
+      includeEntryFee,
     ),
     saturdayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.SATURDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.SATURDAY),
+      includeEntryFee,
     ),
     sundayBalance: getPickBalanceByDate(
       settledPicks,
-      dayjs(dateRange.from).weekday(DayOfWeek.SUNDAY).toDate(),
+      dayjs.tz(dateRange.from, timezone).weekday(DayOfWeek.SUNDAY),
+      includeEntryFee,
     ),
     totalWeekBalance: settledPicks.reduce(
       (acc, curr) =>
         acc +
         (curr.status === BetStatus.LOSS
           ? (Number(curr.stake) - Number(curr.bonusCreditStake)) * -1
-          : Number(curr.status === BetStatus.WIN ? curr.payout : curr.stake)),
+          : Number(
+              curr.status === BetStatus.WIN
+                ? includeEntryFee
+                  ? curr.payout
+                  : Number(curr.payout) - Number(curr.stake)
+                : curr.stake,
+            )),
       0,
     ),
     deposits: transactions

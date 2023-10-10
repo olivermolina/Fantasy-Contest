@@ -21,7 +21,7 @@ export default function AmountCellContent(props: {
             props.amount !== 0 ? (props.amount > 0 ? 'green' : 'red') : 'black',
         }}
       >
-        <span>{props.amount.toFixed(2)}</span>
+        <span>{props.amount?.toFixed(2)}</span>
       </Box>
     );
   }
@@ -36,7 +36,7 @@ export default function AmountCellContent(props: {
       }}
       onClick={props.onClick}
     >
-      <span>{props.amount.toFixed(2)}</span>
+      <span>{props.amount?.toFixed(2)}</span>
     </Link>
   );
 }

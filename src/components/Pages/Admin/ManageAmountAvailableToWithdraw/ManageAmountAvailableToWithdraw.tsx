@@ -1,185 +1,201 @@
 import React, { useEffect } from 'react';
 import {
-  Button,
-  FormControl,
-  FormHelperText,
-  InputAdornment,
-  Select,
-  Skeleton,
-  TextField,
-} from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { TransactionType } from '@prisma/client';
-import * as Yup from 'yup';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import { showDollarPrefix } from '~/utils/showDollarPrefix';
-import { UserTotalBalanceInterface } from '~/server/routers/user/userTotalBalance/getUserTotalBalance';
-import UserAutocomplete from '~/components/Admin/Management/UserAutocomplete';
-import Typography from '@mui/material/Typography';
-import {
-  ManagementBaseProps,
-  ManagementInputs,
-} from '~/components/Admin/Management/Management';
+  DataGrid,
+  GridActionsCellItem,
+  GridEventListener,
+  GridRowEditStopReasons,
+  GridRowId,
+  GridRowModel,
+  GridRowModes,
+  GridRowModesModel,
+  GridRowParams,
+  GridRowsProp,
+  GridToolbar,
+  MuiEvent,
+} from '@mui/x-data-grid';
+import CustomNoEventsOverlay from '~/components/Pages/Admin/TournamentEvents/CustomNoEventsOverlay';
+import LinearProgress from '@mui/material/LinearProgress';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 
-const InputValidationSchema = Yup.object().shape({
-  amount: Yup.number()
-    .typeError('Please provide amount')
-    .min(1, 'Minimum amount is 1'),
-  user: Yup.object()
-    .typeError('Please select user')
-    .required('Please select user'),
-  transactionType: Yup.string()
-    .typeError('Please select transaction type')
-    .required('Please select transaction type'),
-});
+export type UserWalletRow = {
+  id: string;
+  username: string;
+  balance: number;
+  cashBalance: number;
+  bonusCredits: number;
+  amountAvailableToWithdraw: number;
+};
 
-interface AddRemoveWithdrawableProps extends ManagementBaseProps {
-  /**
-   * Submit form function
-   */
-  onSubmit: (inputs: ManagementInputs) => void;
-  setSelectedUserId: React.Dispatch<React.SetStateAction<string | undefined>>;
-  /**
-   * Selected user total balance
-   */
-  userTotalBalance?: UserTotalBalanceInterface;
+interface Props {
+  users: UserWalletRow[];
+  isLoading: boolean;
+  saveUserWallet: (userWallet: UserWalletRow) => void;
 }
 
-const ManageAmountAvailableToWithdraw = (props: AddRemoveWithdrawableProps) => {
-  const { onSubmit, users, isLoading, setSelectedUserId, userTotalBalance } =
-    props;
+const ManageAmountAvailableToWithdraw = (props: Props) => {
+  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
+    {},
+  );
+  const [rows, setRows] = React.useState<GridRowsProp>([]);
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const handleRowEditStart = (
+    params: GridRowParams,
+    event: MuiEvent<React.SyntheticEvent>,
+  ) => {
+    event.defaultMuiPrevented = true;
+  };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitSuccessful },
-    resetField,
-    control,
-  } = useForm<ManagementInputs>({
-    resolver: yupResolver(InputValidationSchema),
-  });
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (
+    params,
+    event,
+  ) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+
+  const handleEditClick = (id: GridRowId) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    });
+
+    const editedRow = rows.find((row) => row.id === id);
+    if (editedRow!.isNew) {
+      setRows(rows.filter((row) => row.id !== id));
+    }
+  };
+
+  const save = (row: GridRowModel) => {
+    props.saveUserWallet(row as UserWalletRow);
+  };
+
+  const processRowUpdate = (newRow: GridRowModel) => {
+    const updatedRow = { ...newRow, isNew: false };
+    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+    save(updatedRow);
+    return updatedRow;
+  };
+
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
 
   useEffect(() => {
-    if (isSubmitSuccessful) resetField('amount');
-  }, [isSubmitSuccessful]);
+    setRows(props.users);
+  }, [props.users]);
 
   return (
-    <div className={'flex flex-col gap-2'}>
-      <Typography>
-        Add or remove balance from the amount available to withdraw
-      </Typography>
+    <div className={'w-full h-[75vh]'}>
+      <DataGrid
+        loading={props.isLoading}
+        slots={{
+          noRowsOverlay: CustomNoEventsOverlay,
+          loadingOverlay: LinearProgress,
+          toolbar: GridToolbar,
+        }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+            quickFilterProps: { debounceMs: 500 },
+          },
+        }}
+        rows={rows}
+        getRowId={(row) => row.id}
+        columns={[
+          { field: 'id', flex: 2, headerName: 'ID' },
+          { field: 'username', flex: 1, headerName: 'Username' },
+          {
+            field: 'cashBalance',
+            flex: 1,
+            headerName: 'Cash Balance',
+            editable: true,
+            type: 'number',
+          },
+          {
+            field: 'bonusCredits',
+            flex: 1,
+            headerName: 'Bonus Credits',
+            editable: true,
+            type: 'number',
+          },
+          {
+            field: 'balance',
+            flex: 1,
+            headerName: 'Total Balance',
+            editable: true,
+            type: 'number',
+          },
+          {
+            field: 'amountAvailableToWithdraw',
+            flex: 1,
+            headerName: 'Amount Available to Withdraw',
+            editable: true,
+            type: 'number',
+          },
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className={`flex flex-col md:flex-row items-start gap-4`}>
-          <UserAutocomplete
-            control={control}
-            users={users}
-            isLoading={isLoading}
-            setSelectedUserId={setSelectedUserId}
-          />
-          <FormControl
-            fullWidth
-            error={!!errors?.transactionType}
-            size={'small'}
-          >
-            <InputLabel id="select-transactionType-label">
-              Select transaction type
-            </InputLabel>
-            <Select
-              labelId="select-transactionType-label"
-              id="select-transactionType"
-              label="Select transaction type"
-              {...register('transactionType')}
-              fullWidth
-              size={'small'}
-            >
-              {[TransactionType.CREDIT, TransactionType.DEBIT].map(
-                (transactionType, i) => (
-                  <MenuItem value={transactionType} key={`category-${i}`}>
-                    {transactionType}
-                  </MenuItem>
-                ),
-              )}
-            </Select>
-            {errors?.transactionType?.message ? (
-              <FormHelperText>
-                {errors?.transactionType?.message}
-              </FormHelperText>
-            ) : null}
-          </FormControl>
-          <TextField
-            id="outlined-basic"
-            label="Amount"
-            variant="outlined"
-            type={'number'}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              ),
-            }}
-            {...register('amount')}
-            error={!!errors?.amount}
-            helperText={errors?.amount?.message}
-            size={'small'}
-          />
-          <Button variant="contained" type="submit" fullWidth={matches}>
-            Submit
-          </Button>
-        </div>
-        <div className={'flex flex-col gap-2 mt-2'}>
-          <p className={'flex flex-row'}>
-            Amount Available to withdraw:
-            <span className={'font-bold ml-1'}>
-              {isLoading ? (
-                <Skeleton variant={'text'} sx={{ width: 20 }} />
-              ) : (
-                showDollarPrefix(
-                  userTotalBalance?.withdrawableAmount || 0,
-                  true,
-                )
-              )}
-            </span>
-          </p>
-          <p className={'flex flex-row'}>
-            Cash Balance:
-            <span className={'font-bold ml-1'}>
-              {isLoading ? (
-                <Skeleton variant={'text'} sx={{ width: 20 }} />
-              ) : (
-                showDollarPrefix(userTotalBalance?.totalCashAmount || 0, true)
-              )}
-            </span>
-          </p>
-          <p className={'flex flex-row'}>
-            Bonus Balance:
-            <span className={'font-bold ml-1'}>
-              {isLoading ? (
-                <Skeleton variant={'text'} sx={{ width: 20 }} />
-              ) : (
-                showDollarPrefix(userTotalBalance?.creditAmount || 0, true)
-              )}
-            </span>
-          </p>
-          <p className={'flex flex-row'}>
-            Total Balance:
-            <span className={'font-bold ml-1'}>
-              {isLoading ? (
-                <Skeleton variant={'text'} sx={{ width: 20 }} />
-              ) : (
-                showDollarPrefix(userTotalBalance?.totalAmount || 0, true)
-              )}
-            </span>
-          </p>
-        </div>
-      </form>
+          {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 150,
+            cellClassName: 'actions',
+            getActions: ({ id }) => {
+              const isInEditMode =
+                rowModesModel[id]?.mode === GridRowModes.Edit;
+
+              if (isInEditMode) {
+                return [
+                  <GridActionsCellItem
+                    key={`save-${id}`}
+                    icon={<SaveIcon />}
+                    label="Save"
+                    sx={{
+                      color: 'primary.main',
+                    }}
+                    onClick={handleSaveClick(id)}
+                  />,
+                  <GridActionsCellItem
+                    key={`cancel-${id}`}
+                    icon={<CancelIcon />}
+                    label="Cancel"
+                    className="textPrimary"
+                    onClick={handleCancelClick(id)}
+                    color="inherit"
+                  />,
+                ];
+              }
+
+              return [
+                <GridActionsCellItem
+                  key={`edit-${id}`}
+                  icon={<EditIcon />}
+                  label="Edit"
+                  className="textPrimary"
+                  onClick={handleEditClick(id)}
+                  color="inherit"
+                />,
+              ];
+            },
+          },
+        ]}
+        editMode="row"
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={handleRowModesModelChange}
+        onRowEditStart={handleRowEditStart}
+        onRowEditStop={handleRowEditStop}
+        processRowUpdate={processRowUpdate}
+      />
     </div>
   );
 };

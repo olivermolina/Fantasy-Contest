@@ -1,4 +1,3 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import { Session } from '@prisma/client';
 import * as yup from '~/utils/yup';
@@ -9,8 +8,9 @@ import GIDX, {
 import { prisma } from '~/server/prisma';
 import { ActionType } from '~/constants/ActionType';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const accountSavePaymentMethod = t.procedure
+const accountSavePaymentMethod = isAuthenticated
   .input(
     yup.object({
       fullName: yup.string().required(),
@@ -30,7 +30,7 @@ const accountSavePaymentMethod = t.procedure
     if (!userId || !user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 

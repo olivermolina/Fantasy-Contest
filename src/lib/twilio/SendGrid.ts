@@ -29,7 +29,9 @@ export const addSendGridContacts = async (users: User[]) => {
       method: 'PUT',
       body: data,
     });
-    console.log('Successfully added SendGrid contacts.');
+    console.log(
+      `Successfully added SendGrid contacts. Total count: ${users.length}.`,
+    );
   } catch (e: any) {
     console.log(e.response?.body);
   }

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -15,17 +16,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 import { Logo } from '~/components/Layout/Logo';
 import { Tooltip } from '@mui/material';
 import { UrlPaths } from '~/constants/UrlPaths';
 import AdminBreadCrumb from '~/components/Admin/AdminLayout/AdminBreadCrumb';
-import HomeIcon from '@mui/icons-material/Home';
 import { NextRouter } from 'next/router';
-import Head from 'next/head';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { User } from '@prisma/client';
 import Avatar from '@mui/material/Avatar';
+import Header from '../../Header/Header';
 
 const drawerWidth = 180;
 
@@ -44,10 +45,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
+  width: 0,
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -81,7 +79,6 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
   minHeight: '90px',
-  backgroundColor: '#2562ea',
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -103,10 +100,10 @@ const Drawer = styled(MuiDrawer, {
 
 const MENU_OPTIONS = [
   {
-    id: 'home',
-    label: 'Home',
-    path: UrlPaths.Admin,
-    icon: <HomeIcon />,
+    id: 'challenge',
+    label: 'Challenge',
+    path: UrlPaths.Challenge,
+    icon: <TrendingUpIcon />,
   },
   {
     id: 'logout',
@@ -141,6 +138,10 @@ export default function AdminLayout(props: AdminLayoutProps) {
     setOpen(false);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [router.pathname]);
+
   React.useEffect(() => {
     const resizeOps = () => {
       document.documentElement.style.setProperty(
@@ -150,20 +151,26 @@ export default function AdminLayout(props: AdminLayoutProps) {
     };
     resizeOps();
     window.addEventListener('resize', resizeOps);
+    document.getElementById('main')?.scrollIntoView();
   }, []);
 
   return (
     <>
-      <Head>
+      <Header>
         <meta
           name="viewport"
-          content="width=1450, height=device-height, initial-scale=1"
+          content="width=1450, height=1600, initial-scale=1"
         />
-      </Head>
+      </Header>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="fixed" open={open}>
-          <Toolbar sx={{ height: '90px' }}>
+          <Toolbar
+            sx={{
+              height: '90px',
+              backgroundColor: '#2562ea',
+            }}
+          >
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -194,6 +201,7 @@ export default function AdminLayout(props: AdminLayoutProps) {
               </IconButton>
             </Tooltip>
           </Toolbar>
+          <AdminBreadCrumb />
         </AppBar>
         <Drawer variant="permanent" open={open}>
           <DrawerHeader>
@@ -243,14 +251,17 @@ export default function AdminLayout(props: AdminLayoutProps) {
           </List>
           <Divider />
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, overflow: 'hidden' }}>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, overflow: 'hidden' }}
+          id={'main'}
+        >
           <DrawerHeader />
           <div
             className={
-              'mt-5 p-5 min-h-screen w-full overflow-y-hidden overflow-x-auto block'
+              'mt-14 p-5 min-h-screen w-full overflow-y-hidden overflow-x-auto block'
             }
           >
-            <AdminBreadCrumb />
             {props.children}
           </div>
         </Box>

@@ -4,54 +4,15 @@ import {
   Button,
   Dialog,
   IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  MenuItem,
   TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { RowModel } from './PendingBetsManagement';
+import { LegRowModel, RowModel } from './PendingBetsManagement';
 import { BetStatus } from '@prisma/client';
-
-const PendingPickTable = (props: { row?: RowModel }) => {
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="Pending Pick table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="center">Type</TableCell>
-            <TableCell align="center">Odds</TableCell>
-            <TableCell align="center">Category</TableCell>
-            <TableCell align="center">Total</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {props.row?.legs.map((leg) => (
-            <TableRow
-              key={leg.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {leg.name}
-              </TableCell>
-              <TableCell align="center">{leg.type}</TableCell>
-              <TableCell align="center">{leg.odds}</TableCell>
-              <TableCell align="center">{leg.category}</TableCell>
-              <TableCell align="center">{leg.total.toFixed(2)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-};
+import BetLegsTable from '~/components/Pages/Admin/PendingBetsManagement/BetLegsTable';
 
 interface Props {
   /**
@@ -59,9 +20,11 @@ interface Props {
    */
   handleClose: () => void;
   /**
-   * Delete pending pick callback function
+   * Settle pick callback function
+   * @param currentRow
+   * @param betStatus
    */
-  onClickDeleteRow: (currentRow: RowModel, betStatus: BetStatus) => unknown;
+  settlePick: (currentRow: RowModel, betStatus: BetStatus) => unknown;
   /**
    * Boolean to show dialog
    * @example true
@@ -76,30 +39,43 @@ interface Props {
    */
   clearSelectedRow: () => void;
   /**
-   * Boolean to view only the pick legs
-   */
-  isViewOnly: boolean;
-  /**
    * Bet status
    */
   betStatus?: BetStatus;
+  /**
+   * Set bet status callback function
+   * @param betStatus
+   */
+  setSelectedBetStatus: (betStatus: BetStatus) => void;
+  /**
+   * Update bet leg callback function
+   * @param leg
+   */
+  updateBetLeg: (leg: LegRowModel, betStatus: BetStatus) => void;
 }
 
 export default function PendingPickDialog(props: Props) {
   const {
     handleClose,
     open,
-    onClickDeleteRow,
+    settlePick,
     row,
     clearSelectedRow,
-    isViewOnly,
     betStatus,
+    setSelectedBetStatus,
   } = props;
   const confirmAction = () => {
     if (row && betStatus) {
-      onClickDeleteRow(row, betStatus);
+      settlePick(row, betStatus);
       clearSelectedRow();
     }
+  };
+
+  const handleBetStatusChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const newValue = event.target.value;
+    setSelectedBetStatus(newValue as BetStatus);
   };
 
   return (
@@ -107,12 +83,7 @@ export default function PendingPickDialog(props: Props) {
       <AppBar sx={{ position: 'relative' }}>
         <Toolbar>
           <Typography sx={{ flex: 1 }} variant="h6" component="div">
-            {betStatus === BetStatus.REFUNDED &&
-              `Are you sure you want to REFUND this pick?`}
-            {betStatus &&
-              betStatus !== BetStatus.REFUNDED &&
-              `Are you sure you want to settle the pick status to ${betStatus}?`}
-            {!betStatus && `${row?.legs.length} Picks`}
+            {row?.legs.length} Picks
           </Typography>
           <IconButton
             edge="start"
@@ -196,30 +167,50 @@ export default function PendingPickDialog(props: Props) {
           <div className={'flex flex-row justify-start items-center gap-2 p-2'}>
             <span className={'font-semibold w-28'}>Status</span>
             <TextField
-              variant={'outlined'}
-              size={'small'}
+              id="status"
+              select
               fullWidth
-              InputProps={{
-                readOnly: true,
-              }}
-              value={row?.status}
-            />
+              size={'small'}
+              value={betStatus || ''}
+              onChange={handleBetStatusChange}
+            >
+              <MenuItem key={'empty-status'} value={undefined} disabled>
+                <em>Select status</em>
+              </MenuItem>
+              {[
+                BetStatus.WIN,
+                BetStatus.PENDING,
+                BetStatus.LOSS,
+                BetStatus.CANCELLED,
+                BetStatus.REFUNDED,
+              ].map((value) => (
+                <MenuItem key={value} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </TextField>
           </div>
         </div>
-        <PendingPickTable row={row} />{' '}
-        {!isViewOnly && (
-          <div className={'flex justify-center'}>
-            <Button
-              color="warning"
-              autoFocus
-              onClick={confirmAction}
-              variant="contained"
-              sx={{ maxWidth: 100 }}
-            >
-              Confirm
-            </Button>
-          </div>
-        )}
+        <BetLegsTable betRow={row} updateBetLeg={props.updateBetLeg} />
+        <div className={'flex justify-center gap-2'}>
+          <Button
+            variant={'outlined'}
+            onClick={handleClose}
+            sx={{ minWidth: 100 }}
+          >
+            Close
+          </Button>
+          <Button
+            color="primary"
+            autoFocus
+            onClick={confirmAction}
+            variant="contained"
+            sx={{ minWidth: 100 }}
+            disabled={!betStatus || betStatus === row?.status}
+          >
+            Save
+          </Button>
+        </div>
       </div>
     </Dialog>
   );

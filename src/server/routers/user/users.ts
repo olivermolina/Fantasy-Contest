@@ -1,9 +1,10 @@
 import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import { prisma } from '~/server/prisma';
-import { Prisma, User, UserType } from '@prisma/client';
+import { Prisma, User, UserType, AgentSubAdmin, Agent } from '@prisma/client';
 import { z } from 'zod';
 import type { AgentUsersType } from '~/server/routers/admin/middleware/isAdmin';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
+import { MORE_OR_LESS_CONTEST_ID } from '~/constants/MoreOrLessContestId';
 
 // @ts-expect-error Big int was not supported fix here https://github.com/prisma/studio/issues/614#issuecomment-795213237
 BigInt.prototype.toJSON = function () {
@@ -18,7 +19,11 @@ BigInt.prototype.toJSON = function () {
 export const setPlayerWhereFilter = (
   user: User & {
     UserAsAgents: AgentUsersType[];
-    SubAdminAgents: AgentUsersType[];
+    AgentSubAdmins: (AgentSubAdmin & {
+      Agent: Agent & {
+        users: User[];
+      };
+    })[];
   },
   where: Prisma.UserWhereInput = {},
 ) => {
@@ -31,7 +36,7 @@ export const setPlayerWhereFilter = (
     case UserType.SUB_ADMIN:
       // Get all players under the sub admin agents
       where.agentId = {
-        in: user.SubAdminAgents.map((agent) => agent.id),
+        in: user.AgentSubAdmins.map((agentSubAdmin) => agentSubAdmin.agentId),
       };
       break;
     case UserType.AGENT:
@@ -44,7 +49,7 @@ export const setPlayerWhereFilter = (
   }
 };
 
-const users = t.procedure
+const users = isAuthenticated
   .input(
     z
       .object({
@@ -70,9 +75,15 @@ const users = t.procedure
             users: true,
           },
         },
-        SubAdminAgents: {
+        AgentSubAdmins: {
           include: {
-            users: true,
+            Agent: {
+              include: {
+                User: true,
+                users: true,
+              },
+            },
+            subAdminUser: true,
           },
         },
       },
@@ -97,7 +108,9 @@ const users = t.procedure
         case UserType.SUB_ADMIN:
           // Get all agents under the sub admin
           where.id = {
-            in: user.SubAdminAgents.map((agent) => agent.userId),
+            in: user.AgentSubAdmins.map(
+              (agentSubAdmin) => agentSubAdmin.Agent.User.id,
+            ),
           };
           break;
         case UserType.AGENT:
@@ -110,6 +123,8 @@ const users = t.procedure
             message: `You don't have permission to access the user list`,
           });
       }
+    } else if (input?.userType === UserType.SUB_ADMIN) {
+      where.type = UserType.SUB_ADMIN;
     }
 
     return await prisma.user.findMany({
@@ -133,6 +148,14 @@ const users = t.procedure
         status: true,
         isFirstDeposit: true,
         created_at: true,
+        notes: true,
+        exemptedReasonCodes: true,
+        Wallets: {
+          where: {
+            contestsId: MORE_OR_LESS_CONTEST_ID,
+          },
+        },
+        agentId: true,
       },
     });
   });

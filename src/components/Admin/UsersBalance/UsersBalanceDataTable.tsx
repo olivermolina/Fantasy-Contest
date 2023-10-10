@@ -1,98 +1,91 @@
-import React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import CustomDataTable from '~/components/CustomDataTable';
+import React, { useEffect } from 'react';
 import { UserBalance } from '~/server/routers/admin/usersBalance';
-import { showDollarPrefix } from '~/utils/showDollarPrefix';
 import Link from 'next/link';
+import { DataGrid, GridRowsProp, GridToolbar } from '@mui/x-data-grid';
+import CustomNoEventsOverlay from '~/components/Pages/Admin/TournamentEvents/CustomNoEventsOverlay';
+import LinearProgress from '@mui/material/LinearProgress';
 
 interface PropsOfferDataTable {
   isLoading: boolean;
-  flatData: UserBalance[];
-  totalDBRowCount: number;
-  totalFetched: number;
-  isFetching: boolean;
-  fetchNextPage: any;
+  data?: UserBalance[];
 }
 
 function UsersBalanceDataTable(props: PropsOfferDataTable) {
-  const columns = React.useMemo<ColumnDef<UserBalance>[]>(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-        size: 60,
-      },
-      {
-        accessorKey: 'username',
-        cell: (info) => info.getValue(),
-        header: () => <span>Username</span>,
-      },
-      {
-        accessorKey: 'email',
-        cell: (info) => info.getValue(),
-        header: () => <span>Email</span>,
-      },
-      {
-        accessorKey: 'firstname',
-        cell: (info) => info.getValue(),
-        header: () => <span>First Name</span>,
-      },
-      {
-        accessorKey: 'lastname',
-        cell: (info) => info.getValue(),
-        header: () => <span>Last Name</span>,
-      },
-      {
-        accessorKey: 'referral',
-        cell: (info) => info.getValue(),
-        header: () => <span>Referred By</span>,
-      },
-      {
-        accessorKey: 'totalAmount',
-        cell: (info) => showDollarPrefix(Number(info.getValue())),
-        header: () => <span>Total Balance</span>,
-      },
-      {
-        accessorKey: 'totalCashAmount',
-        cell: (info) => showDollarPrefix(Number(info.getValue())),
-        header: () => <span>Cash Balance</span>,
-      },
-      {
-        accessorKey: 'creditAmount',
-        cell: (info) => showDollarPrefix(Number(info.getValue())),
-        header: () => <span>Bonus Balance</span>,
-      },
-      {
-        accessorKey: 'withdrawableAmount',
-        cell: (info) => showDollarPrefix(Number(info.getValue())),
-        header: () => <span>Available To Withdraw</span>,
-      },
-      {
-        accessorKey: 'id',
-        cell: (info) => (
-          <Link href={`/picks?userId=${info.getValue()}`} legacyBehavior>
-            <a
-              className={'underline text-blue-500'}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View
-            </a>
-          </Link>
-        ),
-        header: () => <span>Picks</span>,
-      },
-    ],
-    [],
-  );
-
+  const [rows, setRows] = React.useState<GridRowsProp>([]);
+  useEffect(() => {
+    if (props.data) {
+      setRows(props.data);
+    }
+  }, [props.data]);
   return (
-    <CustomDataTable
-      {...props}
-      tableTitle={'Users Balance'}
-      searchPlaceholder={'Search...'}
-      columns={columns}
-    />
+    <div className={'w-full h-[75vh]'}>
+      <DataGrid
+        loading={props.isLoading}
+        slots={{
+          noRowsOverlay: CustomNoEventsOverlay,
+          loadingOverlay: LinearProgress,
+          toolbar: GridToolbar,
+        }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+            quickFilterProps: { debounceMs: 500 },
+          },
+        }}
+        rows={rows}
+        getRowId={(row) => row.id}
+        columns={[
+          { field: 'id', flex: 2, headerName: 'ID' },
+          { field: 'username', flex: 1, headerName: 'Username' },
+          { field: 'email', flex: 1, headerName: 'Email' },
+          { field: 'firstname', flex: 1, headerName: 'First Name' },
+          { field: 'lastname', flex: 1, headerName: 'Last Name' },
+          { field: 'referral', flex: 1, headerName: 'Referred By' },
+          {
+            field: 'totalAmount',
+            flex: 1,
+            headerName: 'Total Balance',
+            type: 'number',
+          },
+          {
+            field: 'totalCashAmount',
+            flex: 1,
+            headerName: 'Cash Balance',
+            type: 'number',
+          },
+          {
+            field: 'creditAmount',
+            flex: 1,
+            headerName: 'Bonus Balance',
+            type: 'number',
+          },
+          {
+            field: 'withdrawableAmount',
+            flex: 1,
+            headerName: 'Available To Withdraw',
+            type: 'number',
+          },
+
+          {
+            field: 'picks',
+            headerName: 'Picks',
+            width: 150,
+            renderCell: (params) => (
+              <Link href={`/picks?userId=${params.id}`} legacyBehavior>
+                <a
+                  className={'underline text-blue-500'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View
+                </a>
+              </Link>
+            ),
+          },
+        ]}
+        editMode="row"
+      />
+    </div>
   );
 }
 

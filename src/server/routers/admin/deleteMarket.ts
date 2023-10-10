@@ -3,6 +3,7 @@ import { prisma } from '~/server/prisma';
 import * as yup from '~/utils/yup';
 import { adminProcedure } from './middleware/isAdmin';
 import { appNodeCache } from '~/lib/node-cache/AppNodeCache';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const deleteMarket = adminProcedure
   .input(
@@ -25,7 +26,7 @@ const deleteMarket = adminProcedure
     } catch (e) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'Unable to delete market. Someone already placed an entry.',
+        message: CustomErrorMessages.DELETE_MARKET_ERROR,
       });
     }
   });

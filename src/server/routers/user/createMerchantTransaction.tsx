@@ -1,13 +1,13 @@
 import { prisma } from '~/server/prisma';
 import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import * as yup from '~/utils/yup';
 import GIDX, { IDeviceGPS } from '~/lib/tsevo-gidx/GIDX';
 import ShortUniqueId from 'short-unique-id';
 import { ActionType } from '~/constants/ActionType';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const createMerchantTransaction = t.procedure
+const createMerchantTransaction = isAuthenticated
   .input(
     yup.object({
       ipAddress: yup.string().required(),
@@ -27,7 +27,7 @@ const createMerchantTransaction = t.procedure
     if (!userId || !user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 

@@ -1,7 +1,7 @@
 import { prismaMock } from '~/server/singleton';
 import { AppRouter, appRouter } from '~/server/routers/_app';
 import { inferProcedureInput, TRPCError } from '@trpc/server';
-import { TransactionType } from '@prisma/client';
+import { TransactionType, UserType } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { createTransaction } from '~/server/routers/bets/createTransaction';
 
@@ -51,6 +51,7 @@ describe('addRemoveWithdrawable', () => {
       identityStatus: true,
       reasonCodes: ['ID-VERIFIED', 'LL-GEO-US-NJ'],
       isAdmin: false,
+      type: UserType.PLAYER,
       phone: null,
     });
 
@@ -85,6 +86,7 @@ describe('addRemoveWithdrawable', () => {
       identityStatus: true,
       reasonCodes: ['ID-VERIFIED', 'LL-GEO-US-NJ'],
       isAdmin: true,
+      type: UserType.ADMIN,
       phone: null,
     });
 

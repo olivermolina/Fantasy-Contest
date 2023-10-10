@@ -1,18 +1,10 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import LayoutContainer from '~/containers/LayoutContainer/LayoutContainer';
 import { GetServerSideProps } from 'next';
-import dynamic from 'next/dynamic';
 import { withAuth } from '~/hooks/withAuthServerSideProps';
 import requestIp from 'request-ip';
 import ProfileContainer from '~/containers/ProfileContainer';
-import { Skeleton } from '@mui/material';
-
-const AccountDepositLazyContainer = dynamic(
-  () => import('~/containers/ProfileAccountDepositContainer'),
-  {
-    suspense: true,
-  },
-);
+import AccountDepositLazyContainer from '~/containers/ProfileAccountDepositContainer';
 
 interface Props {
   clientIp: string;
@@ -23,15 +15,7 @@ const AccountDeposit = (props: Props) => {
     <LayoutContainer>
       <div className={'flex w-full'}>
         <ProfileContainer>
-          <Suspense
-            fallback={
-              <div>
-                <Skeleton />
-              </div>
-            }
-          >
-            <AccountDepositLazyContainer {...props} />
-          </Suspense>
+          <AccountDepositLazyContainer {...props} />
         </ProfileContainer>
       </div>
     </LayoutContainer>

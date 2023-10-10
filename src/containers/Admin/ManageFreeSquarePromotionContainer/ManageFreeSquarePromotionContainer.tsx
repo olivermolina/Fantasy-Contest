@@ -44,9 +44,9 @@ export const ManageFreeSquarePromotionContainer = () => {
       toast.error('Something went wrong. Please try again.');
     }
   };
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, league: League) => {
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id, league });
       await refetch();
       toast.success(`Free square promotion deleted successfully.`);
     } catch (e) {

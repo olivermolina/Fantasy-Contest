@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { Context } from '~/server/context';
 import { t } from '~/server/trpc';
 import { BaseMiddlewareFunctionType } from './BaseMiddlewareFunctionType';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 // This is the type of the context that will be passed to the next middleware or procedure.
 type UpdatedContext = Context;
@@ -20,7 +21,7 @@ export const middlewareFn: BaseMiddlewareFunctionType<
   if (!userId) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
-      message: 'You must be authenticated to access this function.',
+      message: CustomErrorMessages.NOT_AUTHENTICATED_ERROR,
     });
   }
 

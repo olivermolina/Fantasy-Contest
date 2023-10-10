@@ -17,6 +17,9 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
+import { DehydratedState } from '@tanstack/query-core/src/hydration';
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
+import { SessionContextProvider, Session } from '@supabase/auth-helpers-react';
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -27,18 +30,27 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const MyApp = (({ Component, pageProps }: AppPropsWithLayout) => {
-  const { dehydratedState } = pageProps as { dehydratedState: unknown };
+  const [supabaseClient] = useState(() => createPagesBrowserClient());
+  const { dehydratedState, initialSession } = pageProps as {
+    dehydratedState: { json: DehydratedState };
+    initialSession: Session | null | undefined;
+  };
   const getLayout = Component.getLayout ?? ((page) => <>{page}</>);
   const [queryClient] = useState(() => new QueryClient());
   return getLayout(
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <Hydrate state={dehydratedState}>
-          <Component {...pageProps} />
-        </Hydrate>
-        <ToastContainer />
-      </QueryClientProvider>
-    </Provider>,
+    <SessionContextProvider
+      supabaseClient={supabaseClient}
+      initialSession={initialSession}
+    >
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <Hydrate state={dehydratedState?.json}>
+            <Component {...pageProps} />
+          </Hydrate>
+          <ToastContainer />
+        </QueryClientProvider>
+      </Provider>
+    </SessionContextProvider>,
   );
 }) as AppType;
 

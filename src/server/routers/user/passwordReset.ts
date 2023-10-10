@@ -16,7 +16,7 @@ const passwordReset = t.procedure
         ? 'https://www.lockspread.com'
         : 'http://localhost:3000';
     const redirectTo = `${baseUrl}/auth/update-password`;
-    const { data, error } = await supabase.auth.api.resetPasswordForEmail(
+    const { data, error } = await supabase.auth.resetPasswordForEmail(
       input.email,
       {
         redirectTo,

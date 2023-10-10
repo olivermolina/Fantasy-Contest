@@ -2,6 +2,7 @@ import * as yup from '~/utils/yup';
 import { adminProcedure } from '~/server/routers/admin/middleware/isAdmin';
 import prisma from '~/server/prisma';
 import { TRPCError } from '@trpc/server';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const addReferralCode = adminProcedure
   .input(
@@ -32,7 +33,7 @@ const addReferralCode = adminProcedure
     if (referralCode) {
       throw new TRPCError({
         code: 'CONFLICT',
-        message: 'Referral Code is already in use. Please try another code.',
+        message: CustomErrorMessages.DUPLICATE_REFERRAL_CODE,
       });
     }
 

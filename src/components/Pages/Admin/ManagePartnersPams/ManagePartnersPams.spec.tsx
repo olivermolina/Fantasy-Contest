@@ -8,6 +8,7 @@ describe('ManagePartnersPams', () => {
       users: manageUserMocks,
       openUserForm: jest.fn(),
       addUser: jest.fn(),
+      subAdminUsers: [],
     };
 
     const { container } = render(<ManagePartnersPams {...mockProps} />);

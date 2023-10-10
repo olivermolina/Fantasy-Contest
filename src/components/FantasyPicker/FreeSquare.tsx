@@ -31,8 +31,8 @@ export default function FreeSquare(props: FreeSquareProps) {
   const [time, setTime] = useState<string>();
 
   useMemo(() => {
-    const currentTime = dayjs().tz('America/New_York');
-    const gameTimeTz = dayjs(`${gameDateTime} EST`).tz('America/New_York');
+    const currentTime = dayjs();
+    const gameTimeTz = dayjs(gameDateTime).tz('America/New_York', true);
     const diffTime = dayjs(gameTimeTz).unix() - currentTime.unix();
 
     let duration = dayjs.duration(diffTime * 1000, 'milliseconds');
@@ -44,11 +44,13 @@ export default function FreeSquare(props: FreeSquareProps) {
         duration.asMilliseconds() - interval,
         'milliseconds',
       );
-      const timestamp = `${
-        duration.days() && duration.days() + 'd '
-      }${duration.hours()}h ${twoDP(duration.minutes())}m ${twoDP(
-        duration.seconds(),
-      )}s`;
+
+      const days = duration.days() > 0 ? `${twoDP(duration.days()) + 'd'}` : '';
+      const hours = duration.hours() + 'h';
+      const minutes = twoDP(duration.minutes()) + 'm';
+      const seconds = twoDP(duration.seconds()) + 's';
+
+      const timestamp = `${days} ${hours} ${minutes} ${seconds}`;
       setTime(timestamp);
     }, interval);
   }, [gameDateTime]);
@@ -56,13 +58,13 @@ export default function FreeSquare(props: FreeSquareProps) {
   return (
     <div
       className={
-        'flex justify-evenly p-1 rounded-t-lg bg-yellow-600 font-bold text-md lg:text-md text-white '
+        'flex justify-evenly p-1 rounded-t-lg bg-yellow-600 font-bold text-white items-center text-xs sm:text-sm md:text-md lg:text-lg'
       }
     >
       {time ? (
         <span
           className={
-            'bg-black text-white px-1 lg:px-4 rounded-sm whitespace-nowrap'
+            'bg-black text-white px-1 lg:px-2 rounded-sm whitespace-nowrap'
           }
         >
           {time}
@@ -70,7 +72,7 @@ export default function FreeSquare(props: FreeSquareProps) {
       ) : (
         <Skeleton sx={{ width: 150 }} />
       )}
-      <span className={'whitespace-nowrap text-black'}>{discount}% OFF</span>
+      <p className={'whitespace-nowrap text-black'}>{discount}% OFF</p>
     </div>
   );
 }

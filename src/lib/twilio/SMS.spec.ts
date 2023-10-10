@@ -7,6 +7,10 @@ import { smsService } from './SMSService';
 
 // mock the client file
 jest.mock('./SMSClient');
+jest.mock('~/utils/logger', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+}));
 
 // fixture
 const smsMessageResultMock: Partial<MessageInstance> = {

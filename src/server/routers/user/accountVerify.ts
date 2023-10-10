@@ -1,4 +1,3 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import * as yup from '~/utils/yup';
 import { prisma } from '~/server/prisma';
@@ -12,8 +11,9 @@ import { getErrorMessage } from '~/utils/geErrorMessage';
 import specialRestrictions from '~/server/routers/contest/specialRestrictions';
 import { isVerified } from '~/utils/isVerified';
 import { isBlocked } from '~/utils/isBlocked';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const accountVerify = t.procedure
+const accountVerify = isAuthenticated
   .input(
     yup.object({
       session: yup.mixed<Session>(),
@@ -32,7 +32,7 @@ const accountVerify = t.procedure
     if (!userId || !user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 
@@ -41,7 +41,7 @@ const accountVerify = t.procedure
     if (!session) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Invalid session!',
+        message: CustomErrorMessages.SESSION_NOT_FOUND,
       });
     }
 
@@ -65,7 +65,9 @@ const accountVerify = t.procedure
       });
     }
 
-    if (isBlocked(customerMonitorResponse.ReasonCodes)) {
+    if (
+      isBlocked(customerMonitorResponse.ReasonCodes, user.exemptedReasonCodes)
+    ) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: getErrorMessage(customerMonitorResponse.ReasonCodes),

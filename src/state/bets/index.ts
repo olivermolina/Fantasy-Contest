@@ -1,6 +1,5 @@
 import {
   BetStakeType,
-  ContestCategory,
   ContestType,
   ContestWagerType,
   League,
@@ -13,15 +12,20 @@ import {
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { RootState } from '../store';
-import { setSelectedContestCategory } from '~/state/ui';
+import {
+  ContestCategoryWithBonusCreditLimit,
+  setCartMessage,
+  setSelectedContestCategory,
+} from '~/state/ui';
 import { FantasyCardFreeSquareProps } from '~/components/FantasyPicker/FantasyCard';
+import { trpcClient } from '~/utils/trpcClient/trpcClient';
 
 export interface BaseModel {
   betId: string;
   challengerId?: number;
   contest: string;
   contestType: ContestType;
-  contestCategory: ContestCategory;
+  contestCategory: ContestCategoryWithBonusCreditLimit;
   contestWagerType?: ContestWagerType;
   stakeType: BetStakeType;
   error?: string;
@@ -40,6 +44,7 @@ export interface BetModel extends BaseModel {
   stake: number;
   odds: number;
   type: 'total' | 'moneyline' | 'spread';
+  teamId: string;
   team: 'away' | 'home' | 'over' | 'under';
   name: string;
   statName: string;
@@ -151,7 +156,7 @@ export const updateBetStakeType = createAsyncThunk(
     const state = thunkAPI.getState() as RootState;
     const bet = selectBetById(state, input.betId);
     if (!bet) {
-      toast.error(`Unable to update entry stake type`);
+      toast.error(`Unable to update entry type`);
       return;
     }
 
@@ -175,7 +180,7 @@ export function addIdToBet(bet: BetInput): BetModel {
 
 export const updateAllBetsContestCategory = createAsyncThunk(
   'bets/updateAllBetsContestCategory',
-  (contestCategory: ContestCategory, thunkAPI) => {
+  (contestCategory: ContestCategoryWithBonusCreditLimit, thunkAPI) => {
     const state = thunkAPI.getState() as RootState;
     const allBets = selectAllBets(state);
     for (const bet of allBets) {
@@ -190,6 +195,76 @@ export const updateAllBetsContestCategory = createAsyncThunk(
           },
         }),
       );
+    }
+  },
+);
+
+/**
+ * This will check the bet legs to see if any of the markets have been updated
+ * and show it to the user
+ */
+export const checkBetLegData = createAsyncThunk(
+  'bets/checkBetLegData',
+  async (input, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    const state = thunkAPI.getState() as RootState;
+    const allBets = selectAllBets(state);
+    if (!allBets || allBets.length === 0) {
+      return;
+    }
+
+    const bet = allBets[0];
+    if (!bet || bet.legs.length === 0) {
+      return;
+    }
+
+    const offerIds = bet.legs.map((leg) => leg.marketId) as [
+      string,
+      ...string[],
+    ];
+
+    const updatedMarkets = await trpcClient().contest.listOffersByIds.query({
+      offerIds,
+    });
+
+    let description = 'The following Stat Total has been updated: <br/> <br/>';
+    const updatedLegs: BetModel[] = [];
+    bet.legs.forEach((leg) => {
+      const updatedMarket = updatedMarkets.find(
+        (market) => market.marketId === leg.marketId,
+      );
+
+      if (!updatedMarket) return;
+
+      const line = leg.freeSquare
+        ? Number(updatedMarket.total) -
+          Number(updatedMarket.total) * (leg.freeSquare.discount / 100)
+        : updatedMarket?.total;
+
+      if (updatedMarket && line !== Number(leg.line)) {
+        description += `<b>${leg.name}</b> from <b>${leg.line}</b> to <b>${line} ${leg.statName}</b>. <br/>`;
+        updatedLegs.push({
+          ...leg,
+          total: updatedMarket.total,
+          line: line.toString(),
+        });
+      }
+    });
+    if (updatedLegs.length > 0) {
+      dispatch(
+        updateBet({
+          id: bet.betId,
+          changes: {
+            legs: bet.legs
+              .filter((row) =>
+                updatedLegs.every((uleg) => uleg.marketId !== row.marketId),
+              )
+              .concat(updatedLegs),
+          },
+        }),
+      );
+
+      dispatch(setCartMessage(description));
     }
   },
 );

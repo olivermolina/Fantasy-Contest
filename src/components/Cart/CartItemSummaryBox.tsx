@@ -28,9 +28,15 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     },
     '&:not(:first-of-type)': {
       borderColor: 'white',
+      height: '1.75em',
+      width: '1.75em',
+      padding: '1.75em',
       borderRadius: '50%',
     },
     '&:first-of-type': {
+      height: '1.75em',
+      width: '1.75em',
+      padding: '1.75em',
       borderRadius: '50%',
     },
   },
@@ -78,7 +84,7 @@ export function CartItemSummaryBox(props: CartItemSummaryBoxProps) {
         props.wagerType === ContestWagerType.CASH,
       ),
     }),
-    [props.wagerType, props.maxBetAmount, props.minBetAmount, MAX_LIMIT],
+    [props.wagerType, props.maxBetAmount, props.minBetAmount],
   );
 
   return (
@@ -106,7 +112,7 @@ export function CartItemSummaryBox(props: CartItemSummaryBoxProps) {
             .map((v) => (
               <ToggleButton value={v} key={v}>
                 {props.wagerType === ContestWagerType.CASH ? '$' : ''}
-                {v}
+                {Math.ceil(v)}
               </ToggleButton>
             ))}
           <ToggleButton value={MAX_LIMIT}>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import { HowToPlayDialog } from './HowToPlay';
-import Link from 'next/link';
 import classNames from 'classnames';
+import Skeleton from '@mui/material/Skeleton';
 
 const styles = {
   container:
@@ -15,7 +15,12 @@ const styles = {
 };
 
 interface Props {
+  /** The message to display in the promo container */
   challengePromoMessage: string;
+  /** Whether the component is loading */
+  isLoading: boolean;
+  /** The function to call when the contact us button is clicked */
+  handleOpenContactUs: () => void;
 }
 
 export default function ChallengeHeader(props: Props) {
@@ -32,18 +37,20 @@ export default function ChallengeHeader(props: Props) {
     <div className={styles.container}>
       <div className={styles.promoContainer}>
         <StarRateIcon fontSize="small" />
-        {props.challengePromoMessage}
+        {props.isLoading ? (
+          <Skeleton
+            variant={'text'}
+            width={'50%'}
+            sx={{ bgcolor: '#144e97' }}
+          />
+        ) : (
+          props.challengePromoMessage
+        )}
       </div>
       <div className={styles.linksContainer}>
-        <Link href="/contact-us" legacyBehavior>
-          <a
-            className={classNames('cursor-pointer', styles.button)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Contact Us
-          </a>
-        </Link>
+        <button className={styles.button} onClick={props.handleOpenContactUs}>
+          Contact Us
+        </button>
         <span className={styles.divider} />
         <button className={styles.button} onClick={handleOpenHowToPlay}>
           How To Play

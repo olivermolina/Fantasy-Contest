@@ -79,6 +79,22 @@ const AppSettingsContainer = () => {
           appSettingName: AppSettingName.REPEAT_ENTRIES_LIMIT,
           value: inputs.repeatEntries.toString(),
         },
+        {
+          appSettingName: AppSettingName.SIGNUP_FREE_ENTRY,
+          value: inputs.signupFreeEntry ? '1' : '0',
+        },
+        {
+          appSettingName: AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT,
+          value: inputs.maxDailyTotalBetAmount.toString(),
+        },
+        {
+          appSettingName: AppSettingName.WEEKLY_REFERRAL_MAX_AMOUNT_EARNED,
+          value: inputs.weeklyReferralMaxAmountEarned.toString(),
+        },
+        {
+          appSettingName: AppSettingName.MIN_DEPOSIT_AMOUNT,
+          value: inputs.minDepositAmount.toString(),
+        },
       ]);
 
       dispatch(fetchAppSettings({ refetch: true }));

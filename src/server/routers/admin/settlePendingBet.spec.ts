@@ -3,10 +3,39 @@ import { BetStatus } from '@prisma/client';
 import { settleBet } from '../bets/grade';
 import { innerFn as settlePendingBet } from './settlePendingBet';
 
+jest.mock('~/server/routers/appSettings/list', () => {
+  return {
+    getUserSettings: jest.fn().mockReturnValue({
+      leagueLimits: undefined,
+    }),
+  };
+});
+
 jest.mock('~/server/prisma', () => {
   return {
     bet: {
       update: jest.fn().mockReturnValue({
+        id: 'bet-id',
+        status: 'PUSH',
+        legs: [
+          {
+            id: 'leg-id',
+            status: 'REFUNDED',
+          },
+        ],
+        ContestEntries: [
+          {
+            contest: {
+              id: 'contest-id',
+              prizePool: 100,
+            },
+          },
+        ],
+        ContestCategory: {
+          id: 'contest-category-id',
+        },
+      }),
+      findUnique: jest.fn().mockReturnValue({
         id: 'bet-id',
         status: 'PUSH',
         legs: [
@@ -70,7 +99,15 @@ describe('settlePendingBet', () => {
         },
       },
       include: {
-        legs: true,
+        legs: {
+          include: {
+            market: {
+              include: {
+                offer: true,
+              },
+            },
+          },
+        },
         ContestEntries: {
           include: {
             contest: true,
@@ -80,26 +117,29 @@ describe('settlePendingBet', () => {
       },
     });
 
-    expect(settleBet).toHaveBeenCalledWith({
-      id: 'bet-id',
-      status: BetStatus.PUSH,
-      legs: [
-        {
-          id: 'leg-id',
-          status: BetStatus.REFUNDED,
-        },
-      ],
-      ContestEntries: [
-        {
-          contest: {
-            id: 'contest-id',
-            prizePool: 100,
+    expect(settleBet).toHaveBeenCalledWith(
+      {
+        id: 'bet-id',
+        status: BetStatus.PUSH,
+        legs: [
+          {
+            id: 'leg-id',
+            status: BetStatus.REFUNDED,
           },
+        ],
+        ContestEntries: [
+          {
+            contest: {
+              id: 'contest-id',
+              prizePool: 100,
+            },
+          },
+        ],
+        ContestCategory: {
+          id: 'contest-category-id',
         },
-      ],
-      ContestCategory: {
-        id: 'contest-category-id',
       },
-    });
+      undefined,
+    );
   });
 });

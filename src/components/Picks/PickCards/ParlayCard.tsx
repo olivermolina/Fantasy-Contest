@@ -25,6 +25,10 @@ const ParlayCard: React.FC<ParlayCardProps> = (props) => {
             {props.name} ({props.picks?.length} Picks)
           </p>
           <p>
+            <span className={'text-lightText mr-1 '}>Entry ID:</span>{' '}
+            <span className="font-semibold text-md">{props.id}</span>
+          </p>
+          <p>
             <span className={'text-lightText mr-1 '}>Contest Type:</span>{' '}
             <span className="font-semibold text-md">{props.contestType}</span>
           </p>

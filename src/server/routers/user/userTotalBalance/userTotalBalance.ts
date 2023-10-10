@@ -1,15 +1,18 @@
 import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import getUserTotalBalance from './getUserTotalBalance';
-import * as yup from '~/utils/yup';
 
 import { prisma } from '~/server/prisma';
+import { z } from 'zod';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const userTotalBalance = t.procedure
   .input(
-    yup.object({
-      userId: yup.string(),
-    }),
+    z
+      .object({
+        userId: z.string().optional(),
+      })
+      .optional(),
   )
   .query(async ({ ctx, input }) => {
     const contextUserId = ctx.session.user?.id;
@@ -17,7 +20,7 @@ const userTotalBalance = t.procedure
     if (!contextUserId) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Invalid user id!',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 
@@ -27,7 +30,8 @@ const userTotalBalance = t.procedure
       },
     });
 
-    const userId = user?.isAdmin && input.userId ? input.userId : contextUserId;
+    const userId =
+      user?.isAdmin && input?.userId ? input.userId : contextUserId;
 
     return getUserTotalBalance(userId);
   });

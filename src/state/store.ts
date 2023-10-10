@@ -3,12 +3,14 @@ import bets from './bets';
 import ui from './ui';
 import profile from './profile';
 import appSettings from './appSettings';
+import contentSettings from './manageContent';
 
 const allStores = {
   bets,
   ui,
   profile,
   appSettings,
+  contentSettings,
 };
 
 export const createStore = () =>

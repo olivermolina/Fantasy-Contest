@@ -27,6 +27,8 @@ export const getMoreLessContest = async () => {
       created_at: new Date(),
       updated_at: new Date(),
     },
-    update: contestData,
+    update: {
+      name: 'MORE OR LESS CONTEST',
+    },
   });
 };

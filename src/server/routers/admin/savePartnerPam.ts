@@ -1,13 +1,11 @@
 import { adminProcedure } from '~/server/routers/admin/middleware/isAdmin';
 import { EditFormInputs } from '~/components/Pages/Admin/ManagePartnersPams/EditForm';
 import { supabase } from '~/utils/supabaseClient';
-import logger from '~/utils/logger';
 import { TRPCError } from '@trpc/server';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 import prisma from '~/server/prisma';
 import { NEW_USER_ID } from '~/constants/NewUserId';
-import { UserStatus, UserType } from '@prisma/client';
-import * as z from 'zod';
+import { User, UserStatus, UserType } from '@prisma/client';
 import { EditFormValidationSchema } from '~/schemas/EditFormValidationSchema';
 
 /**
@@ -17,29 +15,26 @@ import { EditFormValidationSchema } from '~/schemas/EditFormValidationSchema';
  * which should ensure that the input data is in the expected format and conforms to the validation rules.
  */
 export const innerFn = async ({ input }: { input: EditFormInputs }) => {
-  let prismaUser = null;
+  let prismaUser: User | null = null;
 
   // If the input user's ID is equal to a constant `NEW_USER_ID`,
   // attempt to sign up a new user using the `supabase.auth.signUp` method
   if (input.id === NEW_USER_ID) {
     try {
-      const result = await supabase.auth.signUp(
-        {
-          email: input.email,
-          password: input.password,
-        },
-        {
+      const result = await supabase.auth.signUp({
+        email: input.email,
+        password: input.password,
+        options: {
           data: {
             username: input.username,
             state: '',
             DOB: new Date(),
           },
         },
-      );
+      });
       // If user signup was successful, create a new user record in the prisma database
-      const user = result.user;
+      const user = result.data.user;
       if (!user) {
-        logger.error('There was an error adding user.', result.error);
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message:
@@ -79,17 +74,15 @@ export const innerFn = async ({ input }: { input: EditFormInputs }) => {
       data: {
         status: input.status ? UserStatus.ACTIVE : UserStatus.INACTIVE,
         phone: Number(input.phone),
+        type: input.type,
       },
     });
   }
   // If the input user type is AGENT, create or update an agent record in the prisma database
   if (input.type === UserType.AGENT) {
-    const subAdminId =
-      input.subAdminId && input.subAdminId !== 'unassigned'
-        ? input.subAdminId
-        : null;
+    const subAdminId = null;
 
-    await prisma.agent.upsert({
+    const agent = await prisma.agent.upsert({
       where: {
         userId: prismaUser.id,
       },
@@ -102,6 +95,34 @@ export const innerFn = async ({ input }: { input: EditFormInputs }) => {
         subAdminId,
       },
     });
+
+    // Delete all existing agent sub-admin records for the agent
+    await prisma.agentSubAdmin.deleteMany({
+      where: {
+        agentId: agent.id,
+      },
+    });
+
+    if (agent && Array.isArray(input.subAdminIds)) {
+      // Populate agent sub-admin records for the agent
+      await prisma.$transaction(
+        input.subAdminIds.map((subAdminId) =>
+          prisma.agentSubAdmin.upsert({
+            where: {
+              agentId_subAdminId: {
+                agentId: agent.id,
+                subAdminId,
+              },
+            },
+            create: {
+              agentId: agent.id,
+              subAdminId,
+            },
+            update: {},
+          }),
+        ),
+      );
+    }
   }
 
   // Return the created or updated prisma user object

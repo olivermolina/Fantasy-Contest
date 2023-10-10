@@ -367,15 +367,13 @@ exports[`BalanceSummaryTable should render correctly 1`] = `
                 <span
                   class="text-lg font-bold mr-5"
                 >
-                  Total Active Players:
-                   
+                  Total Active Players: 
                   0
                 </span>
                 <span
                   class="text-lg font-bold"
                 >
-                  Total Inactive Players:
-                   
+                  Total Inactive Players: 
                   0
                 </span>
               </td>

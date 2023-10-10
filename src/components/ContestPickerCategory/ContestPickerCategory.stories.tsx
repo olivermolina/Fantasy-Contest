@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import ContestPickerCategory from './ContestPickerCategory';
+import { Prisma } from '@prisma/client';
 
 export default {
   title: 'Lockspread/ContestPickerCategory',
@@ -24,6 +25,10 @@ Default.args = {
     allInPayoutMultiplier: 3,
     primaryInsuredPayoutMultiplier: 2,
     secondaryInsuredPayoutMultiplier: 0.5,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: '',
   },
   isSelected: false,
 };
@@ -36,6 +41,10 @@ Selected.args = {
     allInPayoutMultiplier: 5,
     primaryInsuredPayoutMultiplier: 2.5,
     secondaryInsuredPayoutMultiplier: 1.25,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: '',
   },
   isSelected: true,
 };

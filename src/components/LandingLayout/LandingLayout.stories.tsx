@@ -4,6 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import LandingLayout from '.';
 import Content from '~/components/LandingLayout/Content';
 import { mockCards } from './__mocks__/mockCards';
+import { mockBanner } from '~/components/RewardCard/__mocks__/mockBanner';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -46,16 +47,11 @@ Main.args = {
     <Content
       cards={mockCards}
       explainers={explainers}
-      banners={[
-        {
-          id: 'default',
-          text: 'LockSpread will match your first deposit up to $50!',
-          priority: 1,
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      ]}
+      banners={[mockBanner]}
       isLoading={false}
+      contentIsLoading={false}
+      heading1={'Play More or Less'}
+      heading2={'Win Cash Prizes!'}
     />
   ),
 };

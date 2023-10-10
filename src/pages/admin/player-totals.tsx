@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import PickDatePickerRange from '~/components/Picks/PickDatePickerRange';
 import { DataGrid } from '@mui/x-data-grid';
 import AdminLayoutContainer from '~/containers/AdminLayoutContainer/AdminLayoutContainer';
+import { AmountCellRender } from '~/pages/admin/user-performance-by-sport';
 
 export default function AdminPlayerTotalsPage() {
   const router = useRouter();
@@ -33,10 +34,10 @@ export default function AdminPlayerTotalsPage() {
   );
   return (
     <AdminLayoutContainer>
-      <div style={{ height: 500, width: '100%' }}>
+      <div className={'w-full h-[75vh]'}>
         <DataGrid
-          components={{
-            Toolbar: () => {
+          slots={{
+            toolbar: () => {
               return (
                 <PickDatePickerRange
                   setDateRangeValue={({ startDate, endDate }) => {
@@ -58,19 +59,57 @@ export default function AdminPlayerTotalsPage() {
           rows={data || []}
           getRowId={(row) => row.player}
           columns={[
-            { field: 'player', flex: 1, headerName: 'Player' },
-            { field: 'lastWager', flex: 1, headerName: 'Last wager' },
+            { field: 'name', flex: 2, headerName: 'Name' },
+            { field: 'player', flex: 1, headerName: 'Username' },
+            { field: 'lastWager', flex: 1, headerName: 'Last Entry Amount' },
             { field: 'openBets', flex: 1, headerName: 'Open bets' },
             {
               field: 'gradedBetsAmount',
               flex: 1,
               headerName: 'Graded bets amount',
             },
-            { field: 'win', flex: 1, headerName: 'Win' },
-            { field: 'loss', flex: 1, headerName: 'Loss' },
-            { field: 'net', flex: 1, headerName: 'Net' },
-            { field: 'currency', flex: 1, headerName: 'Currency' },
-            { field: 'currentBalance', flex: 1, headerName: 'Current balance' },
+            {
+              field: 'win',
+              flex: 1,
+              headerName: 'Total Wins',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
+            {
+              field: 'loss',
+              flex: 1,
+              headerName: 'Total Losses',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
+            {
+              field: 'net',
+              flex: 1,
+              headerName: 'Net Income',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
+            {
+              field: 'deposits',
+              flex: 1,
+              headerName: 'Total Deposits',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
+            {
+              field: 'withdrawals',
+              flex: 1,
+              headerName: 'Total Withdrawals',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
+            {
+              field: 'currentBalance',
+              flex: 1,
+              headerName: 'Total balance',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
+            {
+              field: 'amountAvailableToWithdraw',
+              flex: 1,
+              headerName: 'Amount Available to Withdraw',
+              renderCell: (params) => <AmountCellRender value={params.value} />,
+            },
           ]}
         />
       </div>

@@ -1,7 +1,8 @@
 import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import * as yup from '~/utils/yup';
 import { getAgentByReferralCode } from '~/server/routers/user/getAgentByReferralCode';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { t } from '~/server/trpc';
 
 const checkReferral = t.procedure
   .input(
@@ -15,7 +16,7 @@ const checkReferral = t.procedure
     if (!user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Referral user not found',
+        message: CustomErrorMessages.REFERRAL_USER_NOT_FOUND,
       });
     }
     return user;

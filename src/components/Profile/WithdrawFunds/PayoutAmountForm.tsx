@@ -9,7 +9,7 @@ import * as Yup from 'yup';
 import { ReactComponent } from '~/components/Icons/Icons';
 import { showDollarPrefix } from '~/utils/showDollarPrefix';
 import { UserTotalBalanceInterface } from '~/server/routers/user/userTotalBalance/getUserTotalBalance';
-import paypal from '~/assets/icons/paypal.svg';
+// import paypal from '~/assets/icons/paypal.svg';
 import bank from '~/assets/icons/bank.svg';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
@@ -20,12 +20,12 @@ const PAYOUT_METHODS = [
     type: PaymentMethodType.ACH,
     label: 'Bank Transfer',
   },
-  {
-    key: PaymentMethodType.Paypal,
-    image: paypal,
-    type: PaymentMethodType.Paypal,
-    label: 'Paypal',
-  },
+  // {
+  //   key: PaymentMethodType.Paypal,
+  //   image: paypal,
+  //   type: PaymentMethodType.Paypal,
+  //   label: 'Paypal',
+  // },
 ];
 
 export type PayoutAmountInputs = {

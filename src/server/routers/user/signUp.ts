@@ -8,6 +8,9 @@ import { setAuthResponse } from './setAuthResponse';
 import { autoJoinDefaultContest } from '~/server/routers/user/autoJoinDefaultContest';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 import { getAgentByReferralCode } from '~/server/routers/user/getAgentByReferralCode';
+import { AppSettingName } from '@prisma/client';
+import { addUserFreeEntry } from '~/server/routers/user/addUserFreeEntry';
+import { addSendGridContacts } from '~/lib/twilio/SendGrid';
 
 const signUp = t.procedure
   .input(
@@ -31,20 +34,18 @@ const signUp = t.procedure
   .mutation(async ({ input, ctx }) => {
     let uid: string | undefined;
     try {
-      const result = await supabase.auth.signUp(
-        {
-          email: input.email,
-          password: input.password,
-        },
-        {
+      const result = await supabase.auth.signUp({
+        email: input.email,
+        password: input.password,
+        options: {
           data: {
             state: input.state,
             DOB: input.DOB,
             username: input.username,
           },
         },
-      );
-      const user = result.user;
+      });
+      const user = result.data.user;
       if (!user) {
         logger.error('There was an error signing up.', result.error);
         throw new TRPCError({
@@ -55,13 +56,13 @@ const signUp = t.procedure
               : CustomErrorMessages.SIGNUP_ERROR,
         });
       }
-      const session = result.session;
+      const session = result.data.session;
       // This will return null if Supabase "email confirmations" are turned on!
       if (!session) {
         logger.error('There was an error getting user session.', result.error);
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'No session.',
+          message: CustomErrorMessages.SESSION_NOT_FOUND,
         });
       }
       uid = user.id;
@@ -69,14 +70,14 @@ const signUp = t.procedure
       if (!phone) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Invalid phone number.',
+          message: CustomErrorMessages.SIGNUP_INVALID_PHONE,
         });
       }
       const numbers = phone[0];
       if (!numbers) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'Invalid phone number.',
+          message: CustomErrorMessages.SIGNUP_INVALID_PHONE,
         });
       }
 
@@ -86,7 +87,7 @@ const signUp = t.procedure
         agentId = agent?.id;
       }
 
-      await prisma.user.upsert({
+      const prismaUser = await prisma.user.upsert({
         where: {
           id: uid,
         },
@@ -114,10 +115,23 @@ const signUp = t.procedure
       // Auto join more or less contest
       await autoJoinDefaultContest(uid);
 
+      const signupFreeEntryAppSetting = await prisma.appSettings.findFirst({
+        where: {
+          name: AppSettingName.SIGNUP_FREE_ENTRY,
+        },
+      });
+
+      if (Number(signupFreeEntryAppSetting?.value) === 1) {
+        // Add free entry to user
+        await addUserFreeEntry(uid);
+      }
+
+      await addSendGridContacts([prismaUser]);
+
       setAuthResponse(
         ctx,
-        result.session?.access_token,
-        result.session?.refresh_token,
+        result.data.session?.access_token,
+        result.data.session?.refresh_token,
       );
     } catch (error) {
       if (error instanceof TRPCError) throw error;

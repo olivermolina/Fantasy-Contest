@@ -7,6 +7,12 @@ import { startCase } from 'lodash';
 import { ActionType } from '~/constants/ActionType';
 import logger from '~/utils/logger';
 import HttpsProxyAgent from 'https-proxy-agent';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('America/New_York');
 
 enum GIDX_ROUTES {
   DIRECT_CASHIER = 'DirectCashier',
@@ -428,7 +434,9 @@ export default class GIDX {
         MerchantCustomerID: id,
         FirstName: userDetails.firstname,
         LastName: userDetails.lastname,
-        DateOfBirth: dayjs(userDetails.dob).format('MM/DD/YYYY'),
+        DateOfBirth: dayjs
+          .tz(userDetails.dob, 'America/New_York')
+          .format('MM/DD/YYYY'),
         EmailAddress: email,
         AddressLine1: userDetails.address1,
         AddressLine2: userDetails.address2,

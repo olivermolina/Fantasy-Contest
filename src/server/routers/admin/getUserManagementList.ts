@@ -2,6 +2,7 @@ import { adminProcedure } from '~/server/routers/admin/middleware/isAdmin';
 import prisma from '~/server/prisma';
 import { Prisma, UserStatus, UserType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const getManageUserList = adminProcedure.query(async ({ ctx }) => {
   const { type, id } = ctx.user;
@@ -16,10 +17,14 @@ const getManageUserList = adminProcedure.query(async ({ ctx }) => {
       where.type = UserType.SUB_ADMIN;
       where.id = id;
       break;
+    case UserType.AGENT:
+      where.type = UserType.AGENT;
+      where.id = id;
+      break;
     default:
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'User does not have role permissions for this function.',
+        message: CustomErrorMessages.UNAUTHORIZED_ROLE,
       });
   }
 
@@ -27,11 +32,26 @@ const getManageUserList = adminProcedure.query(async ({ ctx }) => {
     prisma.user.findMany({
       where,
       include: {
-        SubAdminAgents: {
+        AgentSubAdmins: {
           include: {
-            User: true,
+            Agent: {
+              include: {
+                User: {
+                  include: {
+                    UserAsAgents: true,
+                  },
+                },
+                AgentSubAdmins: true,
+              },
+            },
           },
+          ...(type === UserType.SUB_ADMIN && {
+            where: {
+              subAdminId: id,
+            },
+          }),
         },
+        UserAsAgents: true,
       },
     }),
     prisma.user.findMany({
@@ -39,36 +59,67 @@ const getManageUserList = adminProcedure.query(async ({ ctx }) => {
         type: UserType.AGENT,
         UserAsAgents: {
           every: {
-            subAdminId: null,
+            AgentSubAdmins: {
+              none: {},
+            },
           },
         },
       },
       include: {
-        SubAdminAgents: {
-          include: {
-            User: true,
-          },
-        },
+        UserAsAgents: true,
       },
     }),
   ]);
 
-  return [
-    {
+  if (type === UserType.AGENT) {
+    return [
+      {
+        subAdmin: {
+          id: 'unassigned',
+          username: 'Unassigned',
+          status: UserStatus.INACTIVE,
+          type: UserType.SUB_ADMIN,
+          email: '',
+        },
+        agents: subAdminUsers.map((row) => ({
+          ...row,
+          subAdminIds: [],
+        })),
+      },
+    ];
+  }
+
+  const response = subAdminUsers.map((user) => ({
+    subAdmin: {
+      id: user.id,
+      username: user.username,
+      status: user.status,
+      type: user.type,
+      email: user.email,
+    },
+    agents: user.AgentSubAdmins?.map((agentSubAdmin) => ({
+      ...agentSubAdmin.Agent.User,
+      subAdminIds: agentSubAdmin.Agent.AgentSubAdmins.map(
+        (row) => row.subAdminId,
+      ),
+    })),
+  }));
+
+  if (type === UserType.ADMIN) {
+    response.unshift({
       subAdmin: {
         id: 'unassigned',
         username: 'Unassigned',
         status: UserStatus.INACTIVE,
+        type: UserType.SUB_ADMIN,
+        email: '',
       },
-      agents: unAssignedAgentUsers,
-    },
-    ...subAdminUsers.map((user) => ({
-      subAdmin: user,
-      agents: user.SubAdminAgents?.map((agent) => ({
-        ...agent.User,
+      agents: unAssignedAgentUsers.map((row) => ({
+        ...row,
+        subAdminIds: [],
       })),
-    })),
-  ];
+    });
+  }
+  return response;
 });
-
 export default getManageUserList;

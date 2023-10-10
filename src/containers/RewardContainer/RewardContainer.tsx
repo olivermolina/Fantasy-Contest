@@ -3,7 +3,7 @@ import { trpc } from '~/utils/trpc';
 import { Skeleton } from '@mui/material';
 import RewardCard from '~/components/RewardCard';
 import { fetchAppSettings } from '~/state/appSettings';
-import { useAppDispatch, useAppSelector } from '~/state/hooks';
+import { useAppDispatch } from '~/state/hooks';
 import { UrlPaths } from '~/constants/UrlPaths';
 import { Banner } from '@prisma/client';
 import { useRouter } from 'next/router';
@@ -12,7 +12,6 @@ const RewardContainer = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { data, isLoading } = trpc.appSettings.banners.useQuery();
-  const appSettings = useAppSelector((state) => state.appSettings);
 
   useEffect(() => {
     dispatch(fetchAppSettings());
@@ -25,6 +24,9 @@ const RewardContainer = () => {
         break;
       case 2:
         await router.push(UrlPaths.ProfileReferral);
+        break;
+      case 3:
+        await router.push(UrlPaths.ProfileWithdrawFunds);
         break;
     }
   };
@@ -44,7 +46,6 @@ const RewardContainer = () => {
           <RewardCard
             key={banner.id}
             banner={banner}
-            appSettings={appSettings}
             handleClick={() => handleClick(banner)}
           />
         ))}

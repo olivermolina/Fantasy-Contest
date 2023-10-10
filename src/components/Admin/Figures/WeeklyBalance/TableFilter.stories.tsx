@@ -27,4 +27,6 @@ WeeklyBalanceTableFilter.args = {
   setGlobalFilter: () => alert('set global filter'),
   viewInactive: false,
   setViewInactive: () => alert('view inactive'),
+  includeEntryFee: false,
+  setIncludeEntryFeeOnClick: () => alert('include entry fee'),
 };

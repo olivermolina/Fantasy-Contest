@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { trpc } from '~/utils/trpc';
-import { ContestCategory } from '@prisma/client';
 import { updateAllBetsContestCategory } from '~/state/bets';
 import { useAppDispatch, useAppSelector } from '~/state/hooks';
-import { setContestCategories, setSelectedContestCategory } from '~/state/ui';
+import {
+  ContestCategoryWithBonusCreditLimit,
+  setContestCategories,
+  setSelectedContestCategory,
+} from '~/state/ui';
 
 const ContestPickerCategoryContainer: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -11,7 +14,9 @@ const ContestPickerCategoryContainer: React.FC = () => {
     (state) => state.ui.selectedContestCategory,
   );
   const { data } = trpc.contest.contestCategoryList.useQuery();
-  const handleChangeCategory = (category: ContestCategory) => {
+  const handleChangeCategory = (
+    category: ContestCategoryWithBonusCreditLimit,
+  ) => {
     dispatch(setSelectedContestCategory(category));
     dispatch(updateAllBetsContestCategory(category));
   };
@@ -19,7 +24,7 @@ const ContestPickerCategoryContainer: React.FC = () => {
   useEffect(() => {
     if (data) dispatch(setContestCategories(data));
     if (!contestCategory && data) {
-      handleChangeCategory(data[0] as ContestCategory);
+      handleChangeCategory(data[0] as ContestCategoryWithBonusCreditLimit);
     }
   }, [contestCategory, data]);
 

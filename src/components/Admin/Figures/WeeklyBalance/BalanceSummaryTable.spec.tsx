@@ -8,6 +8,8 @@ describe('BalanceSummaryTable', () => {
     const props = {
       data: [],
       viewInactive: false,
+      activeCount: 0,
+      inactiveCount: 0,
     };
 
     const { container } = render(<BalanceSummaryTable {...props} />);

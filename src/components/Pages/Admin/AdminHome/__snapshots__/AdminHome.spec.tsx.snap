@@ -3,7 +3,7 @@
 exports[`AdminHome should render 1`] = `
 <div>
   <div
-    class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row css-uzx11o-MuiGrid2-root"
+    class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row css-sftz05-MuiGrid2-root"
   />
 </div>
 `;

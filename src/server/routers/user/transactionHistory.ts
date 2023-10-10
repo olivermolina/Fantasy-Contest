@@ -1,14 +1,17 @@
-import { TRPCError } from '@trpc/server';
-import { t } from '~/server/trpc';
 import { prisma } from '~/server/prisma';
 import { TransactionType } from '@prisma/client';
 import { ActionType } from '~/constants/ActionType';
-import * as yup from '~/utils/yup';
 import _ from 'lodash';
 import { PaymentStatusCode } from '~/constants/PaymentStatusCode';
+import z from 'zod';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
+import { USATimeZone } from '~/constants/USATimeZone';
+import dayjs from 'dayjs';
 
 export interface TransactionHistoryInterface {
   id: string;
+  userId: string;
+  username: string;
   transactionDate: Date | string;
   type: TransactionType | string;
   details: string;
@@ -27,6 +30,8 @@ const mapActionTypeToDescription = (action: ActionType) => {
       return 'Deposit';
     case ActionType.ADD_FREE_CREDIT:
       return 'Free credit';
+    case ActionType.REFERRAL_FREE_CREDIT:
+      return 'Referral Bonus Credit';
     case ActionType.TOKEN_CONTEST_WIN:
     case ActionType.CASH_CONTEST_WIN:
       return 'Win';
@@ -37,52 +42,40 @@ const mapActionTypeToDescription = (action: ActionType) => {
   }
 };
 
-const transactionHistory = t.procedure
+const transactionHistory = isAuthenticated
   .input(
-    yup.object({
-      limit: yup.number().required(),
-      cursor: yup.string(),
+    z.object({
+      userId: z.string().optional().nullable(),
+      from: z.string(),
+      to: z.string(),
+      actionTypes: z.array(z.nativeEnum(ActionType)).optional().nullable(),
     }),
   )
   .query(async ({ ctx, input }) => {
-    if (!ctx.session) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-      });
-    }
+    const userId = input.userId || ctx.session.user?.id;
+    const timezone = USATimeZone['America/New_York'];
+    const startDate = dayjs.tz(input.from, timezone).toDate();
+    const endDate = dayjs.tz(input.to, timezone).toDate();
+    // Add 1 day to the end date to include all bets for the end date
+    endDate.setDate(endDate.getDate() + 1);
 
-    const userId = ctx.session.user?.id;
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-    if (!user) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
-      });
-    }
-
-    const limit = input.limit ?? 50;
-    const { cursor } = input;
-
-    const totalRowCount = await prisma.transaction.count({
-      where: {
-        userId,
-        NOT: {
-          TransactionStatuses: {
-            none: {},
-          },
-        },
-      },
-    });
+    const transactionDates = {
+      gte: startDate,
+      lte: endDate,
+    };
 
     const transactions = await prisma.transaction.findMany({
-      take: limit + 1,
-      cursor: cursor ? { id: cursor } : undefined,
       where: {
-        userId,
+        created_at: transactionDates,
+        ...(input.actionTypes
+          ? {
+              actionType: {
+                in: input.actionTypes,
+              },
+            }
+          : {
+              userId,
+            }),
         NOT: {
           TransactionStatuses: {
             none: {},
@@ -94,17 +87,14 @@ const transactionHistory = t.procedure
       },
       include: {
         TransactionStatuses: true,
+        User: true,
       },
     });
 
-    let nextCursor: typeof cursor | undefined = undefined;
-    if (transactions.length > limit) {
-      const nextItem = transactions.pop();
-      nextCursor = nextItem?.id;
-    }
-
-    const transactionData = transactions.map((transaction) => ({
+    return transactions.map((transaction) => ({
       id: transaction.id,
+      userId: transaction.userId,
+      username: transaction.User.username,
       transactionDate: transaction.created_at,
       type: transaction.TransactionStatuses[0]?.transactionType,
       details: mapActionTypeToDescription(transaction.actionType as ActionType),
@@ -117,14 +107,6 @@ const transactionHistory = t.procedure
           )
         ],
     })) as TransactionHistoryInterface[];
-
-    return {
-      transactions: transactionData,
-      nextCursor,
-      meta: {
-        totalRowCount,
-      },
-    };
   });
 
 export default transactionHistory;

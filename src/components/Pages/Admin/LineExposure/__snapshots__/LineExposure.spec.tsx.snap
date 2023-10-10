@@ -15,7 +15,7 @@ Object {
             class="MuiFormControl-root MuiTextField-root css-10qkx7n-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="league"
               id="league-label"
@@ -38,6 +38,7 @@ Object {
               </div>
               <input
                 aria-hidden="true"
+                aria-invalid="false"
                 class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                 tabindex="-1"
                 value="NBA"
@@ -67,100 +68,90 @@ Object {
               </fieldset>
             </div>
           </div>
-          <form>
+          <div
+            class="flex w-full justify-start gap-2"
+          >
             <div
-              class="css-1m4faer-MuiStack-root"
+              class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
             >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
+                data-shrink="true"
+                for=":r2:"
+                id=":r2:-label"
+              >
+                Start Date
+              </label>
               <div
-                class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly MuiInputBase-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
-                  data-shrink="true"
-                  for=":r1:"
-                  id=":r1:-label"
-                >
-                  Start Date
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
-                >
-                  <input
-                    aria-invalid="false"
-                    aria-label="Choose date, selected date is Dec 25, 2020"
-                    aria-readonly="true"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
-                    id=":r1:"
-                    name="startDate"
-                    readonly=""
-                    type="text"
-                    value="12/25/2020"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="css-14lo706"
-                    >
-                      <span>
-                        Start Date
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-              <div
-                class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
-                  data-shrink="true"
-                  for=":r3:"
-                  id=":r3:-label"
-                >
-                  End Date
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
-                >
-                  <input
-                    aria-invalid="false"
-                    aria-label="Choose date, selected date is Jan 1, 2021"
-                    aria-readonly="true"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
-                    id=":r3:"
-                    name="endDate"
-                    readonly=""
-                    type="text"
-                    value="01/01/2021"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="css-14lo706"
-                    >
-                      <span>
-                        End Date
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-              <button
-                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
-                tabindex="0"
-                type="submit"
-              >
-                Load
-                <span
-                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                <input
+                  aria-invalid="false"
+                  aria-label="Choose date, selected date is Dec 25, 2020"
+                  autocomplete="off"
+                  class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly MuiInputBase-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
+                  id=":r2:"
+                  inputmode="text"
+                  placeholder="MM/DD/YYYY"
+                  readonly=""
+                  type="text"
+                  value="12/25/2020"
                 />
-              </button>
+                <fieldset
+                  aria-hidden="true"
+                  class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="css-14lo706"
+                  >
+                    <span>
+                      Start Date
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
             </div>
-          </form>
+            <div
+              class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
+                data-shrink="true"
+                for=":r5:"
+                id=":r5:-label"
+              >
+                End Date
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly MuiInputBase-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
+              >
+                <input
+                  aria-invalid="false"
+                  aria-label="Choose date, selected date is Jan 1, 2021"
+                  autocomplete="off"
+                  class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly MuiInputBase-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
+                  id=":r5:"
+                  inputmode="text"
+                  placeholder="MM/DD/YYYY"
+                  readonly=""
+                  type="text"
+                  value="01/01/2021"
+                />
+                <fieldset
+                  aria-hidden="true"
+                  class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="css-14lo706"
+                  >
+                    <span>
+                      End Date
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
           class="MuiBox-root css-8atqhb"
@@ -671,7 +662,7 @@ Object {
                       class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                     >
                       <div
-                        class="css-7owdng-MuiStack-root"
+                        class="flex"
                       >
                         <div
                           class="MuiBox-root css-182y0me"
@@ -732,7 +723,7 @@ Object {
                       class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                     >
                       <button
-                        class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-18s6rku-MuiTypography-root-MuiLink-root"
+                        class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-1uxlxyf-MuiTypography-root-MuiLink-root"
                       >
                         <span>
                           4
@@ -746,7 +737,7 @@ Object {
                       class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                     >
                       <button
-                        class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-18s6rku-MuiTypography-root-MuiLink-root"
+                        class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-1uxlxyf-MuiTypography-root-MuiLink-root"
                       >
                         <span>
                           2
@@ -786,7 +777,7 @@ Object {
           class="MuiFormControl-root MuiTextField-root css-10qkx7n-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="league"
             id="league-label"
@@ -809,6 +800,7 @@ Object {
             </div>
             <input
               aria-hidden="true"
+              aria-invalid="false"
               class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
               tabindex="-1"
               value="NBA"
@@ -838,100 +830,90 @@ Object {
             </fieldset>
           </div>
         </div>
-        <form>
+        <div
+          class="flex w-full justify-start gap-2"
+        >
           <div
-            class="css-1m4faer-MuiStack-root"
+            class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
           >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="true"
+              for=":r2:"
+              id=":r2:-label"
+            >
+              Start Date
+            </label>
             <div
-              class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly MuiInputBase-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
-                data-shrink="true"
-                for=":r1:"
-                id=":r1:-label"
-              >
-                Start Date
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
-              >
-                <input
-                  aria-invalid="false"
-                  aria-label="Choose date, selected date is Dec 25, 2020"
-                  aria-readonly="true"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
-                  id=":r1:"
-                  name="startDate"
-                  readonly=""
-                  type="text"
-                  value="12/25/2020"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="css-14lo706"
-                  >
-                    <span>
-                      Start Date
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-            <div
-              class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
-                data-shrink="true"
-                for=":r3:"
-                id=":r3:-label"
-              >
-                End Date
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
-              >
-                <input
-                  aria-invalid="false"
-                  aria-label="Choose date, selected date is Jan 1, 2021"
-                  aria-readonly="true"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
-                  id=":r3:"
-                  name="endDate"
-                  readonly=""
-                  type="text"
-                  value="01/01/2021"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="css-14lo706"
-                  >
-                    <span>
-                      End Date
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
-              tabindex="0"
-              type="submit"
-            >
-              Load
-              <span
-                class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+              <input
+                aria-invalid="false"
+                aria-label="Choose date, selected date is Dec 25, 2020"
+                autocomplete="off"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly MuiInputBase-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
+                id=":r2:"
+                inputmode="text"
+                placeholder="MM/DD/YYYY"
+                readonly=""
+                type="text"
+                value="12/25/2020"
               />
-            </button>
+              <fieldset
+                aria-hidden="true"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="css-14lo706"
+                >
+                  <span>
+                    Start Date
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
           </div>
-        </form>
+          <div
+            class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
+              data-shrink="true"
+              for=":r5:"
+              id=":r5:-label"
+            >
+              End Date
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall Mui-readOnly MuiInputBase-readOnly css-md26zr-MuiInputBase-root-MuiOutlinedInput-root"
+            >
+              <input
+                aria-invalid="false"
+                aria-label="Choose date, selected date is Jan 1, 2021"
+                autocomplete="off"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall Mui-readOnly MuiInputBase-readOnly css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"
+                id=":r5:"
+                inputmode="text"
+                placeholder="MM/DD/YYYY"
+                readonly=""
+                type="text"
+                value="01/01/2021"
+              />
+              <fieldset
+                aria-hidden="true"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="css-14lo706"
+                >
+                  <span>
+                    End Date
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+          </div>
+        </div>
       </div>
       <div
         class="MuiBox-root css-8atqhb"
@@ -1442,7 +1424,7 @@ Object {
                     class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                   >
                     <div
-                      class="css-7owdng-MuiStack-root"
+                      class="flex"
                     >
                       <div
                         class="MuiBox-root css-182y0me"
@@ -1503,7 +1485,7 @@ Object {
                     class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                   >
                     <button
-                      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-18s6rku-MuiTypography-root-MuiLink-root"
+                      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-1uxlxyf-MuiTypography-root-MuiLink-root"
                     >
                       <span>
                         4
@@ -1517,7 +1499,7 @@ Object {
                     class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                   >
                     <button
-                      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-18s6rku-MuiTypography-root-MuiLink-root"
+                      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-1uxlxyf-MuiTypography-root-MuiLink-root"
                     >
                       <span>
                         2

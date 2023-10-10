@@ -10,12 +10,6 @@ type Inputs = {
   depositAmount: number;
 };
 
-const InputValidationSchema = Yup.object().shape({
-  depositAmount: Yup.number()
-    .typeError('Please provide deposit amount')
-    .min(10, 'Minimum deposit is $10'),
-});
-
 const styles = {
   defaultClasses:
     'block pl-11 pr-2 appearance-none font-bold text-lg w-full h-full rounded-md bg-[#1A487F] focus:outline-[#2F5F98]',
@@ -29,6 +23,7 @@ interface DepositInputAmountProps {
   handleNext: () => void;
   isFirstDeposit: boolean | undefined;
   depositAmount: number;
+  minDepositAmount: number;
   maxMatchDeposit: number;
   depositAmountOptions: number[];
   /**
@@ -54,6 +49,7 @@ const DepositInputAmount = (props: DepositInputAmountProps) => {
     handleNext,
     isFirstDeposit,
     depositAmount,
+    minDepositAmount,
     maxMatchDeposit,
     depositAmountOptions,
     reloadBonusAmount,
@@ -69,7 +65,14 @@ const DepositInputAmount = (props: DepositInputAmountProps) => {
     trigger,
     reset,
   } = useForm<Inputs>({
-    resolver: yupResolver(InputValidationSchema),
+    mode: 'onChange',
+    resolver: yupResolver(
+      Yup.object().shape({
+        depositAmount: Yup.number()
+          .typeError('Please provide deposit amount')
+          .min(minDepositAmount, `Minimum deposit is $${minDepositAmount}`),
+      }),
+    ),
   });
 
   const [selected, setSelected] = useState<number | null>(null);
@@ -130,7 +133,7 @@ const DepositInputAmount = (props: DepositInputAmountProps) => {
                       </>
                     )}
 
-                    {reloadBonusAmount > 0 && (
+                    {!isFirstDeposit && reloadBonusAmount > 0 && (
                       <>
                         <p>
                           +$

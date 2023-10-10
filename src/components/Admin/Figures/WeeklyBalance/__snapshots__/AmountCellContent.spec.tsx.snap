@@ -3,7 +3,7 @@
 exports[`AmountCellContent should render correctly 1`] = `
 <div>
   <button
-    class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-1akz8jj-MuiTypography-root-MuiLink-root"
+    class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover MuiLink-button css-1739kdn-MuiTypography-root-MuiLink-root"
   >
     <span>
       110.00

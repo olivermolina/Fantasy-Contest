@@ -5,16 +5,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { League } from '@prisma/client';
 
 interface Props {
   freeSquareId?: string;
-  handleDelete: (freeSquareId: string) => void;
+  league: League;
+  handleDelete: (freeSquareId: string, league: League) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
 export default function DeleteConfirmationDialog(props: Props) {
-  const { handleDelete, open, setOpen, freeSquareId } = props;
+  const { handleDelete, open, setOpen, freeSquareId, league } = props;
 
   const closeDialog = () => {
     setOpen(false);
@@ -23,7 +25,7 @@ export default function DeleteConfirmationDialog(props: Props) {
   const confirmDelete = () => {
     closeDialog();
     if (freeSquareId) {
-      handleDelete(freeSquareId);
+      handleDelete(freeSquareId, league);
     }
   };
 

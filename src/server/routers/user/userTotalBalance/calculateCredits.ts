@@ -20,7 +20,7 @@ const calculateCredits = (
   const transactionBonusAmount = Number(transaction.amountBonus);
   let newTotalCreditAmount = previousTotalCreditAmount;
 
-  // Deposit / Cancelled / Stake won transaction
+  // Deposit / Cancelled / Stake won transaction / Free Credits
   if (
     transactionStatus.transactionType === TransactionType.CREDIT &&
     transactionStatus.statusCode === PaymentStatusCode.COMPLETE
@@ -32,9 +32,13 @@ const calculateCredits = (
         break;
       case ActionType.CASH_CONTEST_CANCELLED:
         //Increment credit amount with refunded amount
-        newTotalCreditAmount = previousTotalCreditAmount + transactionAmount;
+        newTotalCreditAmount =
+          previousTotalCreditAmount +
+          transactionAmount +
+          transactionBonusAmount;
         break;
       case ActionType.WITHDRAW_BONUS_CREDIT:
+      case ActionType.REFERRAL_FREE_CREDIT:
       case ActionType.ADD_FREE_CREDIT:
         //Increment credit amount with free credits and total amount
         newTotalCreditAmount =

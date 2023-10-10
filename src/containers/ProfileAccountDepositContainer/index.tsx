@@ -3,7 +3,7 @@ import visa from '~/assets/visa-dark.svg';
 import mastercard from '~/assets/mastercard.svg';
 import amex from '~/assets/amex.svg';
 import discover from '~/assets/discover.svg';
-import paypal from '~/assets/paypal.svg';
+// import paypal from '~/assets/paypal.svg';
 import ach from '~/assets/ach.svg';
 import { CardTypes } from '~/constants/CardTypes';
 import {
@@ -44,6 +44,7 @@ import { setOpenLocationDialog } from '~/state/profile';
 import { useDeviceGPS } from '~/hooks/useDeviceGPS';
 import { ReloadBonusType } from '~/constants/ReloadBonusType';
 import { calculateReloadBonusAmount } from '~/utils/calculateReloadBonusAmount';
+import AchProcessingInfoDialog from '~/components/Profile/AccountDeposit/AchProcessingInfoDialog';
 
 export const PAYMENT_METHODS = [
   {
@@ -70,12 +71,12 @@ export const PAYMENT_METHODS = [
     object: 'object-cover',
     type: PaymentMethodType.CC,
   },
-  {
-    key: 'paypal',
-    image: paypal,
-    object: 'object-cover',
-    type: PaymentMethodType.Paypal,
-  },
+  // {
+  //   key: 'paypal',
+  //   image: paypal,
+  //   object: 'object-cover',
+  //   type: PaymentMethodType.Paypal,
+  // },
   {
     key: 'ach',
     image: ach,
@@ -106,6 +107,8 @@ const AccountDepositContainer = ({
     React.useState<boolean>(false);
   const [openDeclineDialog, setOpenDeclineDialog] =
     React.useState<boolean>(false);
+  const [achDialogOpen, setAchDialogOpen] = React.useState<boolean>(false);
+  const handleAchDialogClose = () => setAchDialogOpen(false);
 
   const [openVerifyDialog, setOpenVerifyDialog] =
     React.useState<boolean>(false);
@@ -146,6 +149,12 @@ const AccountDepositContainer = ({
     appSettings?.find(
       (appSetting) =>
         appSetting.name === AppSettingName.MAX_MATCH_DEPOSIT_AMOUNT,
+    )?.value || 0,
+  );
+
+  const minDepositAmount = Number(
+    appSettings?.find(
+      (appSetting) => appSetting.name === AppSettingName.MIN_DEPOSIT_AMOUNT,
     )?.value || 0,
   );
 
@@ -278,6 +287,9 @@ const AccountDepositContainer = ({
     newSelectedPaymentMethod?: PaymentMethodInterface,
   ) => {
     setSelectedPaymentMethod(newSelectedPaymentMethod);
+    if (newSelectedPaymentMethod?.type === PaymentMethodType.ACH) {
+      setAchDialogOpen(true);
+    }
   };
 
   const handleCancel = async () => {
@@ -414,6 +426,7 @@ const AccountDepositContainer = ({
         label: 'Input Deposit',
         content: (
           <DepositAmount
+            minDepositAmount={minDepositAmount}
             setDepositAmount={setDepositAmount}
             handleNext={handleNextDepositAmount}
             isFirstDeposit={isFirstDeposit}
@@ -473,6 +486,7 @@ const AccountDepositContainer = ({
       handleBack,
       savedPaymentMethodLoading,
       createMerchantTransactionDataLoading,
+      minDepositAmount,
     ],
   );
 
@@ -505,6 +519,11 @@ const AccountDepositContainer = ({
       <SessionExpiredDialog
         setOpen={setOpenSessionExpiredDialog}
         open={openSessionExpiredDialog}
+      />
+
+      <AchProcessingInfoDialog
+        open={achDialogOpen}
+        handleClose={handleAchDialogClose}
       />
     </div>
   );

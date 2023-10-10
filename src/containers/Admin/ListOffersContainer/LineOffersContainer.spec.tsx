@@ -13,6 +13,14 @@ jest.mock('~/utils/trpc', () => ({
         }),
       },
     },
+    admin: {
+      overrideOffer: {
+        useMutation: jest.fn().mockReturnValue({
+          isLoading: true,
+          data: [],
+        }),
+      },
+    },
   },
 }));
 describe('ListOffersContainer', () => {

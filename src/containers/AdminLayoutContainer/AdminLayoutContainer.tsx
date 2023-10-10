@@ -44,14 +44,26 @@ const AdminLayoutContainer = (props: React.PropsWithChildren) => {
       await logoutMutation.mutateAsync();
       await router.push('/');
     } else {
-      await router.push(path);
+      await router.push(
+        {
+          pathname: path,
+        },
+        undefined,
+        { scroll: true },
+      );
     }
   };
 
   return (
-    <AdminLayout router={router} onMenuItemClick={onMenuItemClick} user={data}>
-      {props.children}
-    </AdminLayout>
+    <>
+      <AdminLayout
+        router={router}
+        onMenuItemClick={onMenuItemClick}
+        user={data}
+      >
+        {props.children}
+      </AdminLayout>
+    </>
   );
 };
 

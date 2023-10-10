@@ -15,7 +15,7 @@ exports[`ManageAgentReferralCodes should render correctly 1`] = `
         class="flex flex-col gap-4"
       >
         <div
-          class="MuiAutocomplete-root MuiAutocomplete-fullWidth css-qm9mjt-MuiAutocomplete-root"
+          class="MuiAutocomplete-root MuiAutocomplete-fullWidth css-1kkal6p-MuiAutocomplete-root"
           name="user"
         >
           <div

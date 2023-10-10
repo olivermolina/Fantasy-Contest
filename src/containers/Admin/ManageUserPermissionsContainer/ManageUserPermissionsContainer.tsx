@@ -31,7 +31,7 @@ export const ManageUserPermissionsContainer = () => {
           ?.filter((user) => user.subAdmin)
           .map((user) => (
             <ManageUserPermissions
-              key={user.subAdmin.id}
+              key={user.subAdmin?.id}
               {...user}
               handleOpenManagePermission={handleOpenManagePermission}
               user={userDetails}

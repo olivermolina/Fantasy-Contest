@@ -1,12 +1,13 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import * as yup from '~/utils/yup';
 import prisma from '~/server/prisma';
-import { TransactionType } from '@prisma/client';
+import { TransactionType, UserType } from '@prisma/client';
 import { ActionType } from '~/constants/ActionType';
 import { createTransaction } from '~/server/routers/bets/createTransaction';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const addRemoveWithdrawable = t.procedure
+const addRemoveWithdrawable = isAuthenticated
   .input(
     yup.object({
       userId: yup.string().required(),
@@ -24,14 +25,14 @@ const addRemoveWithdrawable = t.procedure
     if (!user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 
-    if (!user.isAdmin) {
+    if (user.type !== UserType.ADMIN) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: `You don't have permission to add/remove amount available to withdraw.`,
+        message: CustomErrorMessages.PERMISSION_REQUIRED,
       });
     }
 

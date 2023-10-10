@@ -45,9 +45,9 @@ const ContactUs: FC<Props> = (props) => {
 
   return (
     <div className={'flex flex-col p-5 gap-4 '}>
-      <span className={'text-2xl lg:text-3xl font-bold'}>
+      <h1 className={'text-2xl lg:text-3xl font-bold'}>
         Reach out to us 24/7 with any Questions!
-      </span>
+      </h1>
       <div>
         <span className={'text-lg lg:text-xl font-semibold'}>
           We&lsquo;ll get back to you as soon as we can! You can reach us

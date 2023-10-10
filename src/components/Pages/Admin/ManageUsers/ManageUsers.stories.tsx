@@ -18,7 +18,7 @@ const Template: ComponentStory<typeof ManageUserComponent> = (args) => (
   <ManageUserComponent {...args} />
 );
 
-export const ManageUsers = Template.bind({});
+export const ManageUser = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 
-ManageUsers.args = { users: [] };
+ManageUser.args = { users: [] };

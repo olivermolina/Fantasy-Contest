@@ -20,11 +20,15 @@ export const autoJoinDefaultContest = async (userId: string) => {
 
     await prisma.wallets.create({
       data: {
-        balance: 1000,
+        balance: 0,
+        cashBalance: 0,
+        bonusCredits: 0,
+        amountAvailableToWithdraw: 0,
+        unPlayedAmount: 0,
         userId: userId,
         contestsId: moreOrLessContest.id,
-        created_by: '',
-        updated_by: '',
+        created_by: 'system',
+        updated_by: 'system',
       },
     });
   }

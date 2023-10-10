@@ -7,6 +7,7 @@ import {
   UserTotalBalanceInterface,
 } from '../getUserTotalBalance';
 import { generateUserTotalBalancesFromTransactions } from '../generateUserTotalBalancesFromTransactions';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 /**
  * This function gets the UserTotalBalance object
@@ -53,7 +54,7 @@ export const getUserTotalBalanceBatch = async (
   if (!users) {
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'User not found',
+      message: CustomErrorMessages.USER_NOT_FOUND,
     });
   }
   const userTotalBalances = await Promise.all(

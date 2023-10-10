@@ -54,6 +54,7 @@ export const manageUserMocks = [
     subAdminId: subAdminUsersMock[0]!.id,
     password: '',
     timezone: 'America/New_York',
+    subAdminIds: [],
   },
   {
     id: '1',
@@ -65,6 +66,7 @@ export const manageUserMocks = [
     subAdminId: '',
     password: '',
     timezone: 'America/New_York',
+    subAdminIds: [],
   },
   {
     id: '3',
@@ -76,6 +78,7 @@ export const manageUserMocks = [
     subAdminId: subAdminUsersMock[1]!.id,
     password: '',
     timezone: 'America/New_York',
+    subAdminIds: [],
   },
   {
     id: '4',
@@ -85,6 +88,7 @@ export const manageUserMocks = [
     type: UserType.AGENT,
     phone: '123456789',
     subAdminId: subAdminUsersMock[0]!.id,
+    subAdminIds: [],
     password: '',
     timezone: 'America/New_York',
   },
@@ -96,6 +100,7 @@ export const manageUserMocks = [
     type: UserType.AGENT,
     phone: '123456789',
     subAdminId: subAdminUsersMock[1]!.id,
+    subAdminIds: [],
     password: '',
     timezone: 'America/New_York',
   },
@@ -107,6 +112,7 @@ export const manageUserMocks = [
     type: UserType.AGENT,
     phone: '123456789',
     subAdminId: subAdminUsersMock[1]!.id,
+    subAdminIds: [],
     password: '',
     timezone: 'America/New_York',
   },
@@ -118,6 +124,7 @@ export const manageUserMocks = [
     type: UserType.AGENT,
     phone: '123456789',
     subAdminId: subAdminUsersMock[1]!.id,
+    subAdminIds: [],
     password: '',
     timezone: 'America/New_York',
   },
@@ -132,4 +139,5 @@ export const newUserMock = {
   phone: '',
   subAdminId: '',
   timezone: 'America/New_York',
+  subAdminIds: [],
 };

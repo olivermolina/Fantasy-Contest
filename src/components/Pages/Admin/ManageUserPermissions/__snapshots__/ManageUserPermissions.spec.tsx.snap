@@ -73,10 +73,9 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                     aria-colcount="4"
                     aria-multiselectable="false"
                     aria-rowcount="5"
-                    class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
+                    class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1lymaxv-MuiDataGrid-root"
                     role="grid"
                   >
-                    <div />
                     <div
                       class="MuiDataGrid-main css-204u17-MuiDataGrid-main"
                     >
@@ -153,8 +152,8 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                                   class="MuiDataGrid-menuIcon"
                                 >
                                   <button
-                                    aria-controls=":r2:"
-                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    aria-haspopup="menu"
                                     aria-label="Menu"
                                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                                     data-mui-internal-clone-element="true"
@@ -255,12 +254,12 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                                   class="MuiDataGrid-menuIcon"
                                 >
                                   <button
-                                    aria-controls=":r6:"
-                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    aria-haspopup="menu"
                                     aria-label="Menu"
                                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                                     data-mui-internal-clone-element="true"
-                                    id=":r7:"
+                                    id=":r9:"
                                     tabindex="-1"
                                     type="button"
                                   >
@@ -357,12 +356,12 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                                   class="MuiDataGrid-menuIcon"
                                 >
                                   <button
-                                    aria-controls=":ra:"
-                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    aria-haspopup="menu"
                                     aria-label="Menu"
                                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                                     data-mui-internal-clone-element="true"
-                                    id=":rb:"
+                                    id=":rf:"
                                     tabindex="-1"
                                     type="button"
                                   >
@@ -404,297 +403,279 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                         </div>
                       </div>
                       <div
-                        style="flex: 1 1 0px; overflow: auto;"
+                        class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
+                        style="overflow-x: hidden;"
                       >
                         <div
-                          class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
-                          style="overflow-x: hidden;"
+                          class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
+                          style="width: auto; height: 208px; min-height: auto;"
                         >
                           <div
-                            class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-                            style="width: auto; height: 208px; min-height: auto;"
+                            class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
+                            style="transform: translate3d(0px, 0px, 0px);"
                           >
                             <div
-                              class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                              style="transform: translate3d(0px, 0px, 0px);"
+                              aria-rowindex="2"
+                              aria-selected="false"
+                              class="MuiDataGrid-row"
+                              data-id="1"
+                              data-rowindex="0"
+                              role="row"
+                              style="max-height: 52px; min-height: 52px;"
                             >
                               <div
-                                aria-rowindex="2"
-                                aria-selected="false"
-                                class="MuiDataGrid-row"
-                                data-id="1"
-                                data-rowindex="0"
-                                role="row"
-                                style="max-height: 52px; min-height: 52px;"
+                                aria-colindex="1"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="0"
+                                data-field="id"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
                               >
                                 <div
-                                  aria-colindex="1"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="0"
-                                  data-field="id"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
+                                  class="MuiDataGrid-cellContent"
+                                  title="1"
                                 >
-                                  <div
-                                    class="MuiDataGrid-cellContent"
-                                    title="1"
-                                  >
-                                    1
-                                  </div>
-                                </div>
-                                <div
-                                  aria-colindex="2"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="1"
-                                  data-field="username"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
-                                >
-                                  <div
-                                    class="MuiDataGrid-cellContent"
-                                    title="agent1"
-                                  >
-                                    agent1
-                                  </div>
-                                </div>
-                                <div
-                                  aria-colindex="3"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="2"
-                                  data-field="status"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
-                                >
-                                  <div
-                                    class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
-                                  >
-                                    <label
-                                      class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-j204z7-MuiFormControlLabel-root"
-                                    >
-                                      <span
-                                        class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root"
-                                      >
-                                        <input
-                                          checked=""
-                                          class="PrivateSwitchBase-input css-1m9pwf3"
-                                          data-indeterminate="false"
-                                          type="checkbox"
-                                        />
-                                        <svg
-                                          aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                                          data-testid="CheckBoxIcon"
-                                          focusable="false"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                                          />
-                                        </svg>
-                                        <span
-                                          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-                                        />
-                                      </span>
-                                    </label>
-                                  </div>
+                                  1
                                 </div>
                               </div>
                               <div
-                                aria-rowindex="3"
-                                aria-selected="false"
-                                class="MuiDataGrid-row"
-                                data-id="2"
-                                data-rowindex="1"
-                                role="row"
-                                style="max-height: 52px; min-height: 52px;"
+                                aria-colindex="2"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="1"
+                                data-field="username"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
                               >
                                 <div
-                                  aria-colindex="1"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="0"
-                                  data-field="id"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
+                                  class="MuiDataGrid-cellContent"
+                                  title="agent1"
                                 >
-                                  <div
-                                    class="MuiDataGrid-cellContent"
-                                    title="2"
-                                  >
-                                    2
-                                  </div>
-                                </div>
-                                <div
-                                  aria-colindex="2"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="1"
-                                  data-field="username"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
-                                >
-                                  <div
-                                    class="MuiDataGrid-cellContent"
-                                    title="agent2"
-                                  >
-                                    agent2
-                                  </div>
-                                </div>
-                                <div
-                                  aria-colindex="3"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="2"
-                                  data-field="status"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
-                                >
-                                  <div
-                                    class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
-                                  >
-                                    <label
-                                      class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-j204z7-MuiFormControlLabel-root"
-                                    >
-                                      <span
-                                        class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root"
-                                      >
-                                        <input
-                                          checked=""
-                                          class="PrivateSwitchBase-input css-1m9pwf3"
-                                          data-indeterminate="false"
-                                          type="checkbox"
-                                        />
-                                        <svg
-                                          aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                                          data-testid="CheckBoxIcon"
-                                          focusable="false"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                                          />
-                                        </svg>
-                                        <span
-                                          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-                                        />
-                                      </span>
-                                    </label>
-                                  </div>
+                                  agent1
                                 </div>
                               </div>
                               <div
-                                aria-rowindex="4"
-                                aria-selected="false"
-                                class="MuiDataGrid-row"
-                                data-id="3"
-                                data-rowindex="2"
-                                role="row"
-                                style="max-height: 52px; min-height: 52px;"
+                                aria-colindex="3"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="2"
+                                data-field="status"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
                               >
                                 <div
-                                  aria-colindex="1"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="0"
-                                  data-field="id"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
+                                  class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
                                 >
-                                  <div
-                                    class="MuiDataGrid-cellContent"
-                                    title="3"
+                                  <label
+                                    class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-j204z7-MuiFormControlLabel-root"
                                   >
-                                    3
-                                  </div>
-                                </div>
-                                <div
-                                  aria-colindex="2"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="1"
-                                  data-field="username"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
-                                >
-                                  <div
-                                    class="MuiDataGrid-cellContent"
-                                    title="agent3"
-                                  >
-                                    agent3
-                                  </div>
-                                </div>
-                                <div
-                                  aria-colindex="3"
-                                  aria-colspan="1"
-                                  class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
-                                  data-colindex="2"
-                                  data-field="status"
-                                  role="cell"
-                                  style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
-                                  tabindex="-1"
-                                >
-                                  <div
-                                    class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
-                                  >
-                                    <label
-                                      class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-j204z7-MuiFormControlLabel-root"
+                                    <span
+                                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root"
                                     >
-                                      <span
-                                        class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-root MuiCheckbox-colorPrimary css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root"
+                                      <input
+                                        checked=""
+                                        class="PrivateSwitchBase-input css-1m9pwf3"
+                                        data-indeterminate="false"
+                                        type="checkbox"
+                                      />
+                                      <svg
+                                        aria-hidden="true"
+                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                        data-testid="CheckBoxIcon"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
                                       >
-                                        <input
-                                          class="PrivateSwitchBase-input css-1m9pwf3"
-                                          data-indeterminate="false"
-                                          type="checkbox"
+                                        <path
+                                          d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
                                         />
-                                        <svg
-                                          aria-hidden="true"
-                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                                          data-testid="CheckBoxOutlineBlankIcon"
-                                          focusable="false"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
-                                          />
-                                        </svg>
-                                        <span
-                                          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                                      </svg>
+                                      <span
+                                        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                                      />
+                                    </span>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              aria-rowindex="3"
+                              aria-selected="false"
+                              class="MuiDataGrid-row"
+                              data-id="2"
+                              data-rowindex="1"
+                              role="row"
+                              style="max-height: 52px; min-height: 52px;"
+                            >
+                              <div
+                                aria-colindex="1"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="0"
+                                data-field="id"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
+                              >
+                                <div
+                                  class="MuiDataGrid-cellContent"
+                                  title="2"
+                                >
+                                  2
+                                </div>
+                              </div>
+                              <div
+                                aria-colindex="2"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="1"
+                                data-field="username"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
+                              >
+                                <div
+                                  class="MuiDataGrid-cellContent"
+                                  title="agent2"
+                                >
+                                  agent2
+                                </div>
+                              </div>
+                              <div
+                                aria-colindex="3"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="2"
+                                data-field="status"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
+                              >
+                                <div
+                                  class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
+                                >
+                                  <label
+                                    class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-j204z7-MuiFormControlLabel-root"
+                                  >
+                                    <span
+                                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root"
+                                    >
+                                      <input
+                                        checked=""
+                                        class="PrivateSwitchBase-input css-1m9pwf3"
+                                        data-indeterminate="false"
+                                        type="checkbox"
+                                      />
+                                      <svg
+                                        aria-hidden="true"
+                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                        data-testid="CheckBoxIcon"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
                                         />
-                                      </span>
-                                    </label>
-                                  </div>
+                                      </svg>
+                                      <span
+                                        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                                      />
+                                    </span>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              aria-rowindex="4"
+                              aria-selected="false"
+                              class="MuiDataGrid-row"
+                              data-id="3"
+                              data-rowindex="2"
+                              role="row"
+                              style="max-height: 52px; min-height: 52px;"
+                            >
+                              <div
+                                aria-colindex="1"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="0"
+                                data-field="id"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
+                              >
+                                <div
+                                  class="MuiDataGrid-cellContent"
+                                  title="3"
+                                >
+                                  3
+                                </div>
+                              </div>
+                              <div
+                                aria-colindex="2"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="1"
+                                data-field="username"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
+                              >
+                                <div
+                                  class="MuiDataGrid-cellContent"
+                                  title="agent3"
+                                >
+                                  agent3
+                                </div>
+                              </div>
+                              <div
+                                aria-colindex="3"
+                                aria-colspan="1"
+                                class="MuiDataGrid-cell--withRenderer MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor"
+                                data-colindex="2"
+                                data-field="status"
+                                role="cell"
+                                style="min-width: 0; max-width: 0; min-height: 52px; max-height: 52px;"
+                                tabindex="-1"
+                              >
+                                <div
+                                  class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
+                                >
+                                  <label
+                                    class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-j204z7-MuiFormControlLabel-root"
+                                  >
+                                    <span
+                                      class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-root MuiCheckbox-colorPrimary css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root"
+                                    >
+                                      <input
+                                        class="PrivateSwitchBase-input css-1m9pwf3"
+                                        data-indeterminate="false"
+                                        type="checkbox"
+                                      />
+                                      <svg
+                                        aria-hidden="true"
+                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                                        data-testid="CheckBoxOutlineBlankIcon"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                                        />
+                                      </svg>
+                                      <span
+                                        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                                      />
+                                    </span>
+                                  </label>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div
-                        class="Mui-resizeTriggers"
-                      >
-                        <div
-                          class="expand-trigger"
-                        >
-                          <div
-                            style="width: 1px; height: 1px;"
-                          />
-                        </div>
-                        <div
-                          class="contract-trigger"
-                        />
                       </div>
                     </div>
                     <div
@@ -732,6 +713,7 @@ exports[`ManageUserPermissions should render correctly 1`] = `
                             </div>
                             <input
                               aria-hidden="true"
+                              aria-invalid="false"
                               class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                               tabindex="-1"
                               value="100"

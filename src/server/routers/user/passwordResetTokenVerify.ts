@@ -11,7 +11,7 @@ const passwordResetTokenVerify = t.procedure
     }),
   )
   .mutation(async ({ input }) => {
-    const { error } = await supabase.auth.api.getUser(input.accessTokenJwt);
+    const { error } = await supabase.auth.getUser(input.accessTokenJwt);
 
     if (error)
       throw new TRPCError({

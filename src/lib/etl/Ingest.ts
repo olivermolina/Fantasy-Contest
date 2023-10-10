@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { League, Market, MarketResult, Prisma } from '@prisma/client';
 import winston from 'winston';
-import { prisma } from '~/server/prisma';
+import prisma from '~/server/prisma';
 import defaultLogger from '~/utils/logger';
 import EVAnalytics, { LeagueEnum } from '../ev-analytics/EVAnaltyics';
 import { ILookupRepsonse } from '../ev-analytics/ILookupResponse';
 import { IOddsResponse } from '../ev-analytics/IOddsResponse';
+import { getMarketOddsRange } from '~/server/routers/contest/getMarketOddsRange';
+import {
+  isMarketActive,
+  MarketOddsRangeInterface,
+} from '~/utils/isMarketActive';
 
 type MarketType = IOddsResponse['events'][0]['markets'][0];
 
@@ -78,55 +83,47 @@ export const ingest = async (
       };
       allCounts.push(counts);
       logger.info(`Fetched ${counts.games} games`);
-      logger.info(`Fetched ${counts.teams}/${counts.players} teams/players`);
-
-      const teamMap: TeamMapType = new Map(
-        teams.map((t) => [
-          `${t.id.toString()}-${league}`,
-          {
-            ...t,
-            id: `${t.id.toString()}-${league}`,
-            code: t.abbreviation,
-          },
-        ]),
-      );
-
-      const playersMap: PlayerMapType = new Map(
-        players.map((p) => [
-          `${p.id.toString()}-${league}`,
-          { ...p, id: `${p.id.toString()}-${league}`, Team: undefined },
-        ]),
-      );
 
       if (options?.players) {
+        logger.info(`Fetched ${counts.players} players`);
         const playersProfile = logger.startTimer();
-        const playerData = players.map(
-          ({ headshot, id, teamid, ...otherFields }) => ({
-            ...otherFields,
-            id: `${id.toString()}-${league}`,
-            teamid: `${teamid.toString()}-${league}`,
-          }),
-        );
+        const playerData = players.map(({ id, teamid, ...otherFields }) => ({
+          ...otherFields,
+          id: `${id.toString()}-${league}`,
+          teamid: `${teamid.toString()}-${league}`,
+        }));
 
         // Insert or update players in case they have changed teams
-        await prisma.$transaction(
-          playerData.map((player) =>
-            prisma.player.upsert({
-              where: { id: player.id },
-              update: player,
-              create: player,
-            }),
-          ),
-        );
+        await prisma.$executeRaw`
+            INSERT INTO "Player" (
+              id, teamid, name, position, team, headshot
+            )
+            VALUES ${Prisma.join(
+              playerData.map(
+                (player: any) =>
+                  Prisma.sql`(${Prisma.join([
+                    player.id,
+                    player.teamid,
+                    player.name,
+                    player.position,
+                    player.team,
+                    player.headshot,
+                  ])})`,
+              ),
+            )}
+            ON CONFLICT (id) DO UPDATE SET
+              teamid = EXCLUDED.teamid,
+              name = EXCLUDED.name,
+              position = EXCLUDED.position,
+              team = EXCLUDED.team,
+              headshot = EXCLUDED.headshot;
+        `;
 
-        await prisma.player.createMany({
-          skipDuplicates: true,
-          data: playerData,
-        });
         playersProfile.done({ message: 'Finished creating players.' });
       }
 
       if (options?.teams) {
+        logger.info(`Fetched ${counts.teams} teams`);
         const teamsProfile = logger.startTimer();
         await prisma.team.createMany({
           skipDuplicates: true,
@@ -139,8 +136,45 @@ export const ingest = async (
         teamsProfile.done({ message: 'Finished creating teams.' });
       }
 
+      const marketOddsRange = await getMarketOddsRange();
       if (options?.offers || options?.markets) {
+        const teamMap: TeamMapType = new Map(
+          teams.map((t) => [
+            `${t.id.toString()}-${league}`,
+            {
+              ...t,
+              id: `${t.id.toString()}-${league}`,
+              code: t.abbreviation,
+            },
+          ]),
+        );
+
+        const playersMap: PlayerMapType = new Map(
+          players.map((p) => [
+            `${p.id.toString()}-${league}`,
+            { ...p, id: `${p.id.toString()}-${league}`, Team: undefined },
+          ]),
+        );
+
         const offersProfile = logger.startTimer();
+        // Get all markets with market overrides
+        const marketIds = data.events.flatMap((e) =>
+          e.markets.map((m) => m.id),
+        );
+        const marketsWithMarketOverride = await prisma.market.findMany({
+          where: {
+            id: {
+              in: marketIds,
+            },
+            NOT: {
+              MarketOverride: null,
+            },
+          },
+          include: {
+            MarketOverride: true,
+          },
+        });
+
         await Promise.allSettled([
           ...data.events.flatMap((e) => {
             let offer;
@@ -161,8 +195,26 @@ export const ingest = async (
                       sel_id: m.sel_id,
                     },
                   },
-                  create: mapMarkets(m, e, playersMap, teamMap, league),
-                  update: mapMarkets(m, e, playersMap, teamMap, league),
+                  create: mapMarkets(
+                    m,
+                    e,
+                    playersMap,
+                    teamMap,
+                    league,
+                    marketOddsRange,
+                  ),
+                  update: mapMarkets(
+                    m,
+                    e,
+                    playersMap,
+                    teamMap,
+                    league,
+                    marketsWithMarketOverride.find(
+                      (market) => market.id === m.id,
+                    )
+                      ? undefined
+                      : marketOddsRange,
+                  ),
                 }),
               );
             }
@@ -170,10 +222,59 @@ export const ingest = async (
           }),
         ]);
 
+        // Update markets with market overrides
+        await Promise.allSettled([
+          ...marketsWithMarketOverride.map((m) => {
+            const currentMarket = data.events
+              .flatMap((e) => e.markets)
+              .find(
+                (market) => market.id === m.id && market.sel_id === m.sel_id,
+              );
+
+            if (!currentMarket) {
+              return [m];
+            }
+
+            const hasChanged =
+              Number(m.MarketOverride?.total) !== Number(currentMarket.total) ||
+              Number(m.MarketOverride?.under) !== Number(currentMarket.under) ||
+              Number(m.MarketOverride?.over) !== Number(currentMarket.over);
+            return [
+              prisma.market.update({
+                where: {
+                  id_sel_id: {
+                    id: m.id,
+                    sel_id: m.sel_id,
+                  },
+                },
+                data: {
+                  active: hasChanged
+                    ? isMarketActive(
+                        {
+                          over: Number(currentMarket?.over),
+                          under: Number(currentMarket?.under),
+                        },
+                        marketOddsRange,
+                      )
+                    : m.MarketOverride?.active,
+
+                  // If the market override original values is different from the current market, delete it
+                  ...(hasChanged && {
+                    marketOverrideId: undefined,
+                    MarketOverride: {
+                      delete: true,
+                    },
+                  }),
+                },
+              }),
+            ];
+          }),
+        ]);
+
         offersProfile.done({
           message: `Finished creating ${options?.offers ? 'offers' : ' '} ${
             options?.markets ? 'markets' : ''
-          }.`,
+          }. Market overrides: ${marketsWithMarketOverride.length}`,
         });
       }
     }
@@ -233,6 +334,7 @@ function mapMarkets(
   players: PlayerMapType,
   teams: TeamMapType,
   league: string,
+  marketOddsRange?: MarketOddsRangeInterface,
 ): Prisma.MarketCreateManyInput {
   const createPlayer = players.get(`${m.sel_id.toString()}-${league}`)!;
   const createTeam = teams.get(`${m.sel_id.toString()}-${league}`)!;
@@ -273,5 +375,11 @@ function mapMarkets(
     total_stat: m.total_stat,
     moneyline_result: mapResult(m.moneyline_result),
     moneyline_stat: m.moneyline_stat,
+    ...(marketOddsRange && {
+      active: isMarketActive(
+        { over: Number(m.over), under: Number(m.under) },
+        marketOddsRange,
+      ),
+    }),
   };
 }

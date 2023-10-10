@@ -21,6 +21,10 @@ export const appSettingsMockProps = {
     CHALLENGE_PROMO_MESSAGE:
       'Pick 2-4 players. Predict if they will get MORE or LESS than their projection.',
     REPEAT_ENTRIES_LIMIT: '1',
+    SIGNUP_FREE_ENTRY: '1',
+    MAX_DAILY_TOTAL_BET_AMOUNT: '',
+    WEEKLY_REFERRAL_MAX_AMOUNT_EARNED: '0',
+    MIN_DEPOSIT_AMOUNT: '20',
   },
   onSubmit: () => console.log('onSubmit'),
 };

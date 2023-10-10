@@ -76,16 +76,15 @@ exports[`PendingBetsManagementContainer should show a loading screen when the qu
     </div>
   </div>
   <div
-    style="height: 300px; width: 100%;"
+    class="h-[75vh] lg:h-[80vh] w-full"
   >
     <div
       aria-colcount="8"
       aria-multiselectable="false"
       aria-rowcount="1"
-      class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
+      class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1lymaxv-MuiDataGrid-root"
       role="grid"
     >
-      <div />
       <div
         class="MuiDataGrid-main css-204u17-MuiDataGrid-main"
       >
@@ -162,8 +161,8 @@ exports[`PendingBetsManagementContainer should show a loading screen when the qu
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":r3:"
-                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
@@ -264,12 +263,12 @@ exports[`PendingBetsManagementContainer should show a loading screen when the qu
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":r7:"
-                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":r8:"
+                      id=":ra:"
                       tabindex="-1"
                       type="button"
                     >
@@ -366,12 +365,12 @@ exports[`PendingBetsManagementContainer should show a loading screen when the qu
                     class="MuiDataGrid-menuIcon"
                   >
                     <button
-                      aria-controls=":rb:"
-                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-haspopup="menu"
                       aria-label="Menu"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                       data-mui-internal-clone-element="true"
-                      id=":rc:"
+                      id=":rg:"
                       tabindex="-1"
                       type="button"
                     >
@@ -413,50 +412,32 @@ exports[`PendingBetsManagementContainer should show a loading screen when the qu
           </div>
         </div>
         <div
-          style="flex: 1 1 0px; overflow: auto;"
+          class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
+          style="overflow-x: hidden;"
         >
           <div
-            class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
-            style="overflow-x: hidden;"
+            class="MuiDataGrid-overlayWrapper css-ql19fo-MuiDataGrid-overlayWrapper"
           >
             <div
-              class="MuiDataGrid-overlayWrapper css-ql19fo-MuiDataGrid-overlayWrapper"
+              class="MuiDataGrid-overlayWrapperInner css-1akuw9y-MuiDataGrid-overlayWrapperInner"
+              style="height: -56px; width: 0px;"
             >
               <div
-                class="MuiDataGrid-overlayWrapperInner css-1akuw9y-MuiDataGrid-overlayWrapperInner"
-                style="height: -56px; width: 0px;"
+                class="MuiDataGrid-overlay css-1w53k9d-MuiDataGrid-overlay"
               >
-                <div
-                  class="MuiDataGrid-overlay css-1w53k9d-MuiDataGrid-overlay"
-                >
-                  No rows
-                </div>
+                No rows
               </div>
             </div>
-            <div
-              class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-              style="width: auto; height: 1px; min-height: auto;"
-            >
-              <div
-                class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                style="transform: translate3d(0px, undefinedpx, 0px);"
-              />
-            </div>
           </div>
-        </div>
-        <div
-          class="Mui-resizeTriggers"
-        >
           <div
-            class="expand-trigger"
+            class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
+            style="width: auto; height: 1px; min-height: auto;"
           >
             <div
-              style="width: 1px; height: 1px;"
+              class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
+              style="transform: translate3d(0px, undefinedpx, 0px);"
             />
           </div>
-          <div
-            class="contract-trigger"
-          />
         </div>
       </div>
       <div
@@ -494,6 +475,7 @@ exports[`PendingBetsManagementContainer should show a loading screen when the qu
               </div>
               <input
                 aria-hidden="true"
+                aria-invalid="false"
                 class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                 tabindex="-1"
                 value="100"

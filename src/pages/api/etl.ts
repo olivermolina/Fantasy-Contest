@@ -1,4 +1,3 @@
-// import { verifySignature } from '@upstash/qstash/nextjs';
 import chunk from 'lodash.chunk';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { TOKEN } from '~/constants/TOKEN';
@@ -13,7 +12,6 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { compact, filter, uniq } from 'lodash';
-import { Market } from '~/lib/ev-analytics/IOddsResponse';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -59,27 +57,37 @@ const handleIngest = async (
 
     const lookups = await getLookups(league, logger);
 
-    // Get players
-    caller.etl.ingestByLeague({
-      league,
-      token: TOKEN,
-      options: {
-        players: true,
-        initialData: data,
-        initialLookup: lookups,
-      },
-    });
+    if (lookups) {
+      for (const playersChunk of chunk(lookups?.players, 5000)) {
+        // Get players
+        await caller.etl.ingestByLeague({
+          league,
+          token: TOKEN,
+          options: {
+            players: true,
+            initialData: data,
+            initialLookup: {
+              ...lookups,
+              players: playersChunk,
+            },
+          },
+        });
+      }
 
-    // Get teams
-    caller.etl.ingestByLeague({
-      league,
-      token: TOKEN,
-      options: {
-        teams: true,
-        initialData: data,
-        initialLookup: lookups,
-      },
-    });
+      // Get teams
+      await caller.etl.ingestByLeague({
+        league,
+        token: TOKEN,
+        options: {
+          teams: true,
+          initialData: data,
+          initialLookup: {
+            ...lookups,
+            players: [],
+          },
+        },
+      });
+    }
 
     for (const offerChunk of chunk(events, 3)) {
       caller.etl.ingestByLeague({
@@ -144,28 +152,13 @@ const handlePastIngest = async (isGradingOnly?: boolean) => {
   }
 };
 
-// Get all offers with pending bets and grade if status is Final
-const gradeManualOffersWithPendingBets = async () => {
-  const manualOffers = await caller.bets.getManualOffersWithPendingBets({
-    token: TOKEN,
-  });
-
-  for (const offer of manualOffers) {
-    if (offer.status === 'Final') {
-      void caller.bets.grade({
-        markets: offer.markets.map((market: unknown) => market as Market),
-        token: TOKEN,
-      });
-    }
-  }
-};
-
 async function handler(_req: NextApiRequest, res: NextApiResponse) {
   const queryDateString = _req?.query?.date as string;
   const queryGrade = _req?.query?.grade as string;
+  const league = _req?.query?.league as string;
   const isGradingOnly = Number(queryGrade) == 1;
   const gamedate = queryDateString ? new Date(queryDateString) : undefined;
-  const defaultLeagues = Object.values(LeagueEnum);
+  const defaultLeagues = league ? [league as LeagueEnum] : [];
 
   await Promise.allSettled([
     // Ingest and grade current data
@@ -174,17 +167,17 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
     // Sometimes the picks are not settled if the events are not found in the
     // default ingest, so we have to query all pending picks and ingest by date
     handlePastIngest(isGradingOnly),
-
-    // Grade manual offers
-    gradeManualOffersWithPendingBets(),
   ]);
 
-  res.status(200).end();
+  res.status(200).send({
+    code: 'success',
+    message: 'Ingest completed!',
+  });
 }
 
+// Temporary disable signature verification
 // const handlerWrapper =
 //   process.env.NODE_ENV === 'development' ? handler : verifySignature(handler);
-// export default handlerWrapper;
 
 export default handler;
 

@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { UserStatus } from '@prisma/client';
+import { UserStatus, UserType } from '@prisma/client';
 
 /**
  * Represents the validation schema for user form fields.
@@ -34,4 +34,9 @@ export const UserFormValidationSchema = z.object({
     })
     .optional(),
   password: z.string().min(6),
+  type: z.nativeEnum(UserType, {
+    errorMap: () => ({ message: 'Please select user type' }),
+  }),
+  exemptedReasonCodes: z.array(z.string()).optional(),
+  agentId: z.string().optional().nullable(),
 });

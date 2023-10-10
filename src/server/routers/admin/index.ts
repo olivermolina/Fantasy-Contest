@@ -12,13 +12,15 @@ import usersBalance from './usersBalance';
 import addCredit from './addCredit';
 import getPendingBets from './getPendingBets';
 import { settlePendingBet } from './settlePendingBet';
-import { weeklyBalances } from './figures';
+import {
+  monthlyBalances,
+  userPerformanceByPicks,
+  userPerformanceBySport,
+  userPerformanceBySportCategory,
+  weeklyBalances,
+} from './figures';
 import { setUserLimits } from './setUserLimits';
 import { playerStats } from './playerStats';
-import { adminProcedure } from './middleware/isAdmin';
-import prisma from '~/server/prisma';
-import { z } from 'zod';
-import { AppSettingName } from '@prisma/client';
 import getLineExposures from './getLineExposures';
 import addFreeSquarePromotion from './addFreeSquarePromotion';
 import deleteFreeSquarePromotion from './deleteFreeSquarePromotion';
@@ -33,46 +35,79 @@ import getManageUserList from './getUserManagementList';
 import getModulePermissions from './getModulePermissions';
 import saveModulePermissions from './saveModulePermissions';
 import saveUser from './saveUser';
+import saveBanner from './saveBanner';
 import savePartnerPam from './savePartnerPam';
 import usersBetLists from './usersBetLists';
+import overrideOffer from './overrideOffer';
+import addUsersFreeEntry from './addUsersFreeEntry';
+import updateBetLeg from './updateBetLeg';
+import { setContestCategoryLimits } from './setContestCategoryLimits';
+import tsevoBillingReport from './tsevoBillingReport';
+import { setLeagueLimits } from './setLeagueLimits';
+import tournamentEvents from './tournamentEvents';
+import { saveTournamentEvent } from './saveTournamentEvent';
+import { deleteTournamentEvent } from './deleteTournamentEvent';
+import { saveTournamentEventOffer } from './saveTournamentEventOffer';
+import deleteTournamentEventOffer from './deleteTournamentEventOffer';
+import createSms from './createSms';
+import marketCategories from './marketCategories';
+import saveMarketCategory from './saveMarketCategory';
+import populateMarketCategories from './populateMarketCategories';
+import { userConversion } from './userConversion';
+import deleteTeam from './deleteTeam';
+import deletePlayer from './deletePlayer';
+import saveBonusCreditLimits from './saveBonusCreditLimits';
+import removeUserLimits from './removeUserLimits';
+import leagueCategories from './leagueCategories';
+import saveLeagueCategory from './saveLeagueCategory';
+import copyTournamentEvent from './copyTournamentEvent';
+import copyOffer from './copyOffer';
+import deleteOffer from './deleteOffer';
+import saveUserWallet from './saveUserWallet';
 
 /**
  * NOTE: All these procedures should use the adminProcedure as a base.
  * @see './middleware/isAdmin.ts'
  */
 export const adminRouter = t.router({
+  /**
+   * Manual offers
+   */
   offers,
   teams,
   upsertTeam,
+  deleteTeam,
   upsertPlayer,
+  deletePlayer,
   upsertOffer,
+  copyOffer,
+  deleteOffer,
   upsertMarket,
   markets,
   players,
   deleteMarket,
+
+  /**
+   * Users
+   */
   usersBalance,
   addCredit,
   getPendingBets,
   settlePendingBet,
+  saveUserWallet,
+
+  /**
+   * Figures
+   */
   weeklyBalances,
+  userPerformanceBySport,
+  userPerformanceByPicks,
+  userPerformanceBySportCategory,
+  monthlyBalances,
+
   setUserLimits,
   playerStats,
-  removeUserLimits: adminProcedure
-    .input(z.object({ userId: z.string() }))
-    .mutation(({ input: { userId } }) => {
-      return prisma.userAppSettings.deleteMany({
-        where: {
-          userId,
-          name: {
-            in: [
-              AppSettingName.MAX_BET_AMOUNT,
-              AppSettingName.MIN_BET_AMOUNT,
-              AppSettingName.REPEAT_ENTRIES_LIMIT,
-            ],
-          },
-        },
-      });
-    }),
+  removeUserLimits,
   getLineExposures,
   updateAppSettings,
   addFreeSquarePromotion,
@@ -87,8 +122,34 @@ export const adminRouter = t.router({
   getManageUserList,
   saveModulePermissions,
   saveUser,
+  saveBanner,
   savePartnerPam,
   usersBetLists,
+  overrideOffer,
+  addUsersFreeEntry,
+  updateBetLeg,
+  setContestCategoryLimits,
+  tsevoBillingReport,
+  setLeagueLimits,
+
+  /**
+   * Tournament Style
+   */
+  tournamentEvents,
+  saveTournamentEvent,
+  deleteTournamentEvent,
+  saveTournamentEventOffer,
+  deleteTournamentEventOffer,
+  copyTournamentEvent,
+
+  createSms,
+  marketCategories,
+  saveMarketCategory,
+  populateMarketCategories,
+  userConversion,
+  saveBonusCreditLimits,
+  leagueCategories,
+  saveLeagueCategory,
 });
 
 export default adminRouter;

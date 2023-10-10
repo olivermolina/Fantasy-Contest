@@ -83,7 +83,7 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
         class="flex flex-col md:flex-row items-start gap-4"
       >
         <div
-          class="MuiAutocomplete-root MuiAutocomplete-fullWidth css-qm9mjt-MuiAutocomplete-root"
+          class="MuiAutocomplete-root MuiAutocomplete-fullWidth css-1kkal6p-MuiAutocomplete-root"
           name="user"
         >
           <div
@@ -151,7 +151,7 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
           class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="outlined-basic"
             id="outlined-basic-label"
@@ -221,10 +221,9 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
         aria-colcount="6"
         aria-multiselectable="false"
         aria-rowcount="1"
-        class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1usso8h-MuiDataGrid-root"
+        class="MuiDataGrid-root MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor css-1lymaxv-MuiDataGrid-root"
         role="grid"
       >
-        <div />
         <div
           class="MuiDataGrid-main css-204u17-MuiDataGrid-main"
         >
@@ -301,8 +300,8 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
                       class="MuiDataGrid-menuIcon"
                     >
                       <button
-                        aria-controls=":r4:"
-                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-haspopup="menu"
                         aria-label="Menu"
                         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                         data-mui-internal-clone-element="true"
@@ -403,12 +402,12 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
                       class="MuiDataGrid-menuIcon"
                     >
                       <button
-                        aria-controls=":r8:"
-                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-haspopup="menu"
                         aria-label="Menu"
                         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                         data-mui-internal-clone-element="true"
-                        id=":r9:"
+                        id=":rb:"
                         tabindex="-1"
                         type="button"
                       >
@@ -505,12 +504,12 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
                       class="MuiDataGrid-menuIcon"
                     >
                       <button
-                        aria-controls=":rc:"
-                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-haspopup="menu"
                         aria-label="Menu"
                         class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall MuiDataGrid-menuIconButton css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
                         data-mui-internal-clone-element="true"
-                        id=":rd:"
+                        id=":rh:"
                         tabindex="-1"
                         type="button"
                       >
@@ -552,50 +551,32 @@ exports[`PlayFreeBonusCreditContainer should render correctly 1`] = `
             </div>
           </div>
           <div
-            style="flex: 1 1 0px; overflow: auto;"
+            class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
+            style="overflow-x: hidden;"
           >
             <div
-              class="MuiDataGrid-virtualScroller css-axafay-MuiDataGrid-virtualScroller"
-              style="overflow-x: hidden;"
+              class="MuiDataGrid-overlayWrapper css-ql19fo-MuiDataGrid-overlayWrapper"
             >
               <div
-                class="MuiDataGrid-overlayWrapper css-ql19fo-MuiDataGrid-overlayWrapper"
+                class="MuiDataGrid-overlayWrapperInner css-1akuw9y-MuiDataGrid-overlayWrapperInner"
+                style="height: -56px; width: 0px;"
               >
                 <div
-                  class="MuiDataGrid-overlayWrapperInner css-1akuw9y-MuiDataGrid-overlayWrapperInner"
-                  style="height: -56px; width: 0px;"
+                  class="MuiDataGrid-overlay css-1w53k9d-MuiDataGrid-overlay"
                 >
-                  <div
-                    class="MuiDataGrid-overlay css-1w53k9d-MuiDataGrid-overlay"
-                  >
-                    No rows
-                  </div>
+                  No rows
                 </div>
               </div>
-              <div
-                class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
-                style="width: auto; height: 1px; min-height: auto;"
-              >
-                <div
-                  class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
-                  style="transform: translate3d(0px, undefinedpx, 0px);"
-                />
-              </div>
             </div>
-          </div>
-          <div
-            class="Mui-resizeTriggers"
-          >
             <div
-              class="expand-trigger"
+              class="MuiDataGrid-virtualScrollerContent MuiDataGrid-virtualScrollerContent--overflowed css-1kwdphh-MuiDataGrid-virtualScrollerContent"
+              style="width: auto; height: 1px; min-height: auto;"
             >
               <div
-                style="width: 1px; height: 1px;"
+                class="MuiDataGrid-virtualScrollerRenderZone css-s1v7zr-MuiDataGrid-virtualScrollerRenderZone"
+                style="transform: translate3d(0px, undefinedpx, 0px);"
               />
             </div>
-            <div
-              class="contract-trigger"
-            />
           </div>
         </div>
         <div

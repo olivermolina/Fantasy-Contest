@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import * as Yup from 'yup';
-import { ContestCategory } from '@prisma/client';
+import { ContestCategory, League } from '@prisma/client';
 
 export interface AddFreeSquarePromotionInput {
   /**
@@ -43,7 +43,7 @@ export interface AddFreeSquarePromotionInput {
    * The list of contest pick category ID's
    * @example [pickId1, pickId2, pickId3]
    */
-  pickCategories: string[];
+  pickCategories: [string, ...string[]];
   /**
    * Boolean to check if it can be used in a free entry
    */
@@ -52,12 +52,16 @@ export interface AddFreeSquarePromotionInput {
    * Max stake/bet amount
    */
   maxStake: number;
+  /**
+   * League
+   */
+  league: League;
 }
 
 const InputValidationSchema = Yup.object().shape({
   discount: Yup.number()
     .typeError('Please provide a discount')
-    .min(1, 'Minimum discount is 1')
+    .min(0, 'Minimum discount is 0')
     .max(100, 'Maximum discount is 100'),
   maxStake: Yup.number()
     .typeError('Please provide a max stake/bet.')
@@ -115,6 +119,7 @@ export default function EditFreeSquarePromotionDialog(
         ) || [],
       freeEntryEnabled: row?.freeSquare?.freeEntryEnabled,
       maxStake: row?.freeSquare?.maxStake,
+      league: row?.league as League,
     },
     mode: 'all',
     shouldFocusError: true,
@@ -138,6 +143,7 @@ export default function EditFreeSquarePromotionDialog(
         ) || [],
       freeEntryEnabled: row?.freeSquare?.freeEntryEnabled,
       maxStake: row?.freeSquare?.maxStake,
+      league: row?.league as League,
     });
   }, [row]);
 

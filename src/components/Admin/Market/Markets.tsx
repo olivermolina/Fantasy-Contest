@@ -37,12 +37,14 @@ interface PropsMarket {
   offer?: Offer;
   teams: Team[];
   handleAddTeam: (team: Team) => Promise<Team | undefined>;
+  handleDeleteTeam: (team: Team) => Promise<Team | undefined>;
   players: Player[];
   playerIsLoading: boolean;
   setPlayerFilterName: React.Dispatch<React.SetStateAction<string>>;
   teamIsLoading: boolean;
   setTeamFilterName: React.Dispatch<React.SetStateAction<string>>;
   handleAddPlayer: (player: Player) => Promise<Player | undefined>;
+  handleDeletePlayer: (player: Player) => Promise<Player | undefined>;
   handleSave: (
     market: Prisma.MarketCreateInput,
   ) => Promise<MarketWithPlayerTeam | undefined>;
@@ -57,6 +59,7 @@ export type MarketWithPlayerTeam = Market & {
 export default function Markets(props: PropsMarket) {
   const {
     handleAddTeam,
+    handleDeleteTeam,
     teams,
     players,
     playerIsLoading,
@@ -64,6 +67,7 @@ export default function Markets(props: PropsMarket) {
     teamIsLoading,
     setTeamFilterName,
     handleAddPlayer,
+    handleDeletePlayer,
     isLoading,
     handleDelete,
   } = props;
@@ -112,6 +116,7 @@ export default function Markets(props: PropsMarket) {
     team: null,
     freeSquareId: null,
     marketOverrideId: null,
+    active: true,
   };
   const [selectedMarket, setSelectedMarket] =
     useState<MarketWithPlayerTeam>(newMarket);
@@ -154,6 +159,12 @@ export default function Markets(props: PropsMarket) {
         id: 'total_stat',
         cell: (info) => info.getValue(),
         header: () => <span>Total Result</span>,
+      },
+      {
+        accessorFn: (row) => row.active,
+        id: 'active',
+        cell: (info) => (info.getValue() ? 'Active' : 'Suspended'),
+        header: () => <span>Status</span>,
       },
       {
         header: 'Action',
@@ -209,6 +220,7 @@ export default function Markets(props: PropsMarket) {
       },
     });
     if (market) setSelectedMarket(market);
+    handleClose();
   };
 
   const isNewOffer = !props.offer || props.offer?.gid === 'NEW';
@@ -270,9 +282,11 @@ export default function Markets(props: PropsMarket) {
             setTeamFilterName={setTeamFilterName}
             teamIsLoading={teamIsLoading}
             handleAddTeam={handleAddTeam}
+            handleDeleteTeam={handleDeleteTeam}
             market={selectedMarket}
             players={players}
             handleAddPlayer={handleAddPlayer}
+            handleDeletePlayer={handleDeletePlayer}
             playerIsLoading={playerIsLoading}
             setPlayerFilterName={setPlayerFilterName}
           />

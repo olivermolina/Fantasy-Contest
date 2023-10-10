@@ -29,6 +29,10 @@ export type AppSettingsState = Record<
     | 'MAX_MARKET_ODDS'
     | 'CHALLENGE_PROMO_MESSAGE'
     | 'REPEAT_ENTRIES_LIMIT'
+    | 'SIGNUP_FREE_ENTRY'
+    | 'MAX_DAILY_TOTAL_BET_AMOUNT'
+    | 'WEEKLY_REFERRAL_MAX_AMOUNT_EARNED'
+    | 'MIN_DEPOSIT_AMOUNT'
   >,
   string
 > & {
@@ -73,7 +77,14 @@ const initialappSettings: AppSettingsState = {
     DefaultAppSettings.CHALLENGE_PROMO_MESSAGE,
   [AppSettingName.REPEAT_ENTRIES_LIMIT]:
     DefaultAppSettings.REPEAT_ENTRIES.toString(),
-
+  [AppSettingName.SIGNUP_FREE_ENTRY]:
+    DefaultAppSettings.SIGNUP_FREE_ENTRY.toString(),
+  [AppSettingName.MAX_DAILY_TOTAL_BET_AMOUNT]:
+    DefaultAppSettings.MAX_DAILY_TOTAL_BET_AMOUNT.toString(),
+  [AppSettingName.WEEKLY_REFERRAL_MAX_AMOUNT_EARNED]:
+    DefaultAppSettings.WEEKLY_REFERRAL_MAX_AMOUNT_EARNED.toString(),
+  [AppSettingName.MIN_DEPOSIT_AMOUNT]:
+    DefaultAppSettings.MIN_DEPOSIT_AMOUNT.toString(),
   initial: true,
 };
 
@@ -93,7 +104,7 @@ export const fetchAppSettings = createAsyncThunk(
       return state.appSettings;
     }
     const result = await trpcClient().appSettings.list.query();
-    const settings = result.reduce((acc, setting) => {
+    const settings = result.userAppSettings.reduce((acc, setting) => {
       acc[setting.name] = setting.value;
       return acc;
     }, {} as Record<AppSettingName, string>);

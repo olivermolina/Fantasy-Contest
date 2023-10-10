@@ -1,4 +1,3 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import * as yup from '~/utils/yup';
 import GIDX, { IDeviceGPS, UserDetailsInput } from '~/lib/tsevo-gidx/GIDX';
@@ -7,8 +6,9 @@ import { Session } from '@prisma/client';
 import { ActionType } from '~/constants/ActionType';
 import { customerProfile } from '~/server/routers/user/customerProfile';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const accountRegister = t.procedure
+const accountRegister = isAuthenticated
   .input(
     yup.object({
       userDetails: yup.mixed<UserDetailsInput>().required(),
@@ -27,7 +27,7 @@ const accountRegister = t.procedure
     if (!userId || !user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 

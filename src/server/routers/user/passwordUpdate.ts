@@ -12,18 +12,18 @@ const passwordUpdate = t.procedure
     }),
   )
   .mutation(async ({ input }) => {
-    const { user, error } = await supabase.auth.signIn({
-      refreshToken: input.refreshToken,
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: input.refreshToken,
     });
 
-    if (!user || error) {
+    if (!data.user || error) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message: CustomErrorMessages.PASSWORD_UPDATE_LINK,
       });
     }
 
-    const { error: updateError } = await supabase.auth.update({
+    const { error: updateError } = await supabase.auth.updateUser({
       password: input.password,
     });
 

@@ -9,7 +9,8 @@ const upsertTeam = adminProcedure
   .input(yup.mixed<Team>().required())
   .mutation(async ({ input }) => {
     const uid = new ShortUniqueId({ length: 16 });
-    const id = !input.id || input.id === 'NEW' ? uid() : input.id;
+    const id =
+      !input.id || input.id === 'NEW' || input.id === 'new' ? uid() : input.id;
     appNodeCache.flushAll();
 
     return await prisma.team.upsert({

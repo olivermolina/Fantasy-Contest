@@ -12,7 +12,7 @@ export const SidebarItem = (props: SidebarItemProps) => (
   <li>
     <>
       <Link href="/">
-        <span className="font-normal">{props.title}</span>
+        <span className="font-semibold">{props.title}</span>
       </Link>
       <ul className="pl-4">
         {props.subItems?.map((item, i) => {

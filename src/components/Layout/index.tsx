@@ -13,6 +13,7 @@ import { GetServerSidePropsContext } from 'next';
 import type { LeagueFantasyOffersCount } from '~/server/routers/contest/getLeaguesMarketCount';
 import { Skeleton } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import _ from 'lodash';
 
 export const theme = createTheme({
   palette: {
@@ -138,18 +139,22 @@ function NavLink(props: { link: string; icon: any; name: string }) {
   );
 }
 
+const leaguesMap = Object.entries(leagues);
+
 export const Layout: React.FC<Props> = (props) => {
   const { setParam, league } = useQueryParams({ query: props.query });
 
   // Filter nav leagues with available offers & markets
   const availableLeagues = useMemo(
     () =>
-      Object.entries(leagues).filter(
-        ([league]) =>
-          !!props.leagueFantasyOffersCount.find(
-            (row) => row.league.toString() === league && row.count > 0,
-          ),
-      ),
+      props.leagueFantasyOffersCount?.reduce((acc: typeof leaguesMap, row) => {
+        if (row.count > 0) {
+          const leagueOption = _.get(leagues, row.league.toString());
+          acc.push([row.league.toString(), leagueOption]);
+        }
+
+        return acc;
+      }, []),
     [props.leagueFantasyOffersCount],
   );
 
@@ -176,9 +181,9 @@ export const Layout: React.FC<Props> = (props) => {
             'bg-primary items-center grid grid-cols-3 lg:hidden border-b border-gray-400'
           }
         >
-          <div />
-          <div className="flex justify-center">
-            <Logo key="bottom" scale={3} isLoggedIn={true} />
+          <span />
+          <div className="flex justify-center items-center pt-2">
+            <Logo key="bottom" isLoggedIn={true} scale={4} />
           </div>
           <div className="p-4 flex justify-end">
             {props.showTokenCount ? (
@@ -227,8 +232,8 @@ export const Layout: React.FC<Props> = (props) => {
                     </div>
                   )}
 
-                  {availableLeagues.map(([name, { Icon }], i) => (
-                    <a
+                  {availableLeagues?.map(([name, { Icon }], i) => (
+                    <button
                       key={i}
                       onClick={() => {
                         setParam('league', name);
@@ -247,7 +252,7 @@ export const Layout: React.FC<Props> = (props) => {
                         }
                       />
                       {name}
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>

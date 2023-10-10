@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
@@ -13,10 +12,11 @@ import * as Yup from 'yup';
 import TeamAutoComplete, {
   TeamWithInputValue,
 } from '~/components/Admin/Offer/OfferForm/TeamAutoComplete';
-import { Team, Player } from '@prisma/client';
+import { Player, Team } from '@prisma/client';
 
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton } from '@mui/material';
+import { NEW_USER_ID } from '~/constants/NewUserId';
 
 const InputValidationSchema = Yup.object().shape({
   name: Yup.string().trim().required('Name is required'),
@@ -37,6 +37,8 @@ interface PlayerDialogFormProps {
   handleClose: () => void;
   handleCancel: () => void;
   onAddTeam: (team: Team) => Promise<Team | undefined>;
+  onDeleteTeam: (team: Team) => Promise<Team | undefined>;
+  onDeletePlayer: () => void;
   teams: Team[];
   onFormSubmit: (player: Player) => void;
   teamIsLoading: boolean;
@@ -49,11 +51,13 @@ const PlayerDialogForm = (props: PlayerDialogFormProps) => {
     handleClose,
     player,
     onAddTeam,
+    onDeleteTeam,
     teams,
     onFormSubmit,
     handleCancel,
     teamIsLoading,
     setTeamFilterName,
+    onDeletePlayer,
   } = props;
 
   const defaultValues = {
@@ -77,13 +81,21 @@ const PlayerDialogForm = (props: PlayerDialogFormProps) => {
 
   const onSubmit = async (player: PlayerWithInputValue) => {
     await onFormSubmit({
-      id: 'NEW',
+      id: player.id || NEW_USER_ID,
       name: player.name,
       position: player.position,
       team: player?.Team?.name || '',
       teamid: player?.Team?.id || '',
       headshot: player.headshot,
     });
+  };
+
+  const handleSubmitWithoutPropagation = (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleSubmit(onSubmit)(event);
   };
 
   useEffect(() => {
@@ -94,10 +106,12 @@ const PlayerDialogForm = (props: PlayerDialogFormProps) => {
 
   return (
     <Dialog open={open}>
-      <form id="playerDialogForm">
+      <form id="playerDialogForm" onSubmit={handleSubmitWithoutPropagation}>
         <DialogTitle>
           <Box display="flex" alignItems="center">
-            <Box flexGrow={1}>Add a new player</Box>
+            <Box flexGrow={1}>
+              {player.id === 'NEW' ? 'New' : 'Edit'} Player
+            </Box>
             <Box>
               <IconButton onClick={handleClose}>
                 <CloseIcon />
@@ -106,9 +120,6 @@ const PlayerDialogForm = (props: PlayerDialogFormProps) => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Did you miss any player in our list? Please, add it!
-          </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
@@ -132,6 +143,7 @@ const PlayerDialogForm = (props: PlayerDialogFormProps) => {
             helperText={errors?.team?.message}
             setValue={setValue}
             onAddTeam={onAddTeam}
+            onDeleteTeam={onDeleteTeam}
             isLoading={teamIsLoading}
             setTeamFilterName={setTeamFilterName}
           />
@@ -162,9 +174,25 @@ const PlayerDialogForm = (props: PlayerDialogFormProps) => {
             sx={{ mt: 2 }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button onClick={() => handleSubmit(onSubmit)()}>Add</Button>
+        <DialogActions sx={{ justifyContent: 'space-between', p: 2 }}>
+          {player.id !== NEW_USER_ID ? (
+            <Button
+              onClick={onDeletePlayer}
+              className={'underline text-blue-500'}
+            >
+              Delete this Player
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className={'space-x-2'}>
+            <Button type="submit" variant={'contained'}>
+              Save
+            </Button>
+            <Button onClick={handleCancel} variant={'outlined'}>
+              Cancel
+            </Button>
+          </div>
         </DialogActions>
       </form>
     </Dialog>

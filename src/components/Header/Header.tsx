@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 const ucfirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-function Header() {
+function Header(props: React.PropsWithChildren) {
   const { pathname } = useRouter();
   const appName = 'LockSpread';
 
@@ -18,7 +18,7 @@ function Header() {
           if ((path.match(/-/) || []).length > 0) {
             path = path
               .split('-')
-              .reduce((p, n) => `${ucfirst(p)}-${ucfirst(n)}`);
+              .reduce((p, n) => `${ucfirst(p)} ${ucfirst(n)}`);
           } else {
             path = ucfirst(path);
           }
@@ -32,6 +32,7 @@ function Header() {
   return (
     <Head>
       <title>{title}</title>
+      {props.children}
     </Head>
   );
 }

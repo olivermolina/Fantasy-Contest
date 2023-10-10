@@ -1,4 +1,3 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import {
   PaymentMethodType,
@@ -15,8 +14,10 @@ import { prisma } from '~/server/prisma';
 import dayjs from 'dayjs';
 import { ActionType } from '~/constants/ActionType';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
+import createTransaction from '~/server/routers/bets/createTransaction';
 
-const accountPayout = t.procedure
+const accountPayout = isAuthenticated
   .input(
     yup.object({
       fullName: yup.string().required(),
@@ -37,7 +38,7 @@ const accountPayout = t.procedure
     if (!userId || !user) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
 
@@ -90,6 +91,15 @@ const accountPayout = t.procedure
             data?.PaymentDetails[0]?.PaymentApprovalDateTime || '',
           statusDateTime: data?.PaymentDetails[0]?.PaymentStatusDateTime || '',
         },
+      });
+
+      await createTransaction({
+        transactionId: transaction.id,
+        userId,
+        amountProcess: payoutAmount,
+        amountBonus: 0,
+        transactionType: TransactionType.DEBIT,
+        actionType: ActionType.PAYOUT,
       });
 
       return {

@@ -1,39 +1,35 @@
 import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import UserFormComponent from './EditForm';
-import {
-  manageUserMocks,
-  newUserMock,
-  subAdminUsersMock,
-} from './__mocks__/manageUserMocks';
+import EditFormComponent from './EditForm';
+import { manageUserMocks, newUserMock } from './__mocks__/manageUserMocks';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: 'Lockspread/Admin/UserForm',
-  component: UserFormComponent,
+  component: EditFormComponent,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
     backgroundColor: { control: 'color' },
   },
-} as ComponentMeta<typeof UserFormComponent>;
+} as ComponentMeta<typeof EditFormComponent>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof UserFormComponent> = (args) => (
-  <UserFormComponent {...args} />
+const Template: ComponentStory<typeof EditFormComponent> = (args) => (
+  <EditFormComponent {...args} />
 );
 
-export const EditUserForm = Template.bind({});
+export const EditPartnerForm = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 
-EditUserForm.args = {
+EditPartnerForm.args = {
   user: manageUserMocks[0],
-  subAdminUsers: subAdminUsersMock,
+  subAdminUsers: [],
 };
 
-export const AddUserForm = Template.bind({});
+export const AddPartnerForm = Template.bind({});
 
-AddUserForm.args = {
+AddPartnerForm.args = {
   user: newUserMock,
-  subAdminUsers: subAdminUsersMock,
+  subAdminUsers: [],
 };

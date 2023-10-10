@@ -6,6 +6,7 @@ import {
   BetStakeType,
   ContestCategory,
   ContestWagerType,
+  Prisma,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -31,6 +32,10 @@ const contestCategories: ContestCategory[] = [
     allInPayoutMultiplier: 3,
     primaryInsuredPayoutMultiplier: 2,
     secondaryInsuredPayoutMultiplier: 0.5,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: null,
   },
   {
     id: faker.datatype.uuid(),
@@ -38,6 +43,10 @@ const contestCategories: ContestCategory[] = [
     allInPayoutMultiplier: 5,
     primaryInsuredPayoutMultiplier: 2.5,
     secondaryInsuredPayoutMultiplier: 1.25,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: null,
   },
   {
     id: faker.datatype.uuid(),
@@ -45,6 +54,10 @@ const contestCategories: ContestCategory[] = [
     allInPayoutMultiplier: 10,
     primaryInsuredPayoutMultiplier: 5,
     secondaryInsuredPayoutMultiplier: 1.25,
+    customStakeLimitEnabled: false,
+    maxStakeAmount: new Prisma.Decimal(0),
+    minStakeAmount: new Prisma.Decimal(0),
+    bonusCreditLimitId: null,
   },
 ];
 
@@ -86,8 +99,13 @@ Open.args = {
       wagerType: ContestWagerType.TOKEN,
       stakeType: BetStakeType.ALL_IN,
       insuredPayout: {
+        numberOfPicks: 2,
         primaryInsuredPayout: 0,
         secondaryInsuredPayout: 0,
+        allInPayout: 0,
+        allInPayoutMultiplier: 5,
+        primaryInsuredPayoutMultiplier: 3,
+        secondaryInsuredPayoutMultiplier: 2,
       },
     },
     {
@@ -130,8 +148,13 @@ Open.args = {
       wagerType: ContestWagerType.TOKEN,
       stakeType: BetStakeType.ALL_IN,
       insuredPayout: {
+        numberOfPicks: 2,
         primaryInsuredPayout: 5,
         secondaryInsuredPayout: 2.5,
+        allInPayout: 10,
+        allInPayoutMultiplier: 5,
+        primaryInsuredPayoutMultiplier: 3,
+        secondaryInsuredPayoutMultiplier: 2,
       },
     },
   ],

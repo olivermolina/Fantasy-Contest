@@ -1,6 +1,7 @@
 import React from 'react';
 import BackdropLoading from '~/components/BackdropLoading';
 import {
+  LegRowModel,
   PendingBetsManagement,
   RowModel,
 } from '~/components/Pages/Admin/PendingBetsManagement/PendingBetsManagement';
@@ -11,7 +12,7 @@ import { BetStatus } from '@prisma/client';
 
 export const PendingBetsManagementContainer = () => {
   const queryClient = useQueryClient();
-  const { data, isLoading } = trpc.admin.getPendingBets.useQuery();
+  const { data, isLoading, refetch } = trpc.admin.getPendingBets.useQuery();
   const queryKey = trpc.admin.getPendingBets.getQueryKey();
   const mutation = trpc.admin.settlePendingBet.useMutation({
     // When mutate is called:
@@ -41,24 +42,37 @@ export const PendingBetsManagementContainer = () => {
       queryClient.invalidateQueries({ queryKey });
     },
   });
+
   const settlePick = async (currentRow: RowModel, betStatus: BetStatus) => {
     try {
       await mutation.mutateAsync({ betId: currentRow.ticket, betStatus });
-      toast.success(
-        `You successfully ${
-          betStatus === BetStatus.REFUNDED ? 'refund' : 'settle'
-        } the pick with ID ${currentRow.ticket}.`,
-      );
+      await refetch();
+      toast.success('Status updated successfully');
     } catch (e) {
-      toast.error(
-        'Something went wrong when deleting the pick. Please try again later.',
-      );
+      toast.error('Something went wrong. Please try again later.');
+    }
+  };
+
+  const updateBetLegMutation = trpc.admin.updateBetLeg.useMutation();
+  const updateBetLeg = async (leg: LegRowModel, status: BetStatus) => {
+    try {
+      await updateBetLegMutation.mutateAsync({ id: leg.id, status });
+      await refetch();
+      toast.success('Leg status updated successfully');
+    } catch (e) {
+      toast.error('Error updating bet status');
     }
   };
   return (
     <>
-      <BackdropLoading open={isLoading || mutation.isLoading} />
-      <PendingBetsManagement data={data || []} onClickDeleteRow={settlePick} />
+      <BackdropLoading
+        open={isLoading || mutation.isLoading || updateBetLegMutation.isLoading}
+      />
+      <PendingBetsManagement
+        data={data || []}
+        settlePick={settlePick}
+        updateBetLeg={updateBetLeg}
+      />
     </>
   );
 };

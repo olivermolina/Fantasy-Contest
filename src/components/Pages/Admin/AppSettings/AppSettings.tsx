@@ -3,11 +3,18 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppSettingsState } from '~/state/appSettings';
-import { MenuItem, TextField } from '@mui/material';
+import {
+  FormControlLabel,
+  MenuItem,
+  Switch,
+  TextField,
+  Tooltip,
+} from '@mui/material';
 import { ReloadBonusType } from '~/constants/ReloadBonusType';
 import Link from 'next/link';
 import { UrlPaths } from '~/constants/UrlPaths';
 import Button from '@mui/material/Button';
+import InfoIcon from '@mui/icons-material/Info';
 
 const formSchema = z.object({
   maxMatchDepositAmount: z.coerce
@@ -39,6 +46,19 @@ const formSchema = z.object({
   minMarketOdds: z.coerce.number().min(-200, 'Minimum market odds is required'),
   maxMarketOdds: z.coerce.number().min(1, 'Maximum market odds is required'),
   challengePromoMessage: z.string().min(1, 'Promo message is required'),
+  signupFreeEntry: z.boolean(),
+  maxDailyTotalBetAmount: z.coerce
+    .number()
+    .min(0, 'Maximum daily total bet amount must be greater than or equal 0.'),
+  weeklyReferralMaxAmountEarned: z.coerce
+    .number()
+    .min(
+      0,
+      'Weekly referral max amount earned must be greater than or equal 0.',
+    ),
+  minDepositAmount: z.coerce
+    .number()
+    .min(0, 'Deposit amount must be greater than or equal 0.'),
 });
 
 export type AppSettingFormSchemaType = z.infer<typeof formSchema>;
@@ -85,6 +105,12 @@ export const AppSettings = (props: Props) => {
         minMarketOdds: Number(appSettings.MIN_MARKET_ODDS),
         maxMarketOdds: Number(appSettings.MAX_MARKET_ODDS),
         challengePromoMessage: appSettings.CHALLENGE_PROMO_MESSAGE,
+        signupFreeEntry: Number(appSettings.SIGNUP_FREE_ENTRY) == 1,
+        maxDailyTotalBetAmount: Number(appSettings.MAX_DAILY_TOTAL_BET_AMOUNT),
+        weeklyReferralMaxAmountEarned: Number(
+          appSettings.WEEKLY_REFERRAL_MAX_AMOUNT_EARNED,
+        ),
+        minDepositAmount: Number(appSettings.MIN_DEPOSIT_AMOUNT),
       });
     }
   }, [appSettings]);
@@ -95,6 +121,21 @@ export const AppSettings = (props: Props) => {
         {/*Account Deposit*/}
         <div className={'flex flex-col gap-4'}>
           <p className={'font-semibold text-md'}>Account Deposit</p>
+          <TextField
+            type={'number'}
+            label="Minimum Deposit Amount"
+            variant="outlined"
+            fullWidth
+            {...register('minDepositAmount')}
+            error={!!errors?.minDepositAmount}
+            helperText={errors?.minDepositAmount?.message}
+            size={'small'}
+            inputProps={{
+              step: 0.01,
+            }}
+            InputLabelProps={{ shrink: true }}
+          />
+
           <TextField
             type={'number'}
             label="Maximum Match Deposit Amount"
@@ -244,6 +285,20 @@ export const AppSettings = (props: Props) => {
             }}
             InputLabelProps={{ shrink: true }}
           />
+          <TextField
+            type={'number'}
+            label="Weekly Referral Max Amount Earned"
+            variant="outlined"
+            fullWidth
+            {...register('weeklyReferralMaxAmountEarned')}
+            error={!!errors?.weeklyReferralMaxAmountEarned}
+            helperText={errors?.weeklyReferralMaxAmountEarned?.message}
+            size={'small'}
+            inputProps={{
+              step: 0.01,
+            }}
+            InputLabelProps={{ shrink: true }}
+          />
         </div>
 
         {/*Stake*/}
@@ -279,6 +334,26 @@ export const AppSettings = (props: Props) => {
             }}
             InputLabelProps={{ shrink: true }}
           />
+          <div className={'flex flex-auto'}>
+            <TextField
+              type={'number'}
+              label="Maximum Daily Total Stake Amount"
+              placeholder={'50'}
+              variant="outlined"
+              fullWidth
+              {...register('maxDailyTotalBetAmount')}
+              error={!!errors?.maxDailyTotalBetAmount}
+              helperText={errors?.maxDailyTotalBetAmount?.message}
+              size={'small'}
+              inputProps={{
+                step: 0.01,
+              }}
+              InputLabelProps={{ shrink: true }}
+            />
+            <Tooltip title={'Set 0 as no limits.'}>
+              <InfoIcon color={'primary'} />
+            </Tooltip>
+          </div>
           <TextField
             type={'number'}
             label="Repeat Entry Limit"
@@ -341,6 +416,24 @@ export const AppSettings = (props: Props) => {
             helperText={errors?.challengePromoMessage?.message}
             size={'small'}
             InputLabelProps={{ shrink: true }}
+          />
+        </div>
+
+        {/*Sign up*/}
+        <div className={'flex flex-col gap-4'}>
+          <p className={'font-semibold text-md'}>Sign up Free Entry</p>
+          <Controller
+            name="signupFreeEntry"
+            control={control}
+            defaultValue={false}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch {...field} checked={field.value} color="primary" />
+                }
+                label={`Automatic "Free Entry" bonus balance at first sign up`}
+              />
+            )}
           />
         </div>
 

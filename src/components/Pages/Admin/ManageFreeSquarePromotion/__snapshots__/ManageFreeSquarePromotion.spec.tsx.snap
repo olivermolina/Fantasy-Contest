@@ -12,7 +12,7 @@ exports[`ManageFreeSquarePromotion should render correctly 1`] = `
         class="MuiFormControl-root MuiTextField-root css-10qkx7n-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1sumxir-MuiFormLabel-root-MuiInputLabel-root"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeSmall MuiInputLabel-outlined css-1jy569b-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="true"
           for="league"
           id="league-label"
@@ -35,6 +35,7 @@ exports[`ManageFreeSquarePromotion should render correctly 1`] = `
           </div>
           <input
             aria-hidden="true"
+            aria-invalid="false"
             class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
             tabindex="-1"
             value="NBA"
@@ -500,7 +501,7 @@ exports[`ManageFreeSquarePromotion should render correctly 1`] = `
                   class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                 >
                   <div
-                    class="css-7owdng-MuiStack-root"
+                    class="flex"
                   >
                     <div
                       class="MuiBox-root css-182y0me"
@@ -608,7 +609,7 @@ exports[`ManageFreeSquarePromotion should render correctly 1`] = `
                   class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter MuiTableCell-sizeMedium css-3ybl5n-MuiTableCell-root"
                 >
                   <div
-                    class="css-7owdng-MuiStack-root"
+                    class="flex"
                   >
                     <div
                       class="MuiBox-root css-182y0me"

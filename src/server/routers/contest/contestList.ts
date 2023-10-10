@@ -4,6 +4,7 @@ import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/prisma';
 import { canJoinContest } from '~/server/routers/contest/canJoinContest';
 import * as yup from '~/utils/yup';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const contestList = t.procedure
   .output(
@@ -41,7 +42,7 @@ const contestList = t.procedure
     if (!userId) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'User not found',
+        message: CustomErrorMessages.USER_NOT_FOUND,
       });
     }
     return contests.map((contest) => ({

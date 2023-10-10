@@ -8,7 +8,7 @@ import {
   TextField,
 } from '@mui/material';
 import Button from '@mui/material/Button';
-import { UserStatus, UserType } from '@prisma/client';
+import { User, UserStatus, UserType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -31,7 +31,7 @@ export type EditFormInputs = z.infer<typeof EditFormValidationSchema>;
  */
 interface Props {
   user: ManagePartnersPamsRowModel;
-  subAdminUsers: ManagePartnersPamsRowModel[];
+  subAdminUsers: User[] | [];
   onSubmit: (data: EditFormInputs) => void;
   closeForm: () => void;
 }
@@ -173,19 +173,19 @@ export default function EditForm(props: Props) {
               control={control}
               defaultValue={user.type}
               render={({ field }) => (
-                <FormControl
-                  fullWidth
-                  error={!!errors?.type}
-                  size={'small'}
-                  disabled={user.id !== NEW_USER_ID}
-                >
+                <FormControl fullWidth error={!!errors?.type} size={'small'}>
                   <Select size={'small'} fullWidth {...field}>
                     <MenuItem key={'empty-status'} value={undefined}>
                       <span className={'italic text-gray-400'}>
                         Select type
                       </span>
                     </MenuItem>
-                    {[UserType.SUB_ADMIN, UserType.AGENT].map((userType) => (
+                    {[
+                      UserType.SUB_ADMIN,
+                      UserType.AGENT,
+                      UserType.PLAYER,
+                      UserType.ADMIN,
+                    ].map((userType) => (
                       <MenuItem key={userType} value={userType}>
                         {mapUserTypeLabel(userType)}
                       </MenuItem>
@@ -205,12 +205,12 @@ export default function EditForm(props: Props) {
             <span className={'font-semibold'}>PAM</span>
             <div className={'col-span-2 lg:col-span-5'}>
               <Controller
-                name="subAdminId"
+                name="subAdminIds"
                 control={control}
-                defaultValue={user.subAdminId}
+                defaultValue={user.subAdminIds || []}
                 render={({ field }) => (
                   <FormControl fullWidth error={!!errors?.type} size={'small'}>
-                    <Select size={'small'} fullWidth {...field}>
+                    <Select size={'small'} fullWidth multiple {...field}>
                       <MenuItem key={'empty-status'} value={undefined}>
                         <span className={'italic text-gray-400'}>
                           Select PAM

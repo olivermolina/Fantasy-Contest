@@ -4,6 +4,7 @@ import prisma from '~/server/prisma';
 import { describeParlayBet } from '~/utils/describeParlayBet';
 import { Prisma, User, UserType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 // @ts-expect-error Big int was not supported fix here https://github.com/prisma/studio/issues/614#issuecomment-795213237
 BigInt.prototype.toJSON = function () {
@@ -20,8 +21,11 @@ export const getUserBetLists = async (
     case UserType.SUB_ADMIN:
       where.userId = {
         in: [
-          ...ctx.user.SubAdminAgents.reduce((acc: string[], subAdmin) => {
-            return [...acc, ...subAdmin.users?.map((user: User) => user.id)];
+          ...ctx.user.AgentSubAdmins.reduce((acc: string[], subAdmin) => {
+            return [
+              ...acc,
+              ...subAdmin.Agent.users?.map((user: User) => user.id),
+            ];
           }, []),
         ],
       };
@@ -38,7 +42,7 @@ export const getUserBetLists = async (
     default:
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'User does not have role permissions for this function.',
+        message: CustomErrorMessages.UNAUTHORIZED_ROLE,
       });
   }
 
@@ -72,7 +76,7 @@ export const getUserBetLists = async (
     userPhone: bet.owner.phone?.toString() ?? '',
     riskWin: `${bet.stake} / ${bet.payout}`,
     description: describeParlayBet({ legs: bet.legs }),
-    type: bet.type,
+    type: bet.stakeType,
     legs: bet.legs.map((leg) => ({
       id: leg.id,
       name: leg.market.name,
@@ -80,6 +84,8 @@ export const getUserBetLists = async (
       odds: Number(leg.odds),
       category: leg.market.category,
       total: Number(leg.total),
+      status: leg.status,
+      total_stat: Number(leg.market.total_stat),
     })),
   }));
 };
@@ -105,6 +111,8 @@ const getPendingBets = adminProcedure
             odds: z.number(),
             category: z.string(),
             total: z.number(),
+            status: z.string(),
+            total_stat: z.number().nullable(),
           }),
         ),
       }),

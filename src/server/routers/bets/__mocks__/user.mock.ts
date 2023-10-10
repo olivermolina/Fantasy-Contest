@@ -20,4 +20,5 @@ export const userMock = {
   phone: null,
   type: UserType.PLAYER,
   agentId: null,
+  exemptedReasonCodes: [],
 };

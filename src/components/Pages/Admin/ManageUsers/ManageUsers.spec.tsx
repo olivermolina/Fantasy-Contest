@@ -7,6 +7,7 @@ describe('ManageUsers', () => {
       users: [],
       openUserForm: jest.fn(),
       addUser: jest.fn(),
+      partners: [],
     };
 
     const { container } = render(<ManageUsers {...mockProps} />);

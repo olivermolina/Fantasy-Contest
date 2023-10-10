@@ -3,12 +3,18 @@ export const pendingPickDialogProps = {
     console.log('handleClose');
   },
   open: false,
-  onClickDeleteRow: () => {
-    console.log('onClickDeleteRow');
+  settlePick: () => {
+    console.log('settlePick');
   },
   row: undefined,
   clearSelectedRow: () => {
     console.log('clearSelectedRow');
+  },
+  setSelectedBetStatus: () => {
+    console.log('setSelectedBetStatus');
+  },
+  updateBetLeg: () => {
+    console.log('updateBetLeg');
   },
   isViewOnly: false,
 };

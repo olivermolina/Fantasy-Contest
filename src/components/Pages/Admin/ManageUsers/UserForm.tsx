@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import {
   Box,
+  Checkbox,
+  FormControlLabel,
   FormHelperText,
   IconButton,
   MenuItem,
@@ -10,7 +12,7 @@ import {
   TextField,
 } from '@mui/material';
 import Button from '@mui/material/Button';
-import { UserStatus } from '@prisma/client';
+import { Agent, User, UserStatus, UserType } from '@prisma/client';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -23,6 +25,11 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import FormControl from '@mui/material/FormControl';
 import { UserFormValidationSchema } from '~/schemas/UserFormValidationSchema';
+import { mapUserTypeLabel } from '~/utils/mapUserTypeLabel';
+import FormLabel from '@mui/material/FormLabel';
+import FormGroup from '@mui/material/FormGroup';
+import { BlockedReasonCodesArray } from '~/lib/tsevo-gidx/ReasonCodes';
+import ProfileTransactionHistoryContainer from '~/containers/ProfileTransactionHistoryContainer';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -65,13 +72,17 @@ interface Props {
   user: ManageUserRowModel;
   onSubmit: (data: UserFormInputs) => void;
   closeForm: () => void;
+  partners: (User & {
+    UserAsAgents: Agent[];
+  })[];
+  userType?: UserType;
 }
 
 /**
  * Defines the `UserForm` component.
  */
 export default function UserForm(props: Props) {
-  const { user, closeForm } = props;
+  const { user, closeForm, partners, userType } = props;
   const {
     register,
     handleSubmit,
@@ -84,6 +95,34 @@ export default function UserForm(props: Props) {
   });
 
   const [tabValue, setTabValue] = React.useState(0);
+  const [tsevoState, setTsevoState] = React.useState({
+    'ID-UA18': true,
+    'ID-EX': true,
+    'ID-BLOCK': true,
+    'ID-DECEASED': true,
+    'ID-HR': true,
+    'ID-HVEL-ACTV': true,
+    'ID-AGE-UNKN': true,
+    'ID-WL': true,
+    'ID-ADDR-UPA': true,
+    'DFP-VPRP': true,
+    'DFP-HR-CONN': true,
+    'LL-BLOCK': true,
+  });
+
+  const handleChangeTsevo = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newTsevoState = {
+      ...tsevoState,
+      [event.target.name]: event.target.checked,
+    };
+    setTsevoState(newTsevoState);
+    setValue(
+      'exemptedReasonCodes',
+      Object.keys(newTsevoState).filter(
+        (key) => !newTsevoState[key as keyof typeof newTsevoState],
+      ),
+    );
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -107,7 +146,7 @@ export default function UserForm(props: Props) {
     reset({
       id: user.id,
       username: user.username || '',
-      password: user.id === NEW_USER_ID ? '' : user.username || '',
+      password: user.id === NEW_USER_ID ? '' : user.email || '',
       email: user.email,
       phone: user.phone?.toString(),
       status: user.status,
@@ -119,7 +158,15 @@ export default function UserForm(props: Props) {
       state: user.state || '',
       postalCode: user.postalCode || '',
       DOB: user.DOB || dayjs().toDate(),
+      type: user.type,
+      agentId: user.agentId,
     });
+    setTsevoState((prevState) => ({
+      ...user.exemptedReasonCodes.reduce((acc, curr) => {
+        acc[curr as keyof typeof tsevoState] = false;
+        return acc;
+      }, prevState),
+    }));
   }, [user]);
 
   // Reset the tab value when there are errors
@@ -157,6 +204,8 @@ export default function UserForm(props: Props) {
         >
           <Tab label="Account" {...a11yProps(0)} />
           <Tab label="Address" {...a11yProps(1)} />
+          <Tab label="TSEVO" {...a11yProps(2)} />
+          <Tab label="Transactions" {...a11yProps(3)} />
         </Tabs>
       </Box>
       <TabPanel value={tabValue} index={0}>
@@ -286,22 +335,107 @@ export default function UserForm(props: Props) {
             <div className={'col-span-2 lg:col-span-5'}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <MobileDatePicker
-                  inputFormat="MM/DD/YYYY"
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      fullWidth
-                      error={!!errors?.DOB}
-                      helperText={errors?.DOB?.message}
-                    />
-                  )}
+                  slotProps={{
+                    textField: {
+                      variant: 'outlined',
+                      fullWidth: true,
+                      error: !!errors?.DOB,
+                      helperText: errors?.DOB?.message,
+                    },
+                  }}
                   value={DOBValue}
                   onChange={handleChangeDOB}
                 />
               </LocalizationProvider>
             </div>
           </div>
+
+          {userType !== UserType.AGENT && (
+            <>
+              <div
+                className={
+                  'grid grid-cols-3 items-center lg:grid-cols-6 p-4 gap-2'
+                }
+              >
+                <span className={'font-semibold'}>Type</span>
+                <div className={'col-span-2 lg:col-span-5'}>
+                  <Controller
+                    name="type"
+                    control={control}
+                    defaultValue={user.type}
+                    render={({ field }) => (
+                      <FormControl
+                        fullWidth
+                        error={!!errors?.type}
+                        size={'small'}
+                      >
+                        <Select size={'small'} fullWidth {...field}>
+                          <MenuItem key={'empty-status'} value={undefined}>
+                            <span className={'italic text-gray-400'}>
+                              Select type
+                            </span>
+                          </MenuItem>
+                          {[
+                            UserType.PLAYER,
+                            UserType.SUB_ADMIN,
+                            UserType.AGENT,
+                            UserType.ADMIN,
+                          ].map((userType) => (
+                            <MenuItem key={userType} value={userType}>
+                              {mapUserTypeLabel(userType)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+
+                        {errors?.type?.message ? (
+                          <FormHelperText>
+                            {errors?.type?.message}
+                          </FormHelperText>
+                        ) : null}
+                      </FormControl>
+                    )}
+                  />
+                </div>
+              </div>
+              <div
+                className={
+                  'grid grid-cols-3 items-center lg:grid-cols-6 p-4 gap-2'
+                }
+              >
+                <span className={'font-semibold'}>Partner</span>
+                <div className={'col-span-2 lg:col-span-5'}>
+                  <Controller
+                    name="agentId"
+                    control={control}
+                    defaultValue={''}
+                    render={({ field }) => (
+                      <FormControl
+                        fullWidth
+                        error={!!errors?.type}
+                        size={'small'}
+                      >
+                        <Select size={'small'} fullWidth {...field}>
+                          <MenuItem key={'empty-status'} value={undefined}>
+                            <span className={'italic text-gray-400'}>
+                              Select type
+                            </span>
+                          </MenuItem>
+                          {partners.map((partner) => (
+                            <MenuItem
+                              key={partner.UserAsAgents[0]!.id!}
+                              value={partner.UserAsAgents[0]!.id!}
+                            >
+                              {partner.username}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
@@ -412,7 +546,43 @@ export default function UserForm(props: Props) {
           </div>
         </div>
       </TabPanel>
-
+      <TabPanel index={tabValue} value={2}>
+        <div className={'flex'}>
+          <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+            <FormLabel component="legend">
+              Manage Blocked Reason Codes from TSEVO
+            </FormLabel>
+            <FormGroup>
+              <div
+                className={
+                  'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-flow-row gap-4 mt-4'
+                }
+              >
+                {BlockedReasonCodesArray.map((reasonCode) => (
+                  <FormControlLabel
+                    key={reasonCode}
+                    control={
+                      <Checkbox
+                        checked={
+                          tsevoState[reasonCode as keyof typeof tsevoState]
+                        }
+                        onChange={handleChangeTsevo}
+                        name={reasonCode}
+                      />
+                    }
+                    label={reasonCode}
+                  />
+                ))}
+              </div>
+            </FormGroup>
+          </FormControl>
+        </div>
+      </TabPanel>
+      <TabPanel index={tabValue} value={3}>
+        <div className={'p-2 h-full w-full'}>
+          <ProfileTransactionHistoryContainer userId={user.id} />
+        </div>
+      </TabPanel>
       <div className={'flex flex-row justify-between p-4'}>
         <Button variant={'outlined'} onClick={closeForm}>
           Cancel

@@ -34,6 +34,10 @@ export interface DefaultPickProps {
    * Boolean to show admin components
    */
   isAdminView?: boolean;
+  /**
+   * The event name of the pick
+   */
+  eventName?: string;
 }
 
 export interface StraightPickProps extends DefaultPickProps {

@@ -1,9 +1,9 @@
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { supabase } from '~/utils/supabaseClient';
 import { UrlPaths } from '~/constants/UrlPaths';
 import prisma from '~/server/prisma';
 import { UserType } from '@prisma/client';
 import { findKey, replace } from 'lodash';
+import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 
 /**
  * Higher Order Function for server-side authentication
@@ -22,16 +22,18 @@ export const withAuth = (
    * @returns {Promise<any>} - Returns the result of the original GetServerSideProps function or an object with a redirect property if the user is not authenticated
    */
   return async (context: GetServerSidePropsContext) => {
-    const user = await supabase.auth.api.getUserByCookie(
-      context.req,
-      context.res,
-    );
+    // Create authenticated Supabase Client.
+    const supabase = createPagesServerClient(context);
 
-    if (!user.user) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
       return {
         redirect: {
           permanent: false,
-          destination: UrlPaths.Login,
+          destination: UrlPaths.Login + '?redirect=' + context.resolvedUrl,
         },
       };
     }
@@ -39,7 +41,7 @@ export const withAuth = (
     try {
       const prismaUser = await prisma.user.findFirstOrThrow({
         where: {
-          id: user.user.id,
+          id: session.user.id,
         },
       });
 

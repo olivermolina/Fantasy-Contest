@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AppSettingName" ADD VALUE 'MAX_DAILY_TOTAL_BET_AMOUNT';

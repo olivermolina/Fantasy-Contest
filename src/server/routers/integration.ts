@@ -6,6 +6,9 @@ import { ActionType } from '~/constants/ActionType';
 import { prisma } from '~/server/prisma';
 import defaultLogger from '~/utils/logger';
 import { customerProfile } from '~/server/routers/user/customerProfile';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
+import createTransaction from '~/server/routers/bets/createTransaction';
+import { PaymentMethodType, TransactionType } from '@prisma/client';
 
 export const integrationRouter = t.router({
   gidxCallback: t.procedure
@@ -101,6 +104,22 @@ export const integrationRouter = t.router({
                 processDateTime: paymentDetail?.PaymentProcessDateTime,
               },
             });
+
+            // If deposit is complete, update the wallet
+            if (
+              paymentDetail?.PaymentStatusMessage === 'Complete' &&
+              transaction?.actionType === ActionType.PAY &&
+              transactionStatus?.transactionMethodType === PaymentMethodType.ACH
+            ) {
+              await createTransaction({
+                transactionId: transaction.id,
+                userId: transaction.userId,
+                amountProcess: Number(transaction.amountProcess),
+                amountBonus: Number(transaction.amountBonus),
+                transactionType: TransactionType.CREDIT,
+                actionType: ActionType.PAY,
+              });
+            }
           }
         } catch (e: any) {
           throw new TRPCError({
@@ -134,7 +153,7 @@ export const integrationRouter = t.router({
       if (!user) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'User not found',
+          message: CustomErrorMessages.USER_NOT_FOUND,
         });
       }
 

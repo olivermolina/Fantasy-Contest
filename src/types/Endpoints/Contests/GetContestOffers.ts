@@ -26,6 +26,7 @@ export type FantasyOffer = {
   selId: number;
   league: string;
   matchTime: string;
+  matchDateTime: Date;
   odds: number;
   id: string;
   /**
@@ -61,6 +62,10 @@ export type FantasyOffer = {
    */
   playerTeam: string;
   /**
+   * i.e. 1234
+   */
+  playerTeamId: string;
+  /**
    * Market type
    */
   type: string;
@@ -83,6 +88,43 @@ export type FantasyOffer = {
    * The Free Square object
    */
   freeSquare: FantasyCardFreeSquareProps | null;
+
+  /**
+   * The original total number for O/U of the stat. i.e. 50 passing yards O/U
+   */
+  originalTotal: number;
+  /**
+   * Original Over odds
+   * @example 100
+   */
+  originalOverOdds: number;
+  /**
+   * Original Under odds
+   * @example -100
+   */
+  originalUnderOdds: number;
+  /**
+   * The adjusted total number for O/U of the stat. i.e. 50 passing yards O/U
+   */
+  adjustedTotal?: number | null;
+  /**
+   * Adjusted Over odds
+   * @example 100
+   */
+  adjustedOverOdds?: number | null;
+  /**
+   * Adjusted Under odds
+   * @example -100
+   */
+  adjustedUnderOdds?: number | null;
+  /**
+   * To show if the offer is active or not
+   */
+  active: boolean;
+  /**
+   * The event name of the offer
+   */
+  eventName?: string;
 };
 
 export type GetContestOffers = {

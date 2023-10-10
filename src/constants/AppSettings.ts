@@ -21,4 +21,12 @@ export const DefaultAppSettings = {
   MAX_MARKET_ODDS: 150,
   CHALLENGE_PROMO_MESSAGE:
     'Pick 2-4 players. Predict if they will get MORE or LESS than their projection.',
+  SIGNUP_FREE_ENTRY: 1,
+  MAX_DAILY_TOTAL_BET_AMOUNT: 0,
+  WEEKLY_REFERRAL_MAX_AMOUNT_EARNED: '0',
+  HOMEPAGE_HEADING_1: 'Daily Fantasy Contests!',
+  HOMEPAGE_HEADING_2:
+    'Select More or Less on player stats to win up to 35x your cash!',
+  ACH_DEPOSIT_AUTO_APPROVE_COUNT: 3,
+  MIN_DEPOSIT_AMOUNT: 20,
 };

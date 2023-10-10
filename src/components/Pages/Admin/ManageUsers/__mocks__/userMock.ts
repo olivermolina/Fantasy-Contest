@@ -1,4 +1,4 @@
-import { UserStatus } from '@prisma/client';
+import { UserStatus, UserType } from '@prisma/client';
 import dayjs from 'dayjs';
 
 export const userMock = {
@@ -20,4 +20,9 @@ export const userMock = {
   created_at: new Date(),
   isFirstDeposit: true,
   timezone: 'America/New_York',
+  notes: '',
+  type: UserType.PLAYER,
+  exemptedReasonCodes: [],
+  agentId: '',
+  subAdminIds: [],
 };

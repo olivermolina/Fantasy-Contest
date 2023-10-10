@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import Reward from '.';
+import { mockBanner } from './__mocks__/mockBanner';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -23,11 +24,5 @@ const Template: ComponentStory<typeof Reward> = (args) => <Reward {...args} />;
 export const RewardCard = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 RewardCard.args = {
-  banner: {
-    id: 'test',
-    text: 'LockSpread will match your first deposit up to $200!',
-    priority: 1,
-    created_at: new Date(),
-    updated_at: new Date(),
-  },
+  banner: mockBanner,
 };

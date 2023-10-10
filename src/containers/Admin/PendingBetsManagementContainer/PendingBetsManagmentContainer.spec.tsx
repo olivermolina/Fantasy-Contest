@@ -29,6 +29,12 @@ jest.mock('~/utils/trpc', () => ({
           mutate: jest.fn(),
         }),
       },
+      updateBetLeg: {
+        useMutation: jest.fn().mockReturnValue({
+          isLoading: false,
+          mutate: jest.fn(),
+        }),
+      },
     },
   },
 }));

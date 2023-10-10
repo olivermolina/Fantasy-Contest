@@ -7,13 +7,15 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import LandingLayout from '~/components/LandingLayout';
 import { UrlPaths } from '~/constants/UrlPaths';
-import { supabase } from '~/utils/supabaseClient';
 import { trpc } from '~/utils/trpc';
 import ReferralModal from '~/components/ReferralModal';
 import ChangeRouteLoadingContainer from '~/containers/ChangeRouteLoadingContainer/ChangeRouteLoadingContainer';
 import BackdropLoading from '~/components/BackdropLoading';
 import { TRPCClientError } from '@trpc/client';
 import { FormErrorText } from '~/components/Form/FormErrorText';
+import { Header } from '~/components';
+import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 export type SignupInputs = {
   email: string;
@@ -27,6 +29,7 @@ export type SignupInputs = {
 };
 
 const Auth = () => {
+  const supabaseClient = useSupabaseClient();
   const router = useRouter();
   const { referral } = router.query;
   const {
@@ -44,6 +47,10 @@ const Auth = () => {
     try {
       await mutation.mutateAsync({
         ...data,
+      });
+      await supabaseClient.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       });
       router.push(UrlPaths.Challenge);
     } catch (error) {
@@ -92,7 +99,16 @@ const Auth = () => {
   }, [referral]);
 
   return (
-    <LandingLayout>
+    <LandingLayout
+      customHeader={
+        <Header>
+          <meta
+            name="description"
+            content={`Sign Up into LockSpread to select More or Less on player stats to win up to 35x your cash!`}
+          />
+        </Header>
+      }
+    >
       <ChangeRouteLoadingContainer />
       <BackdropLoading open={mutation.isLoading} />
       <div className="flex p-4 justify-center items-center">
@@ -100,8 +116,15 @@ const Auth = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-4 p-8 w-full rounded-2xl bg-white text-black overflow-y-auto"
         >
-          <h2 className="font-bold col-span-1 lg:col-span-2 mb-4 text-center text-4xl">
-            Please fill all the details
+          <h1
+            className={
+              'font-bold col-span-1 lg:col-span-2 text-center text-4xl'
+            }
+          >
+            Sign Up
+          </h1>
+          <h2 className="font-semibold col-span-1 lg:col-span-2 mb-4 text-center text-xl">
+            Please fill in all the details
           </h2>
           <input
             placeholder="Email"
@@ -243,9 +266,13 @@ const Auth = () => {
 
 export default Auth;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const user = await supabase.auth.api.getUserByCookie(ctx.req, ctx.res);
-  if (user.user) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  // Create authenticated Supabase Client.
+  const supabase = createPagesServerClient(context);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session) {
     return {
       redirect: {
         permanent: false,

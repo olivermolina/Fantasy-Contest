@@ -2,15 +2,6 @@ import { prismaMock } from '~/server/singleton';
 import { AppSettingName } from '@prisma/client';
 import { getMarketOddsRange } from './getMarketOddsRange';
 
-jest.mock('~/lib/node-cache/AppNodeCache', () => {
-  return {
-    appNodeCache: {
-      get: jest.fn().mockReturnValue(null),
-      set: jest.fn(),
-    },
-  };
-});
-
 describe('getMarketOddsRange', () => {
   beforeEach(() => {
     jest.clearAllMocks();

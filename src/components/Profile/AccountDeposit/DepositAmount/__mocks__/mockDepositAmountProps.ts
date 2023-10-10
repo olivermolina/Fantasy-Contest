@@ -12,4 +12,5 @@ export const mockDepositAmountProps = {
   reloadBonusAmount: 0,
   reloadBonusType: 'FLAT',
   showBonusCreditStyles: false,
+  minDepositAmount: 10,
 };

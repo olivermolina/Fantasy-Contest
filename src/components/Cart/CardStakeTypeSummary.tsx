@@ -5,7 +5,7 @@ import {
   ContestCategory,
   ContestWagerType,
 } from '@prisma/client';
-import { InsuredPayout } from '~/utils/calculateInsuredPayout';
+import { InsuredPayout } from '~/utils/calculatePayout';
 import { styled } from '@mui/material/styles';
 import { showDollarPrefix } from '~/utils/showDollarPrefix';
 

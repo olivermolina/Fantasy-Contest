@@ -11,9 +11,14 @@ export const getUser = (userId: string | undefined) =>
           users: true,
         },
       },
-      SubAdminAgents: {
+      AgentSubAdmins: {
         include: {
-          users: true,
+          Agent: {
+            include: {
+              users: true,
+              User: true,
+            },
+          },
         },
       },
     },

@@ -3,9 +3,16 @@ import { NextPageContext } from 'next';
 import superjson from 'superjson';
 import type { AppRouter } from '~/server/routers/_app';
 
-import { httpBatchLink, httpLink, loggerLink, splitLink } from '@trpc/client';
+import {
+  httpBatchLink,
+  httpLink,
+  loggerLink,
+  splitLink,
+  TRPCLink,
+} from '@trpc/client';
 import type { inferProcedureInput, inferProcedureOutput } from '@trpc/server';
 import { DefaultOptions } from '@tanstack/react-query';
+import { observable } from '@trpc/server/observable';
 
 export function getBaseUrl() {
   if (typeof window !== 'undefined') {
@@ -37,9 +44,39 @@ export interface SSRContext extends NextPageContext {
 }
 
 /**
+ *  Custom link to handle authentication
+ */
+export const customLink: TRPCLink<AppRouter> = () => {
+  // here we just got initialized in the app - this happens once per app
+  // useful for storing cache for instance
+  return ({ next, op }) => {
+    // this is when passing the result to the next link
+    // each link needs to return an observable which propagates results
+    return observable((observer) => {
+      return next(op).subscribe({
+        next(value) {
+          observer.next(value);
+        },
+        error(err) {
+          observer.error(err);
+          if (err?.data?.code === 'UNAUTHORIZED') {
+            const win: Window = window;
+            win.location = '/auth/login';
+          }
+        },
+        complete() {
+          observer.complete();
+        },
+      });
+    });
+  };
+};
+
+/**
  * Links to be used in both client and server
  */
 export const trpcLinks = () => [
+  customLink,
   loggerLink({
     enabled: (opts) =>
       process.env.NODE_ENV === 'development' ||
@@ -150,10 +187,10 @@ export const trpcConfig: Parameters<
       },
     };
   },
-  // /**
-  //  * @link https://trpc.io/docs/ssr
-  //  */
-  // ssr: true,
+  /**
+   * @link https://trpc.io/docs/ssr
+   */
+  ssr: false,
   // /**
   //  * Set headers or status code when doing SSR
   //  */

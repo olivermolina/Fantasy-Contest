@@ -20,6 +20,7 @@ const breadcrumbNameMap: { [key: string]: string } = {
   [UrlPaths.PartnersReferralCodes]: 'Manage Partner Referral Codes',
   [UrlPaths.ManagePartnersPams]: 'Add/Edit Agents & PAMs',
   [UrlPaths.ManageUsers]: 'Add/Edit Users',
+  [UrlPaths.AdminUserLimits]: 'Entry Limits',
 };
 
 export default function AdminBreadCrumb() {
@@ -28,7 +29,7 @@ export default function AdminBreadCrumb() {
   return (
     <Breadcrumbs
       aria-label="breadcrumb"
-      className={'bg-gray-200 p-2 my-2'}
+      className={'bg-gray-200 px-6 py-2'}
       separator={<NavigateNextIcon fontSize="small" />}
     >
       <Link

@@ -1,10 +1,10 @@
-import { t } from '~/server/trpc';
 import { TRPCError } from '@trpc/server';
 import * as yup from '~/utils/yup';
 import { prisma } from '~/server/prisma';
 import { ContestDetailModalProps } from '~/components/ContestDetail/ContestDetailModal';
+import { isAuthenticated } from '~/server/routers/middleware/isAuthenticated';
 
-const getById = t.procedure
+const getById = isAuthenticated
   .input(
     yup.object({
       id: yup.string().required(),

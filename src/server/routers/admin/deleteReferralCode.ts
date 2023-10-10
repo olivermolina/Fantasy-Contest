@@ -2,6 +2,7 @@ import * as yup from '~/utils/yup';
 import { adminProcedure } from '~/server/routers/admin/middleware/isAdmin';
 import prisma from '~/server/prisma';
 import { TRPCError } from '@trpc/server';
+import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 
 const deleteReferralCode = adminProcedure
   .input(
@@ -21,7 +22,7 @@ const deleteReferralCode = adminProcedure
     if (!referralCode) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'Referral Code not found.',
+        message: CustomErrorMessages.REFERRAL_CODE_NOT_FOUND,
       });
     }
 

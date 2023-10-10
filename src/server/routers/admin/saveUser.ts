@@ -4,13 +4,11 @@ import {
 } from '~/server/routers/admin/middleware/isAdmin';
 import { UserFormInputs } from '~/components/Pages/Admin/ManageUsers/UserForm';
 import { supabase } from '~/utils/supabaseClient';
-import logger from '~/utils/logger';
 import { TRPCError } from '@trpc/server';
 import { CustomErrorMessages } from '~/constants/CustomErrorMessages';
 import prisma from '~/server/prisma';
-import { UserStatus, UserType } from '@prisma/client';
+import { UserType } from '@prisma/client';
 import { NEW_USER_ID } from '~/constants/NewUserId';
-import * as z from 'zod';
 import { UserFormValidationSchema } from '~/schemas/UserFormValidationSchema';
 
 /**
@@ -34,24 +32,21 @@ export const innerFn = async ({
     // If the input user's ID is equal to a constant `NEW_USER_ID`,
     // attempt to sign up a new user using the `supabase.auth.signUp` method
     if (input.id === NEW_USER_ID) {
-      const result = await supabase.auth.signUp(
-        {
-          email: input.email,
-          password: password,
-        },
-        {
+      const result = await supabase.auth.signUp({
+        email: input.email,
+        password: password,
+        options: {
           data: {
             username: input.username,
             state: '',
             DOB: new Date(),
           },
         },
-      );
+      });
 
-      const user = result.user;
+      const user = result.data.user;
       if (!user) {
         // If there was an error during signup, throw a TRPCError with a signup error message
-        logger.error('There was an error adding user.', result.error);
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message:
@@ -64,6 +59,56 @@ export const innerFn = async ({
     }
     const phone = Number(input.phone);
     const DOB = new Date(input.DOB);
+
+    const oldUser = await prisma.user.findUnique({
+      where: {
+        id: uid,
+      },
+    });
+
+    let referral = oldUser?.referral;
+    let agentId = input.agentId;
+    if (input.type === UserType.AGENT) {
+      await prisma.agent.upsert({
+        where: {
+          userId: uid,
+        },
+        create: {
+          userId: uid,
+        },
+        update: {},
+      });
+    } else {
+      await prisma.agent.delete({
+        where: {
+          userId: uid,
+        },
+      });
+    }
+
+    if (ctx.user.type === UserType.AGENT) {
+      const agent = await prisma.agent.findUnique({
+        where: {
+          userId: ctx.user.id,
+        },
+        include: {
+          User: true,
+        },
+      });
+      referral = ctx.user.username;
+      agentId = agent?.id;
+    } else if ((!oldUser?.referral || oldUser.agentId !== agentId) && agentId) {
+      const agent = await prisma.agent.findUnique({
+        where: {
+          id: agentId,
+        },
+        include: {
+          User: true,
+        },
+      });
+      referral = agent?.User?.username;
+    }
+
     prismaUser = await prisma.user.upsert({
       where: {
         id: uid,
@@ -71,17 +116,15 @@ export const innerFn = async ({
       create: {
         ...restInput,
         id: uid,
-        type: UserType.PLAYER,
         phone,
         DOB,
-        agentId:
-          ctx.user.type === UserType.AGENT
-            ? ctx.user.UserAsAgents[0]?.id
-            : null,
-        referral: ctx.user.type === UserType.AGENT ? ctx.user.username : '',
+        agentId,
+        referral,
       },
       update: {
         ...restInput,
+        agentId,
+        referral,
         phone,
         DOB,
       },

@@ -5,6 +5,9 @@ import { Player, Team } from '@prisma/client';
 import { Controller } from 'react-hook-form';
 import PlayerDialogForm from '~/components/Admin/Market/PlayerDialogForm';
 import CircularProgress from '@mui/material/CircularProgress';
+import { IconButton, InputAdornment } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { NEW_USER_ID } from '~/constants/NewUserId';
 
 export type PlayerWithInputValue = Player & {
   Team?: Team | null;
@@ -20,37 +23,44 @@ interface Props {
   helperText?: string;
   setValue: any;
   onAddTeam: (team: Team) => Promise<Team | undefined>;
+  onDeleteTeam: (team: Team) => Promise<Team | undefined>;
   onAddPlayer: (player: Player) => Promise<Player | undefined>;
+  onDeletePlayer: (player: Player) => Promise<Player | undefined>;
   teams: Team[];
   isLoading: boolean;
   setPlayerFilterName: React.Dispatch<React.SetStateAction<string>>;
   teamIsLoading: boolean;
   setTeamFilterName: React.Dispatch<React.SetStateAction<string>>;
+  noBorder?: boolean;
+  player?: PlayerWithInputValue;
 }
+
+const defaultPlayer = {
+  id: NEW_USER_ID,
+  name: '',
+  position: '',
+  team: '',
+  teamid: '',
+  headshot: '',
+};
 
 export default function PlayerAutoComplete(props: Props) {
   const {
     teams,
     onAddTeam,
+    onDeleteTeam,
     isLoading,
     setPlayerFilterName,
     teamIsLoading,
     setTeamFilterName,
     onAddPlayer,
+    player,
   } = props;
   const [open, toggleOpen] = React.useState(false);
 
-  const defaultPlayer = {
-    id: 'NEW',
-    name: '',
-    position: '',
-    team: '',
-    teamid: '',
-    headshot: '',
-  };
-
-  const [dialogPlayer, setDialogPlayer] =
-    React.useState<PlayerWithInputValue>(defaultPlayer);
+  const [dialogPlayer, setDialogPlayer] = React.useState<PlayerWithInputValue>(
+    player || defaultPlayer,
+  );
 
   const handleSubmit = async (player: Player) => {
     toggleOpen(false);
@@ -64,9 +74,31 @@ export default function PlayerAutoComplete(props: Props) {
   };
 
   const handleCancel = () => {
-    setDialogPlayer(defaultPlayer);
+    if (player?.id === NEW_USER_ID) {
+      setDialogPlayer(defaultPlayer);
+      props.setValue(props.name, defaultPlayer);
+    }
     toggleOpen(false);
-    props.setValue(props.name, defaultPlayer);
+  };
+
+  const handleEditPlayer = () => {
+    if (player) {
+      setDialogPlayer(player!);
+      toggleOpen(true);
+    }
+  };
+
+  const onDeletePlayer = async () => {
+    if (!player) {
+      return;
+    }
+
+    const deletedPlayer = await props.onDeletePlayer(player);
+    if (deletedPlayer) {
+      props.setValue(props.name, null);
+      setDialogPlayer(defaultPlayer);
+      toggleOpen(false);
+    }
   };
 
   return (
@@ -75,6 +107,7 @@ export default function PlayerAutoComplete(props: Props) {
         render={({ field }) => (
           <Autocomplete
             {...field}
+            fullWidth
             loading={isLoading}
             onInputChange={(event, newInputValue) => {
               setPlayerFilterName(newInputValue);
@@ -85,7 +118,7 @@ export default function PlayerAutoComplete(props: Props) {
                 setTimeout(() => {
                   toggleOpen(true);
                   setDialogPlayer({
-                    id: 'new',
+                    id: NEW_USER_ID,
                     name: newValue,
                     inputValue: newValue,
                     position: '',
@@ -96,7 +129,7 @@ export default function PlayerAutoComplete(props: Props) {
                 });
               } else if (newValue && newValue.inputValue) {
                 const player = {
-                  id: 'new',
+                  id: NEW_USER_ID,
                   name: newValue.inputValue,
                   position: '',
                   team: '',
@@ -145,18 +178,45 @@ export default function PlayerAutoComplete(props: Props) {
                 size={'small'}
                 InputProps={{
                   ...params.InputProps,
+                  disableUnderline: props.noBorder,
                   endAdornment: (
                     <React.Fragment>
                       {isLoading ? (
                         <CircularProgress color="inherit" size={20} />
                       ) : null}
+                      {field.value && (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="Edit Player"
+                            edge="end"
+                            size={'small'}
+                            onClick={handleEditPlayer}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      )}
                       {params.InputProps.endAdornment}
                     </React.Fragment>
                   ),
                 }}
+                variant={props.noBorder ? 'standard' : 'outlined'}
               />
             )}
-            fullWidth
+            sx={
+              props.noBorder
+                ? {
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '0',
+                      padding: '0',
+                    },
+                    '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline':
+                      {
+                        border: '1px solid #eee',
+                      },
+                  }
+                : null
+            }
           />
         )}
         name={props.name}
@@ -171,9 +231,11 @@ export default function PlayerAutoComplete(props: Props) {
         handleCancel={handleCancel}
         teams={teams}
         onAddTeam={onAddTeam}
+        onDeleteTeam={onDeleteTeam}
         open={open}
         setTeamFilterName={setTeamFilterName}
         teamIsLoading={teamIsLoading}
+        onDeletePlayer={onDeletePlayer}
       />
     </React.Fragment>
   );
